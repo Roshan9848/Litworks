@@ -18,10 +18,12 @@ export async function POST(req: NextRequest) {
     // Save booking (this handles MongoDB and falls back to local file if needed)
     const result = await saveBooking(body);
 
-    // Send email notification (async/non-blocking so API responds immediately)
-    sendBookingEmail(body).catch((err) => {
-      console.error('Failed to send email notification in background:', err);
-    });
+    // Send email notification (await to prevent Vercel from terminating the function early)
+    try {
+      await sendBookingEmail(body);
+    } catch (err) {
+      console.error('Failed to send email notification:', err);
+    }
 
     return NextResponse.json({
       success: true,
