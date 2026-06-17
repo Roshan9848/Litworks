@@ -52,9 +52,9 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
     cachedDb = db;
 
     return { client, db };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to connect to MongoDB:', error);
-    return null;
+    throw new Error('Failed to connect to MongoDB: ' + error.message);
   }
 }
 
