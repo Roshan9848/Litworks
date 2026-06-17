@@ -36,3 +36,19 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET() {
+  return NextResponse.json({
+    diagnostics: {
+      MONGODB_URI_exists: !!process.env.MONGODB_URI,
+      MONGODB_URI_length: process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0,
+      MONGODB_URI_prefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 15) : '',
+      MONGODB_DB: process.env.MONGODB_DB || 'not_set',
+      SMTP_HOST: process.env.SMTP_HOST || 'not_set',
+      SMTP_PORT: process.env.SMTP_PORT || 'not_set',
+      SMTP_USER: process.env.SMTP_USER || 'not_set',
+      SMTP_PASS_exists: !!process.env.SMTP_PASS,
+      SMTP_PASS_length: process.env.SMTP_PASS ? process.env.SMTP_PASS.length : 0,
+    }
+  });
+}
