@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveBooking } from '@/lib/mongodb';
-import { sendBookingEmail } from '@/lib/mailer';
+import { sendBookingEmail, sendClientConfirmationEmail } from '@/lib/mailer';
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,11 +18,12 @@ export async function POST(req: NextRequest) {
     // Save booking (this handles MongoDB and falls back to local file if needed)
     const result = await saveBooking(body);
 
-    // Send email notification (await to prevent Vercel from terminating the function early)
+    // Send email notifications (await both to ensure Vercel doesn't terminate early)
     try {
       await sendBookingEmail(body);
+      await sendClientConfirmationEmail(body);
     } catch (err) {
-      console.error('Failed to send email notification:', err);
+      console.error('Failed to send email notifications:', err);
     }
 
     return NextResponse.json({
