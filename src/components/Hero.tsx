@@ -93,14 +93,14 @@ export default function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <button
-            onClick={() => handleScroll("#book-service")}
+            onClick={() => handleScroll("#pricing")}
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           >
             Book Instant Reel
           </button>
           <button
-            onClick={() => handleScroll("#services")}
-            className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-800 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+            onClick={() => handleScroll("#book-service")}
+            className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           >
             Explore Services
           </button>

@@ -75,12 +75,12 @@ export async function sendBookingEmail(bookingData: any) {
             <tr>
               <td style="padding: 10px 0; font-weight: bold; border-bottom: 1px solid #222; color: #a3a3a3;">Email Address:</td>
               <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #ffffff;">
-                <a href="mailto:${bookingData.email}" style="color: #ff7a00; text-decoration: none;">${bookingData.email}</a>
+                <a href="mailto:${bookingData.email || ""}" style="color: #ff7a00; text-decoration: none;">${bookingData.email || "Not Provided"}</a>
               </td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold; border-bottom: 1px solid #222; color: #a3a3a3;">Location:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #ffffff;">${bookingData.city}, ${bookingData.state}</td>
+              <td style="padding: 10px 0; border-bottom: 1px solid #222; color: #ffffff;">${bookingData.city || "N/A"}, ${bookingData.state || "N/A"}</td>
             </tr>
             <tr>
               <td style="padding: 10px 0; font-weight: bold; border-bottom: 1px solid #222; color: #a3a3a3;">Service Requested:</td>
@@ -129,6 +129,10 @@ export async function sendBookingEmail(bookingData: any) {
 }
 
 export async function sendClientConfirmationEmail(bookingData: any) {
+  if (!bookingData.email) {
+    console.warn("Client email is missing. Skipping client confirmation email.");
+    return { success: false, reason: "Client email is missing" };
+  }
   // If SMTP settings are missing, log and skip gracefully
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
     return { success: false, reason: "SMTP settings not configured" };

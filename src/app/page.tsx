@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Services from "@/components/Services";
+import Pricing from "@/components/Pricing";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import Workflow from "@/components/Workflow";
 import BookingForm from "@/components/BookingForm";
@@ -29,6 +30,7 @@ export default function Home() {
           <Hero />
           <About />
           <Services />
+          <Pricing />
           <WhyChooseUs />
           <Workflow />
           <BookingForm />
