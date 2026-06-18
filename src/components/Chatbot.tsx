@@ -116,15 +116,36 @@ export default function Chatbot() {
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2.8, type: "spring", stiffness: 260, damping: 20 }}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full overflow-hidden border border-brand-orange/30 bg-neutral-950 shadow-[0_0_20px_rgba(255,122,0,0.3)] hover:shadow-[0_0_30px_rgba(255,122,0,0.6)] transition-all duration-300 cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 flex h-20 w-20 items-center justify-center rounded-full bg-neutral-950/80 border border-neutral-900/50 shadow-[0_0_30px_rgba(255,122,0,0.2)] hover:shadow-[0_0_40px_rgba(255,122,0,0.5)] transition-shadow duration-300 cursor-pointer backdrop-blur-md"
         aria-label="Open LITBOT chat"
       >
         {isOpen ? (
           <X className="h-6 w-6 text-brand-orange" />
         ) : (
-          <img src="/chatbot.jpg" alt="LITBOT Mascot" className="w-full h-full object-cover transform scale-110 hover:scale-120 transition-transform duration-300" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* Rotating Text Ring */}
+            <div className="absolute inset-0 w-full h-full animate-[spin_12s_linear_infinite]">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                <path
+                  id="textPath"
+                  d="M 50, 10 a 40, 40 0 1, 1 -0.1, 0"
+                  fill="none"
+                />
+                <text className="text-[9px] fill-brand-orange uppercase font-bold tracking-[0.2em]">
+                  <textPath href="#textPath">
+                    LITBOT • CHAT NOW • LITWORKS •
+                  </textPath>
+                </text>
+              </svg>
+            </div>
+            
+            {/* Center Mascot Image */}
+            <div className="w-12 h-12 rounded-full overflow-hidden border border-brand-orange/30 shadow-[0_0_15px_rgba(255,122,0,0.2)]">
+              <img src="/chatbot.jpg" alt="LITBOT Mascot" className="w-full h-full object-cover transform scale-110" />
+            </div>
+          </div>
         )}
       </motion.button>
 
@@ -136,7 +157,7 @@ export default function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.9 }}
             transition={{ type: "spring", damping: 25, stiffness: 250 }}
-            className="fixed bottom-24 right-6 z-40 w-[350px] sm:w-[400px] h-[500px] rounded-3xl bg-neutral-950/90 border border-neutral-900 shadow-2xl flex flex-col justify-between overflow-hidden backdrop-blur-xl"
+            className="fixed bottom-28 right-6 z-40 w-[350px] sm:w-[400px] h-[500px] rounded-3xl bg-neutral-950/90 border border-neutral-900 shadow-2xl flex flex-col justify-between overflow-hidden backdrop-blur-xl"
           >
             {/* Header */}
             <div className="bg-neutral-900/60 px-6 py-4 border-b border-neutral-900 flex items-center justify-between">
