@@ -39,10 +39,10 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico" },
-      { url: "/logo.png", type: "image/png" }
+      { url: "/favicon.png", type: "image/png" }
     ],
     apple: [
-      { url: "/logo.png" }
+      { url: "/favicon.png" }
     ],
   },
 };
@@ -56,7 +56,8 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} scroll-smooth`}>
       <head>
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
       </head>
       <body className="bg-black text-white antialiased selection:bg-brand-orange selection:text-black min-h-screen">
         {children}
