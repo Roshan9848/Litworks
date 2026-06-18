@@ -80,6 +80,15 @@ export default function BookingForm() {
     "Event Instant Reel",
   ].includes(selectedService);
 
+  // Helper to get today's date formatted as YYYY-MM-DD
+  const getTodayDateString = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
     setErrorMessage("");
@@ -391,6 +400,7 @@ export default function BookingForm() {
                     <label className="block text-xs uppercase tracking-widest text-neutral-400 font-semibold mb-2">Preferred Date</label>
                     <input
                       type="date"
+                      min={getTodayDateString()}
                       onClick={(e) => {
                         try {
                           e.currentTarget.showPicker();

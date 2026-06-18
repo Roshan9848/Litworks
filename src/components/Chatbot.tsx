@@ -118,10 +118,14 @@ export default function Chatbot() {
         transition={{ delay: 2.8, type: "spring", stiffness: 260, damping: 20 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange text-black shadow-[0_0_20px_rgba(255,122,0,0.4)] hover:shadow-[0_0_30px_rgba(255,122,0,0.7)] transition-shadow duration-300 cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full overflow-hidden border border-brand-orange/30 bg-neutral-950 shadow-[0_0_20px_rgba(255,122,0,0.3)] hover:shadow-[0_0_30px_rgba(255,122,0,0.6)] transition-all duration-300 cursor-pointer"
         aria-label="Open LITBOT chat"
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+        {isOpen ? (
+          <X className="h-6 w-6 text-brand-orange" />
+        ) : (
+          <img src="/chatbot.jpg" alt="LITBOT Mascot" className="w-full h-full object-cover transform scale-110 hover:scale-120 transition-transform duration-300" />
+        )}
       </motion.button>
 
       {/* Chatbot Window */}
@@ -137,8 +141,8 @@ export default function Chatbot() {
             {/* Header */}
             <div className="bg-neutral-900/60 px-6 py-4 border-b border-neutral-900 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange border border-brand-orange/20 shadow-[0_0_15px_rgba(255,122,0,0.15)]">
-                  <Bot className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl overflow-hidden border border-brand-orange/20 shadow-[0_0_15px_rgba(255,122,0,0.15)] relative">
+                  <img src="/chatbot.jpg" alt="LITBOT Mascot" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-white tracking-wider uppercase">LITBOT</h4>
