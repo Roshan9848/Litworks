@@ -389,7 +389,18 @@ export default function BookingForm() {
                   </div>
                   <div>
                     <label className="block text-xs uppercase tracking-widest text-neutral-400 font-semibold mb-2">Preferred Date</label>
-                    <input type="date" {...register("preferredDate")} className="w-full px-5 py-3.5 rounded-xl bg-neutral-950/70 border border-neutral-850 text-white text-sm focus:outline-none focus:border-brand-orange/50" />
+                    <input
+                      type="date"
+                      onClick={(e) => {
+                        try {
+                          e.currentTarget.showPicker();
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                      {...register("preferredDate")}
+                      className="w-full px-5 py-3.5 rounded-xl bg-neutral-950/70 border border-neutral-850 text-white text-sm focus:outline-none focus:border-brand-orange/50 [color-scheme:dark] cursor-pointer"
+                    />
                   </div>
                   <div>
                     <label className="block text-xs uppercase tracking-widest text-neutral-400 font-semibold mb-2">Number of Reels Required</label>

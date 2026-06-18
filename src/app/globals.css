@@ -68,3 +68,15 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Date input premium styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px;
+  transition: all 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(255, 122, 0, 0.2);
+}
