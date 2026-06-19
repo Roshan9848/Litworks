@@ -44,7 +44,7 @@ export default function Workflow() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ duration: 0.6 }}
             className="text-xs uppercase tracking-widest text-brand-orange font-semibold mb-3"
           >
@@ -53,7 +53,7 @@ export default function Workflow() {
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
           >
@@ -92,7 +92,7 @@ export default function Workflow() {
                   <motion.div
                     initial={{ opacity: 0, x: isEven ? 40 : -40 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-60px" }}
+                    viewport={{ once: true, margin: "-15px" }}
                     transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
                     className="w-full md:w-1/2 pl-12 md:pl-0 md:px-8"
                   >

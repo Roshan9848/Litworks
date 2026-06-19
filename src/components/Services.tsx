@@ -81,7 +81,7 @@ export default function Services() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ duration: 0.6 }}
             className="text-xs uppercase tracking-widest text-brand-orange font-semibold mb-3"
           >
@@ -90,7 +90,7 @@ export default function Services() {
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
           >
@@ -110,7 +110,7 @@ export default function Services() {
                 key={service.title}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
+                viewport={{ once: true, margin: "-15px" }}
                 transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
                 className="glass-panel group relative rounded-2xl p-8 flex flex-col justify-between overflow-hidden border border-neutral-900 transition-all duration-300 hover:border-brand-orange/30 hover:shadow-[0_0_40px_-10px_rgba(255,122,0,0.15)] hover:-translate-y-1"
               >

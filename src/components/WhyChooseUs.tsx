@@ -50,7 +50,7 @@ export default function WhyChooseUs() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ duration: 0.6 }}
             className="text-xs uppercase tracking-widest text-brand-orange font-semibold mb-3"
           >
@@ -59,7 +59,7 @@ export default function WhyChooseUs() {
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
           >
@@ -79,7 +79,7 @@ export default function WhyChooseUs() {
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
+                viewport={{ once: true, margin: "-15px" }}
                 transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
                 className="glass-panel group relative p-8 rounded-2xl border border-neutral-900 transition-all duration-300 hover:border-brand-orange/20 hover:shadow-[0_0_30px_rgba(255,122,0,0.1)] hover:-translate-y-1"
               >

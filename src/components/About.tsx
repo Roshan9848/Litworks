@@ -31,7 +31,7 @@ export default function About() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ duration: 0.6 }}
             className="text-xs uppercase tracking-widest text-brand-orange font-semibold mb-3"
           >
@@ -40,7 +40,7 @@ export default function About() {
           <motion.h3
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
           >
@@ -49,7 +49,7 @@ export default function About() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-15px" }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-neutral-400 font-light leading-relaxed text-base sm:text-lg"
           >
@@ -66,7 +66,7 @@ export default function About() {
                 key={card.title}
                 initial={{ opacity: 0, y: 35 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
+                viewport={{ once: true, margin: "-15px" }}
                 transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
                 className="glass-panel glass-panel-hover p-8 rounded-2xl flex flex-col items-start"
               >
