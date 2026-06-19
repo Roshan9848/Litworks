@@ -9,6 +9,8 @@ function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order_id") || "N/A";
   const status = searchParams.get("status");
+  const amountParam = searchParams.get("amount");
+  const amountPaid = amountParam ? `₹${Number(amountParam).toLocaleString("en-IN")}` : "the full package amount";
   const isFailed = status === "failed";
 
   return (
@@ -36,7 +38,7 @@ function BookingSuccessContent() {
 
               {/* Message */}
               <p className="text-xs text-neutral-400 font-light leading-relaxed">
-                We couldn't verify your booking deposit payment. If the amount was debited, please contact our support team immediately with your transaction reference.
+                We couldn't verify your booking payment. If the amount was debited, please contact our support team immediately with your transaction reference.
               </p>
 
               {/* Metadata */}
@@ -67,7 +69,7 @@ function BookingSuccessContent() {
 
               {/* Message */}
               <p className="text-xs text-neutral-400 font-light leading-relaxed">
-                Thank you for choosing **LITWORKS**! Your shoot slot deposit of **₹999** has been successfully verified. Our scheduling editors will reach out to you via WhatsApp or Email within 15 minutes.
+                Thank you for choosing **LITWORKS**! Your booking payment of <strong className="text-white font-bold">{amountPaid}</strong> has been successfully verified. Our scheduling editors will reach out to you via WhatsApp or Email within 15 minutes.
               </p>
 
               {/* Metadata */}
@@ -76,8 +78,8 @@ function BookingSuccessContent() {
                   <span className="text-neutral-600">Booking ID:</span> {orderId}
                 </div>
                 <div>
-                  <span className="text-neutral-600">Deposit Paid:</span>{" "}
-                  <span className="text-brand-orange font-bold">₹999 (Verified)</span>
+                  <span className="text-neutral-600">Amount Paid:</span>{" "}
+                  <span className="text-brand-orange font-bold">{amountParam ? `₹${Number(amountParam).toLocaleString("en-IN")} (Verified)` : "Verified"}</span>
                 </div>
               </div>
             </>

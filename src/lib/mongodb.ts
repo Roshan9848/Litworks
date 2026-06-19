@@ -159,7 +159,7 @@ export async function savePendingBooking(bookingData: any, orderId: string) {
   }
 }
 
-export async function confirmBookingPayment(orderId: string, transactionId: string) {
+export async function confirmBookingPayment(orderId: string, transactionId: string, confirmedAmount?: number) {
   const dbConnection = await connectToDatabase();
   let bookingDoc: any = null;
 
@@ -168,7 +168,14 @@ export async function confirmBookingPayment(orderId: string, transactionId: stri
       const { db } = dbConnection;
       await db.collection('bookings').updateOne(
         { orderId },
-        { $set: { paymentStatus: 'paid', transactionId, paymentConfirmedAt: new Date() } }
+        { 
+          $set: { 
+            paymentStatus: 'paid', 
+            transactionId, 
+            paymentConfirmedAt: new Date(),
+            paymentConfirmedAmount: confirmedAmount || null
+          } 
+        }
       );
       bookingDoc = await db.collection('bookings').findOne({ orderId });
     } catch (error) {
@@ -194,6 +201,7 @@ export async function confirmBookingPayment(orderId: string, transactionId: stri
         bookingDoc.paymentStatus = 'paid';
         bookingDoc.transactionId = transactionId;
         bookingDoc.paymentConfirmedAt = new Date();
+        bookingDoc.paymentConfirmedAmount = confirmedAmount || null;
         
         // Remove from pending
         pendingBookings.splice(foundIdx, 1);
@@ -217,6 +225,7 @@ export async function confirmBookingPayment(orderId: string, transactionId: stri
           bookingDoc = b;
           bookingDoc.paymentStatus = 'paid';
           bookingDoc.transactionId = transactionId;
+          bookingDoc.paymentConfirmedAmount = confirmedAmount || null;
           fs.writeFileSync(bookingsFilePath, JSON.stringify(bookings, null, 2), 'utf8');
         }
       }

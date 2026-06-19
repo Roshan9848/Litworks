@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     let booking: any = null;
     let paymentSuccess = false;
     let transactionId = `tx_${Date.now()}`;
+    let orderDetails: any = null;
 
     // If API keys are missing, run in developer mock mode
     if (!appId || !secretKey) {
@@ -44,13 +45,13 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      const orderDetails = await response.json();
+      orderDetails = await response.json();
 
       if (response.ok && orderDetails.order_status === "PAID") {
         paymentSuccess = true;
         // Fetch transaction id if available
         transactionId = orderDetails.cf_order_id || orderDetails.order_id || transactionId;
-        booking = await confirmBookingPayment(orderId, transactionId);
+        booking = await confirmBookingPayment(orderId, transactionId, orderDetails.order_amount);
       } else {
         console.error("Cashfree Payment Verification failed or unpaid:", orderDetails);
       }
@@ -69,7 +70,16 @@ export async function GET(req: NextRequest) {
         console.error("Failed to send booking emails on payment confirmation:", err);
       }
 
-      return NextResponse.redirect(`${protocol}://${host}/booking-success?order_id=${orderId}`);
+      // Determine redirect amount
+      let redirectAmount = "999";
+      if (typeof orderDetails !== "undefined" && orderDetails?.order_amount) {
+        redirectAmount = String(orderDetails.order_amount);
+      } else if (booking?.dynamicFields?.calculatedTotalPrice) {
+        const baseVal = Number(booking.dynamicFields.calculatedTotalPrice.replace(/[^0-9]/g, ""));
+        redirectAmount = String(Math.round(baseVal * 1.025));
+      }
+
+      return NextResponse.redirect(`${protocol}://${host}/booking-success?order_id=${orderId}&amount=${redirectAmount}`);
     } else {
       return NextResponse.redirect(`${protocol}://${host}/booking-success?order_id=${orderId}&status=failed`);
     }

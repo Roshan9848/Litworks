@@ -4,10 +4,10 @@ import { savePendingBooking } from "@/lib/mongodb";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, phone, email, state, city, service, notes, dynamicFields } = body;
+    const { name, phone, email, state, city, service, notes, dynamicFields, finalPrice } = body;
 
     // Validate inputs
-    if (!name || !phone || !email || !service) {
+    if (!name || !phone || !email || !service || !finalPrice) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -16,6 +16,10 @@ export async function POST(req: NextRequest) {
 
     // Generate unique Order ID
     const orderId = `LIT-${Date.now()}`;
+
+    const basePrice = Number(finalPrice);
+    const platformFee = Math.round(basePrice * 0.025);
+    const totalAmount = basePrice + platformFee;
 
     // Save pending booking in the database
     const pendingBooking = {
@@ -43,6 +47,7 @@ export async function POST(req: NextRequest) {
         mock: true,
         payment_session_id: `mock_session_${Math.random().toString(36).substring(7)}`,
         order_id: orderId,
+        environment: env,
       });
     }
 
@@ -59,7 +64,7 @@ export async function POST(req: NextRequest) {
     const returnUrl = `${protocol}://${host}/api/payment/verify?order_id={order_id}`;
 
     const payload = {
-      order_amount: 10.00, // Temporarily set to 10 INR for live test verification
+      order_amount: totalAmount, // Full plan amount + 2.5% platform fee
       order_currency: "INR",
       order_id: orderId,
       customer_details: {

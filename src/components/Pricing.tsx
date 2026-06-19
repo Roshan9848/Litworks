@@ -324,6 +324,8 @@ export default function Pricing() {
 
     const finalEventOccasion = eventType === "Other" ? customEventType : eventType;
     const finalPrice = getCalculatedPrice();
+    const platformFee = Math.round(finalPrice * 0.025);
+    const totalAmount = finalPrice + platformFee;
 
     const payload = {
       name,
@@ -333,6 +335,7 @@ export default function Pricing() {
       city,
       service: selectedPlan?.serviceType || "Instant Reel",
       notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}`,
+      finalPrice: finalPrice,
       dynamicFields: {
         preferredDate: date || "Not Specified",
         timeSlot: timeSlot,
@@ -341,7 +344,7 @@ export default function Pricing() {
         extraHourRequested: addExtraHour ? "Yes (+₹899)" : "No",
         calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedPlan?.title,
-        bookingDepositPaid: "₹999",
+        bookingDepositPaid: `₹${totalAmount.toLocaleString("en-IN")}`,
       },
     };
 
@@ -842,11 +845,25 @@ export default function Pricing() {
 
                             </div>
                             <div className="h-[1px] bg-brand-orange/15 w-full my-1" />
-                            <div className="flex justify-between items-center text-xs font-bold text-white">
-                              <span>Total Shoot Cost:</span>
-                              <span className="text-brand-orange text-glow">
-                                ₹{getCalculatedPrice().toLocaleString("en-IN")}
-                              </span>
+                            <div className="space-y-1.5 text-[11px] text-neutral-300 font-light">
+                              <div className="flex justify-between">
+                                <span>Base Shoot Cost:</span>
+                                <span className="text-white font-medium">₹{getCalculatedPrice().toLocaleString("en-IN")}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="flex items-center gap-1">
+                                  Platform Fee (2.5%):
+                                  <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
+                                </span>
+                                <span className="text-white font-medium">₹{Math.round(getCalculatedPrice() * 0.025).toLocaleString("en-IN")}</span>
+                              </div>
+                              <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
+                              <div className="flex justify-between items-center text-xs font-bold text-white">
+                                <span>Total Amount to Pay:</span>
+                                <span className="text-brand-orange text-glow">
+                                  ₹{Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")}
+                                </span>
+                              </div>
                             </div>
                           </motion.div>
                         )}
@@ -862,7 +879,7 @@ export default function Pricing() {
                         type="submit"
                         className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
                       >
-                        <span>Proceed to Pay Deposit</span>
+                        <span>Pay ₹{Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")} & Confirm Slot</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </form>
