@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Zap, ArrowUpRight, X, Loader2, CheckCircle2, Phone, User, Calendar, MapPin, Clock, FileText, Search, CreditCard, ChevronLeft, Info } from "lucide-react";
+import { Check, Zap, ArrowUpRight, X, Loader2, CheckCircle2, Phone, User, Calendar, MapPin, Clock, FileText, Search, CreditCard, ChevronLeft, Info, Mail, BookOpen } from "lucide-react";
 
 interface PricingPlan {
   title: string;
@@ -70,6 +70,11 @@ export default function Pricing() {
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLocationVerified, setIsLocationVerified] = useState(false);
+  
+  // New input states for email and event type
+  const [email, setEmail] = useState("");
+  const [eventType, setEventType] = useState("");
+  const [customEventType, setCustomEventType] = useState("");
   
   // Timing slot, add-ons and payment UTR
   const [timeSlot, setTimeSlot] = useState("");
@@ -211,6 +216,9 @@ export default function Pricing() {
     setErrorMessage("");
     setName("");
     setPhone("");
+    setEmail("");
+    setEventType("");
+    setCustomEventType("");
     setDate("");
     setState("");
     setCity("");
@@ -296,7 +304,18 @@ export default function Pricing() {
 
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim() || !state || !city || !area.trim() || !timeSlot) {
+    const isCustomEventValid = eventType !== "Other" || customEventType.trim() !== "";
+    if (
+      !name.trim() ||
+      !phone.trim() ||
+      !email.trim() ||
+      !state ||
+      !city ||
+      !area.trim() ||
+      !eventType ||
+      !isCustomEventValid ||
+      !timeSlot
+    ) {
       setErrorMessage("Please fill out all required fields.");
       return;
     }
@@ -316,19 +335,20 @@ export default function Pricing() {
 
     const finalPrice = getCalculatedPrice();
 
+    const finalEventOccasion = eventType === "Other" ? customEventType : eventType;
     const payload = {
       name: name,
       phone: phone,
-      email: "",
+      email: email,
       state: state,
       city: city,
       service: selectedPlan?.serviceType || "Instant Reel",
-      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nVerified Maps Location: ${searchLocation || "N/A"}\nPayment UTR: ${utrNumber}`,
+      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}\nPayment UTR: ${utrNumber}`,
       dynamicFields: {
         preferredDate: date || "Not Specified",
         timeSlot: timeSlot,
         shootArea: area,
-        googleMapsLocation: searchLocation || "Not Selected",
+        eventType: finalEventOccasion,
         extraHourRequested: addExtraHour ? "Yes (+₹899)" : "No",
         calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedPlan?.title,
@@ -597,6 +617,67 @@ export default function Pricing() {
                             className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
                           />
                         </div>
+
+                        {/* Email Address */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <Mail className="w-3.5 h-3.5 text-brand-orange" />
+                            Email Address *
+                          </label>
+                          <input
+                            type="email"
+                            placeholder="e.g. name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          />
+                        </div>
+
+                        {/* Type of Event */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
+                            Type of Event / Occasion *
+                          </label>
+                          <select
+                            value={eventType}
+                            onChange={(e) => {
+                              setEventType(e.target.value);
+                              if (e.target.value !== "Other") {
+                                setCustomEventType("");
+                              }
+                            }}
+                            required
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          >
+                            <option value="" disabled>Select Event Type</option>
+                            <option value="Wedding">Wedding</option>
+                            <option value="Car Delivery">Car Delivery</option>
+                            <option value="Birthday">Birthday</option>
+                            <option value="House Warming">House Warming</option>
+                            <option value="Shop Opening">Shop Opening</option>
+                            <option value="Other">Other (Specify below)</option>
+                          </select>
+                        </div>
+
+                        {/* Custom Event Type Input */}
+                        {eventType === "Other" && (
+                          <div className="animate-fadeIn">
+                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                              <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
+                              Specify Event Type *
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Corporate Event, Anniversary"
+                              value={customEventType}
+                              onChange={(e) => setCustomEventType(e.target.value)}
+                              required
+                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                            />
+                          </div>
+                        )}
 
                         {/* State & City (Location info at top of location section) */}
                         <div className="grid grid-cols-2 gap-4">

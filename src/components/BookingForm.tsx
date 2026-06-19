@@ -8,9 +8,11 @@ import { CheckCircle, Loader2, Send, Calendar, Phone, Mail, User, BookOpen } fro
 interface BookingFormValues {
   name: string;
   phone: string;
-  email?: string;
+  email: string;
   service: string;
   preferredDate?: string;
+  eventType: string;
+  customEventType?: string;
   notes: string;
 }
 
@@ -23,6 +25,7 @@ export default function BookingForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm<BookingFormValues>({
@@ -32,9 +35,13 @@ export default function BookingForm() {
       email: "",
       service: "",
       preferredDate: "",
+      eventType: "",
+      customEventType: "",
       notes: "",
     },
   });
+
+  const eventTypeVal = watch("eventType");
 
   // Listen for custom pricing select events
   useEffect(() => {
@@ -68,14 +75,17 @@ export default function BookingForm() {
     setIsSubmitting(true);
     setErrorMessage("");
 
+    const finalEventType = data.eventType === "Other" ? data.customEventType : data.eventType;
+
     const payload = {
       name: data.name,
       phone: data.phone,
-      email: data.email || "",
+      email: data.email,
       service: data.service,
-      notes: data.notes,
+      notes: `Event Type: ${finalEventType}\nAdditional Notes: ${data.notes}`,
       dynamicFields: {
         preferredDate: data.preferredDate || "Not Specified",
+        eventType: finalEventType,
       },
     };
 
@@ -266,17 +276,18 @@ export default function BookingForm() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                  {/* Email (Optional) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Email (Required) */}
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5 text-brand-orange" />
-                      Email Address (Optional)
+                      Email Address *
                     </label>
                     <input
                       type="email"
                       placeholder="e.g. name@example.com"
                       {...register("email", {
+                        required: "Email address is required",
                         pattern: {
                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                           message: "Please enter a valid email address",
@@ -290,6 +301,54 @@ export default function BookingForm() {
                       <p className="text-red-500 text-[10px] mt-1.5 font-light">{errors.email.message}</p>
                     )}
                   </div>
+
+                  {/* Type of Event Selector */}
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
+                      Type of Event / Occasion *
+                    </label>
+                    <select
+                      {...register("eventType", { required: "Please select an event type" })}
+                      className={`w-full px-5 py-3.5 rounded-xl bg-neutral-950 border text-white text-xs focus:outline-none transition-colors ${
+                        errors.eventType ? "border-red-500/50 focus:border-red-500" : "border-neutral-850 focus:border-brand-orange"
+                      }`}
+                    >
+                      <option value="" disabled>Select Event Type</option>
+                      <option value="Wedding">Wedding</option>
+                      <option value="Car Delivery">Car Delivery</option>
+                      <option value="Birthday">Birthday</option>
+                      <option value="House Warming">House Warming</option>
+                      <option value="Shop Opening">Shop Opening</option>
+                      <option value="Other">Other (Specify below)</option>
+                    </select>
+                    {errors.eventType && (
+                      <p className="text-red-500 text-[10px] mt-1.5 font-light">{errors.eventType.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6">
+                  {/* Custom Event Type Input */}
+                  {eventTypeVal === "Other" && (
+                    <div className="animate-fadeIn">
+                      <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                        <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
+                        Specify Event Type *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Corporate Event, Anniversary, Baby Shower"
+                        {...register("customEventType", { required: "Event type specification is required when 'Other' is selected" })}
+                        className={`w-full px-5 py-3.5 rounded-xl bg-neutral-950 border text-white text-xs focus:outline-none transition-colors ${
+                          errors.customEventType ? "border-red-500/50 focus:border-red-500" : "border-neutral-850 focus:border-brand-orange"
+                        }`}
+                      />
+                      {errors.customEventType && (
+                        <p className="text-red-500 text-[10px] mt-1.5 font-light">{errors.customEventType.message}</p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Requirements Textbox */}
                   <div>
