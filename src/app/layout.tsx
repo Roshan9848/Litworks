@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -61,6 +62,7 @@ export default function RootLayout({
       </head>
       <body className="bg-black text-white antialiased selection:bg-brand-orange selection:text-black min-h-screen">
         {children}
+        <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
       </body>
     </html>
   );

@@ -76,10 +76,9 @@ export default function Pricing() {
   const [eventType, setEventType] = useState("");
   const [customEventType, setCustomEventType] = useState("");
   
-  // Timing slot, add-ons and payment UTR
+  // Timing slot, add-ons and payment
   const [timeSlot, setTimeSlot] = useState("");
   const [addExtraHour, setAddExtraHour] = useState(false);
-  const [utrNumber, setUtrNumber] = useState("");
 
   const suggestionRef = useRef<HTMLDivElement>(null);
 
@@ -229,7 +228,6 @@ export default function Pricing() {
     setIsLocationVerified(false);
     setTimeSlot("");
     setAddExtraHour(false);
-    setUtrNumber("");
   };
 
   const handleCloseModal = () => {
@@ -302,7 +300,7 @@ export default function Pricing() {
     }
   };
 
-  const handleProceedToPayment = (e: React.FormEvent) => {
+  const handleProceedToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     const isCustomEventValid = eventType !== "Other" || customEventType.trim() !== "";
     if (
@@ -319,31 +317,22 @@ export default function Pricing() {
       setErrorMessage("Please fill out all required fields.");
       return;
     }
+
     setErrorMessage("");
-    setModalStep(2); // Go to Payment step
-  };
-
-  const handleModalSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!utrNumber.trim()) {
-      setErrorMessage("Please enter the UTR / Ref Number of your deposit payment.");
-      return;
-    }
-
     setIsSubmitting(true);
-    setErrorMessage("");
-
-    const finalPrice = getCalculatedPrice();
+    setModalStep(2); // Go to Payment step
 
     const finalEventOccasion = eventType === "Other" ? customEventType : eventType;
+    const finalPrice = getCalculatedPrice();
+
     const payload = {
-      name: name,
-      phone: phone,
-      email: email,
-      state: state,
-      city: city,
+      name,
+      phone,
+      email,
+      state,
+      city,
       service: selectedPlan?.serviceType || "Instant Reel",
-      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}\nPayment UTR: ${utrNumber}`,
+      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}`,
       dynamicFields: {
         preferredDate: date || "Not Specified",
         timeSlot: timeSlot,
@@ -353,12 +342,11 @@ export default function Pricing() {
         calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedPlan?.title,
         bookingDepositPaid: "₹999",
-        paymentUtrReference: utrNumber,
       },
     };
 
     try {
-      const response = await fetch("/api/bookings", {
+      const response = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -366,15 +354,37 @@ export default function Pricing() {
 
       const resData = await response.json();
 
-      if (response.ok && resData.success) {
-        setSubmitSuccess(true);
-      } else {
-        setErrorMessage(resData.error || "Something went wrong. Please try again.");
+      if (!response.ok || !resData.success) {
+        setErrorMessage(resData.error || "Failed to initiate payment. Please try again.");
+        setModalStep(1); // Go back to details
+        setIsSubmitting(false);
+        return;
       }
-    } catch (err) {
-      console.error("Booking error:", err);
-      setErrorMessage("Network error. Please check your connection and try again.");
-    } finally {
+
+      // If mock mode is active, simulate a short delay and redirect to verify endpoint
+      if (resData.mock) {
+        setTimeout(() => {
+          window.location.href = `/api/payment/verify?order_id=${resData.order_id}`;
+        }, 1500);
+        return;
+      }
+
+      // Live/Sandbox Checkout initialization
+      if (typeof window !== "undefined" && (window as any).Cashfree) {
+        const cashfree = (window as any).Cashfree({
+          mode: process.env.NEXT_PUBLIC_CASHFREE_ENV || "sandbox",
+        });
+        cashfree.checkout({
+          paymentSessionId: resData.payment_session_id,
+          redirectTarget: "_self", // Redirects current tab
+        });
+      } else {
+        throw new Error("Cashfree SDK not loaded in browser.");
+      }
+    } catch (err: any) {
+      console.error("Checkout initiation error:", err);
+      setErrorMessage(err.message || "Network error. Please try again.");
+      setModalStep(1); // Go back to details
       setIsSubmitting(false);
     }
   };
@@ -556,7 +566,7 @@ export default function Pricing() {
                   </div>
                   <h4 className="text-xl font-black text-white">Slot Booking Confirmed!</h4>
                   <p className="text-xs text-neutral-400 leading-relaxed font-light">
-                    We have successfully registered your booking request and verified your transaction UTR: <span className="font-bold text-white font-mono">{utrNumber}</span>. Our creators will connect with you on WhatsApp / Phone shortly!
+                    We have successfully registered your booking request. Our creators will connect with you on WhatsApp / Phone shortly!
                   </p>
                   <button
                     onClick={handleCloseModal}
@@ -858,99 +868,30 @@ export default function Pricing() {
                     </form>
                   )}
 
-                  {/* STEP 2: UPI QR Payment Check */}
+                  {/* STEP 2: Cashfree Checkout Redirecting */}
                   {modalStep === 2 && (
-                    <form onSubmit={handleModalSubmit} className="space-y-5">
-                      <div className="flex items-center gap-2 text-brand-orange">
-                        <button
-                          type="button"
-                          onClick={() => setModalStep(1)}
-                          className="p-1 rounded-full border border-neutral-900 text-neutral-400 hover:text-white transition-colors cursor-pointer"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <span className="text-[10px] uppercase tracking-widest font-bold">
-                          Step 2: Pay Shoot Deposit
+                    <div className="py-12 flex flex-col items-center justify-center text-center space-y-6">
+                      <div className="w-16 h-16 rounded-full bg-brand-orange/10 border border-brand-orange/30 text-brand-orange flex items-center justify-center shadow-[0_0_20px_rgba(255,122,0,0.2)]">
+                        <Loader2 className="w-8 h-8 animate-spin" />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-widest text-brand-orange font-bold animate-pulse block">
+                          Step 2: Payment Gateway
                         </span>
+                        <h4 className="text-lg font-black text-white">Connecting to Cashfree</h4>
+                        <p className="text-xs text-neutral-450 font-light leading-relaxed max-w-xs mx-auto">
+                          Please wait while we secure your slot and launch the checkout gateway. Do not close this window.
+                        </p>
                       </div>
 
-                      <div className="text-center space-y-4">
-                        <div className="p-4 rounded-2xl bg-neutral-900/80 border border-neutral-850 max-w-[280px] mx-auto shadow-inner relative overflow-hidden group">
-                          {/* Payment QR Mockup Code */}
-                          <img
-                            src="/upi_payment_qr.png"
-                            onError={(e) => {
-                              // Fallback if public folder image not copied yet
-                              e.currentTarget.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9110797354@kotakbank%26pn=LITWORKS%26am=999%26cu=INR";
-                            }}
-                            alt="Scan UPI QR Code"
-                            className="w-full h-auto object-contain mx-auto rounded-lg"
-                          />
-                        </div>
-
-                        <div className="space-y-1">
-                          <h5 className="text-sm font-black text-white">
-                            Scan to pay Booking Deposit: <span className="text-brand-orange">₹999</span>
-                          </h5>
-                          <p className="text-[10px] text-neutral-450 font-light leading-relaxed max-w-xs mx-auto">
-                            Scan using GPay, PhonePe, Paytm or BHIM to lock in your shoot timing slot.
-                          </p>
-                          <div className="pt-2">
-                            <span className="text-[9px] uppercase tracking-widest text-neutral-500 font-bold block">
-                              Or Pay directly to UPI ID:
-                            </span>
-                            <span className="inline-block px-3 py-1 mt-1 rounded bg-neutral-950 border border-neutral-850 font-mono text-[10px] text-brand-amber select-all">
-                              9110797354@kotakbank
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="h-[1px] bg-neutral-900 w-full" />
-
-                      {/* UTR Input field */}
-                      <div>
-                        <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1.5">
-                          <CreditCard className="w-3.5 h-3.5 text-brand-orange" />
-                          Transaction UTR / Ref Number *
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter 12-digit transaction number"
-                          value={utrNumber}
-                          onChange={(e) => setUtrNumber(e.target.value.replace(/[^0-9]/g, ""))}
-                          required
-                          className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs font-mono tracking-wider placeholder-neutral-700 focus:outline-none focus:border-brand-orange transition-colors"
-                        />
-                        <span className="text-[9px] text-neutral-500 mt-1 block leading-tight">
-                          * Double check the UTR reference number from your payment confirmation screen to avoid booking delays.
+                      {/* Mock Notification Badge */}
+                      {!process.env.NEXT_PUBLIC_CASHFREE_ENV && (
+                        <span className="inline-block px-3 py-1 rounded bg-neutral-900 border border-neutral-850 text-[10px] font-mono text-brand-amber animate-pulse">
+                          Simulating secure payment gateway redirection...
                         </span>
-                      </div>
-
-                      {errorMessage && (
-                        <div className="p-3 rounded-xl bg-red-950/20 border border-red-900/50 text-red-500 text-[11px] font-light text-center">
-                          {errorMessage}
-                        </div>
                       )}
-
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Verifying UTR...
-                          </>
-                        ) : (
-                          <>
-                            <span>Confirm & Finalize Booking</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" />
-                          </>
-                        )}
-                      </button>
-                    </form>
+                    </div>
                   )}
                 </div>
               )}
