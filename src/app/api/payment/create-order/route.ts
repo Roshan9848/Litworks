@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     const returnUrl = `${protocol}://${host}/api/payment/verify?order_id={order_id}`;
 
     const payload = {
-      order_amount: 999.00, // Flat slot booking deposit of 999 INR
+      order_amount: 10.00, // Temporarily set to 10 INR for live test verification
       order_currency: "INR",
       order_id: orderId,
       customer_details: {
