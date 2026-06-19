@@ -99,6 +99,7 @@ export async function POST(req: NextRequest) {
       mock: false,
       payment_session_id: resData.payment_session_id,
       order_id: orderId,
+      environment: env,
     });
   } catch (error: any) {
     console.error("Payment Order Creation error:", error);

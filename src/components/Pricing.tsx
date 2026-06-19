@@ -372,7 +372,7 @@ export default function Pricing() {
       // Live/Sandbox Checkout initialization
       if (typeof window !== "undefined" && (window as any).Cashfree) {
         const cashfree = (window as any).Cashfree({
-          mode: process.env.NEXT_PUBLIC_CASHFREE_ENV || "sandbox",
+          mode: resData.environment || "sandbox",
         });
         cashfree.checkout({
           paymentSessionId: resData.payment_session_id,
