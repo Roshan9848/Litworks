@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
 
     // Obtain base URL of origin for return redirects
     const host = req.headers.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
+    // Cashfree production environment strictly requires HTTPS for return_url
+    const protocol = env === "production" ? "https" : (host.includes("localhost") ? "http" : "https");
     const returnUrl = `${protocol}://${host}/api/payment/verify?order_id={order_id}`;
 
     const payload = {
