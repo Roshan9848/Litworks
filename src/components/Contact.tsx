@@ -1,13 +1,29 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, MessageSquare } from "lucide-react";
 
 export default function Contact() {
-  const phone = "+91 9110797354";
-  const email = "litworks.media@gmail.com";
-  const location = "Serving Telangana & Andhra Pradesh";
-  const whatsappNumber = "+91 9866571801";
+  const [phone, setPhone] = useState("+91 9110797354");
+  const [email, setEmail] = useState("litworks.media@gmail.com");
+  const [location, setLocation] = useState("Serving Telangana & Andhra Pradesh");
+  const [whatsappNumber, setWhatsappNumber] = useState("+91 9866571801");
+
+  useEffect(() => {
+    fetch("/api/website-content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.cms && data.cms.contact) {
+          const c = data.cms.contact;
+          if (c.phone) setPhone(c.phone);
+          if (c.email) setEmail(c.email);
+          if (c.address) setLocation(c.address);
+          if (c.whatsapp) setWhatsappNumber(c.whatsapp);
+        }
+      })
+      .catch((e) => console.error("Failed to load contact CMS data:", e));
+  }, []);
 
   // Clean numbers for links
   const rawPhone = phone.replace(/[^0-9+]/g, "");

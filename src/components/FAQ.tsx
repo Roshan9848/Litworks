@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 
 export default function FAQ() {
-  const faqs = [
+  const defaultFaqs = [
     {
       question: "What is an Instant Reel?",
       answer: "An Instant Reel is short-form video content shot, compiled, and edited on-site during your event (weddings, birthdays, car deliveries, or business launches). Our team works live to deliver cinematic, post-ready reels within hours, allowing you to publish and share the moments while the buzz is still active.",
@@ -31,6 +31,32 @@ export default function FAQ() {
       answer: "Simply scroll to our 'Book Service' form, select your state and city, choose the service you need, fill in any additional dynamic details (such as event dates or budget), and submit. Our support team will connect with you via call/WhatsApp shortly to finalize details.",
     },
   ];
+
+  const [faqs, setFaqs] = useState(defaultFaqs);
+  const [headingData, setHeadingData] = useState({
+    heading: "Frequently Asked Queries",
+    subheading: "Everything you need to know about our workflow and deliverables."
+  });
+
+  useEffect(() => {
+    fetch("/api/website-content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.cms && data.cms.faq) {
+          const faqSection = data.cms.faq;
+          if (faqSection.items && faqSection.items.length > 0) {
+            setFaqs(faqSection.items);
+          }
+          if (faqSection.heading) {
+            setHeadingData({
+              heading: faqSection.heading,
+              subheading: faqSection.subheading || ""
+            });
+          }
+        }
+      })
+      .catch((e) => console.error("Failed to load FAQ CMS data:", e));
+  }, []);
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -60,8 +86,19 @@ export default function FAQ() {
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
           >
-            Frequently Asked Queries
+            {headingData.heading}
           </motion.h3>
+          {headingData.subheading && (
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-xs text-neutral-450 mt-2 tracking-wide font-light"
+            >
+              {headingData.subheading}
+            </motion.p>
+          )}
         </div>
 
         {/* FAQ Accordion List */}

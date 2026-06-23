@@ -1,8 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
+  const [phone, setPhone] = useState("+91 9110797354");
+  const [email, setEmail] = useState("litworks.media@gmail.com");
+  const [location, setLocation] = useState("Serving Telangana & Andhra Pradesh");
+
+  useEffect(() => {
+    fetch("/api/website-content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.cms && data.cms.contact) {
+          const c = data.cms.contact;
+          if (c.phone) setPhone(c.phone);
+          if (c.email) setEmail(c.email);
+          if (c.address) setLocation(c.address);
+        }
+      })
+      .catch((e) => console.error("Failed to load footer CMS data:", e));
+  }, []);
   const handleScroll = (href: string) => {
     const target = document.querySelector(href);
     if (target) {
@@ -146,15 +164,15 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-neutral-400 text-sm font-light">
                 <Phone className="w-4 h-4 mt-0.5 text-brand-orange flex-shrink-0" />
-                <span>+91 9110797354</span>
+                <span>{phone}</span>
               </li>
               <li className="flex items-start gap-3 text-neutral-400 text-sm font-light">
                 <Mail className="w-4 h-4 mt-0.5 text-brand-orange flex-shrink-0" />
-                <span className="break-all">litworks.media@gmail.com</span>
+                <span className="break-all">{email}</span>
               </li>
               <li className="flex items-start gap-3 text-neutral-400 text-sm font-light">
                 <MapPin className="w-4 h-4 mt-0.5 text-brand-orange flex-shrink-0" />
-                <span>Serving Telangana & Andhra Pradesh</span>
+                <span>{location}</span>
               </li>
             </ul>
           </div>

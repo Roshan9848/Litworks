@@ -1,8 +1,35 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export default function Hero() {
+  const [heroData, setHeroData] = useState({
+    badgeText: "100+ Projects Completed • Creative Media Agency",
+    heading: "Create Impact Instantly with LITWORKS",
+    subheading: "We create cinematic Instant Reels, manage social media, run performance marketing campaigns, edit videos, design posters, and help businesses grow online.",
+    primaryBtnText: "Book Instant Reel",
+    secondaryBtnText: "Explore Services"
+  });
+
+  const [statsData, setStatsData] = useState({
+    projectsCount: "100+",
+    deliveryTime: "Mins",
+    satisfactionRate: "99%"
+  });
+
+  useEffect(() => {
+    fetch("/api/website-content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.cms) {
+          if (data.cms.hero) setHeroData(data.cms.hero);
+          if (data.cms.stats) setStatsData(data.cms.stats);
+        }
+      })
+      .catch((e) => console.error("Failed to load hero CMS data:", e));
+  }, []);
+
   const handleScroll = (href: string) => {
     const target = document.querySelector(href);
     if (target) {
@@ -61,7 +88,7 @@ export default function Hero() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange/5 text-xs text-brand-orange uppercase tracking-widest font-semibold mb-6"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
-          100+ Projects Completed • Creative Media Agency
+          {heroData.badgeText}
         </motion.div>
 
         {/* Main Heading */}
@@ -71,8 +98,15 @@ export default function Hero() {
           transition={{ delay: 0.2, duration: 0.8 }}
           className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]"
         >
-          Create Impact Instantly <br className="hidden sm:inline" />
-          with <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-orange to-brand-orange drop-shadow-[0_0_30px_rgba(255,122,0,0.3)]">LITWORKS</span>
+          {heroData.heading.includes("LITWORKS") ? (
+            <>
+              {heroData.heading.split("LITWORKS")[0]}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-orange to-brand-orange drop-shadow-[0_0_30px_rgba(255,122,0,0.3)]">LITWORKS</span>
+              {heroData.heading.split("LITWORKS")[1]}
+            </>
+          ) : (
+            heroData.heading
+          )}
         </motion.h1>
 
         {/* Subheading */}
@@ -82,7 +116,7 @@ export default function Hero() {
           transition={{ delay: 0.4, duration: 0.8 }}
           className="text-base sm:text-lg md:text-xl text-neutral-400 max-w-3xl mx-auto mb-10 leading-relaxed font-light"
         >
-          We create cinematic Instant Reels, manage social media, run performance marketing campaigns, edit videos, design posters, and help businesses grow online.
+          {heroData.subheading}
         </motion.p>
 
         {/* Buttons */}
@@ -96,13 +130,13 @@ export default function Hero() {
             onClick={() => handleScroll("#pricing")}
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           >
-            Book Instant Reel
+            {heroData.primaryBtnText}
           </button>
           <button
             onClick={() => handleScroll("#book-service")}
             className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           >
-            Explore Services
+            {heroData.secondaryBtnText}
           </button>
         </motion.div>
 
@@ -125,15 +159,15 @@ export default function Hero() {
           className="grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto mt-12 px-6 py-4 rounded-2xl bg-neutral-950/60 border border-neutral-900 backdrop-blur-md shadow-2xl"
         >
           <div className="text-center">
-            <h4 className="text-xl sm:text-2xl font-black text-brand-orange text-glow">100+</h4>
+            <h4 className="text-xl sm:text-2xl font-black text-brand-orange text-glow">{statsData.projectsCount}</h4>
             <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Completed Projects</p>
           </div>
           <div className="text-center border-x border-neutral-900">
-            <h4 className="text-xl sm:text-2xl font-black text-white">Mins</h4>
+            <h4 className="text-xl sm:text-2xl font-black text-white">{statsData.deliveryTime}</h4>
             <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Reel Delivery</p>
           </div>
           <div className="text-center">
-            <h4 className="text-xl sm:text-2xl font-black text-white">99%</h4>
+            <h4 className="text-xl sm:text-2xl font-black text-white">{statsData.satisfactionRate}</h4>
             <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Happy Clients</p>
           </div>
         </motion.div>

@@ -47,9 +47,149 @@ const LOCATION_DATABASE = [
   "Muralinagar, Visakhapatnam, Andhra Pradesh",
 ];
 
+const basicPlans: PricingPlan[] = [
+  {
+    title: "Hourly Plan",
+    price: "₹1,999",
+    description: "Perfect for people who want a single, fast, high quality reel.",
+    serviceType: "Instant Reel",
+    features: [
+      "Upto 1 Hour Shoot time",
+      "1 Edited Reel Delivered (upto 60 seconds)",
+      "5 Complementary Pictures",
+      "Trained and Certified Reel Maker",
+      "Shot on Latest iPhones",
+      "LITWORKS Branding Included",
+    ],
+  },
+  {
+    title: "Half Day Plan",
+    price: "₹4,999",
+    description: "Quick, high quality coverage for events & socials delivered fast.",
+    serviceType: "Instant Reel",
+    isBestseller: true,
+    features: [
+      "Upto 3 hours Shoot time",
+      "2 Edited Reels Delivered (each upto 60 seconds)",
+      "Trained and Certified Reel Maker",
+      "Raw footage access",
+      "Shot on latest iPhones",
+      "LITWORKS Branding Included",
+    ],
+  },
+  {
+    title: "Add On's",
+    price: "₹1,250",
+    description: "Want to Extend? Easy.",
+    serviceType: "Instant Reel",
+    features: [
+      "1 extra reel OR 1 hour extra shoot",
+    ],
+  },
+];
+
+const weddingPlans: PricingPlan[] = [
+  {
+    title: "Single Event",
+    price: "₹12,499",
+    description: "Perfect for small functions & highlights.",
+    serviceType: "Wedding Instant Reel",
+    features: [
+      "1 event covered",
+      "3 Edited Reels delivered (each upto 60 seconds)",
+      "Up to 2 Reel-Makers onsite",
+      "Shot on latest iPhones",
+      "Complementary pictures",
+      "Raw footage included",
+      "LITWORKS Branding included",
+      "Please provide an SD card to receive raw content",
+    ],
+  },
+  {
+    title: "Three Events",
+    price: "₹34,999",
+    description: "Perfect for small functions & highlights.",
+    serviceType: "Wedding Instant Reel",
+    features: [
+      "3 events covered",
+      "10 Edited Reels delivered (each upto 60 seconds)",
+      "Up to 2 Reel-Makers onsite",
+      "Shot on latest iPhones",
+      "Complementary pictures",
+      "Raw footage included",
+      "LITWORKS Branding included",
+      "Please provide an SD card to receive raw content",
+    ],
+  },
+  {
+    title: "Four Events",
+    price: "₹44,999",
+    description: "Perfect for small functions & highlights.",
+    serviceType: "Wedding Instant Reel",
+    isBestseller: true,
+    features: [
+      "4 events covered",
+      "15 Edited Reels delivered (each upto 60 seconds)",
+      "Up to 2 Reel-Makers onsite",
+      "Shot on latest iPhones",
+      "Complementary pictures",
+      "Raw footage included",
+      "LITWORKS Branding included",
+      "Please provide an SD card to receive raw content",
+    ],
+  },
+  {
+    title: "Six Events",
+    price: "₹69,999",
+    description: "Perfect for small functions & highlights.",
+    serviceType: "Wedding Instant Reel",
+    features: [
+      "6 events covered",
+      "25 Edited Reels delivered (each upto 60 seconds)",
+      "Up to 2 Reel-Makers onsite",
+      "Dedicated Content Curator",
+      "Shot on latest iPhones",
+      "Complementary pictures",
+      "Raw footage included",
+      "LITWORKS Branding included",
+      "Please provide an SD card to receive raw content",
+    ],
+  },
+];
+
 export default function Pricing() {
   const [activeTab, setActiveTab] = useState<"basic" | "wedding">("basic");
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+  const [dynamicBasicPlans, setDynamicBasicPlans] = useState<PricingPlan[]>(basicPlans);
+  const [dynamicWeddingPlans, setDynamicWeddingPlans] = useState<PricingPlan[]>(weddingPlans);
+
+  useEffect(() => {
+    fetch("/api/website-content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.packages) {
+          const basicMapped = data.packages.basic.map((p: any) => ({
+            title: p.title,
+            price: `₹${p.price.toLocaleString("en-IN")}`,
+            description: p.description,
+            serviceType: p.serviceType,
+            isBestseller: p.isBestseller,
+            features: p.features
+          }));
+          const weddingMapped = data.packages.wedding.map((p: any) => ({
+            title: p.title,
+            price: `₹${p.price.toLocaleString("en-IN")}`,
+            description: p.description,
+            serviceType: p.serviceType,
+            isBestseller: p.isBestseller,
+            features: p.features
+          }));
+          if (basicMapped.length > 0) setDynamicBasicPlans(basicMapped);
+          if (weddingMapped.length > 0) setDynamicWeddingPlans(weddingMapped);
+        }
+      })
+      .catch((e) => console.error("Failed to load dynamic pricing packages:", e));
+  }, []);
   
   // Modal booking workflow steps
   const [modalStep, setModalStep] = useState<1 | 2>(1); // 1 = Details, 2 = Payment QR
@@ -92,115 +232,7 @@ export default function Pricing() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const basicPlans: PricingPlan[] = [
-    {
-      title: "Hourly Plan",
-      price: "₹1,999",
-      description: "Perfect for people who want a single, fast, high quality reel.",
-      serviceType: "Instant Reel",
-      features: [
-        "Upto 1 Hour Shoot time",
-        "1 Edited Reel Delivered (upto 60 seconds)",
-        "5 Complementary Pictures",
-        "Trained and Certified Reel Maker",
-        "Shot on Latest iPhones",
-        "LITWORKS Branding Included",
-      ],
-    },
-    {
-      title: "Half Day Plan",
-      price: "₹4,999",
-      description: "Quick, high quality coverage for events & socials delivered fast.",
-      serviceType: "Instant Reel",
-      isBestseller: true,
-      features: [
-        "Upto 3 hours Shoot time",
-        "2 Edited Reels Delivered (each upto 60 seconds)",
-        "Trained and Certified Reel Maker",
-        "Raw footage access",
-        "Shot on latest iPhones",
-        "LITWORKS Branding Included",
-      ],
-    },
-    {
-      title: "Add On's",
-      price: "₹1,250",
-      description: "Want to Extend? Easy.",
-      serviceType: "Instant Reel",
-      features: [
-        "1 extra reel OR 1 hour extra shoot",
-      ],
-    },
-  ];
-
-  const weddingPlans: PricingPlan[] = [
-    {
-      title: "Single Event",
-      price: "₹12,499",
-      description: "Perfect for small functions & highlights.",
-      serviceType: "Wedding Instant Reel",
-      features: [
-        "1 event covered",
-        "3 Edited Reels delivered (each upto 60 seconds)",
-        "Up to 2 Reel-Makers onsite",
-        "Shot on latest iPhones",
-        "Complementary pictures",
-        "Raw footage included",
-        "LITWORKS Branding included",
-        "Please provide an SD card to receive raw content",
-      ],
-    },
-    {
-      title: "Three Events",
-      price: "₹34,999",
-      description: "Perfect for small functions & highlights.",
-      serviceType: "Wedding Instant Reel",
-      features: [
-        "3 events covered",
-        "10 Edited Reels delivered (each upto 60 seconds)",
-        "Up to 2 Reel-Makers onsite",
-        "Shot on latest iPhones",
-        "Complementary pictures",
-        "Raw footage included",
-        "LITWORKS Branding included",
-        "Please provide an SD card to receive raw content",
-      ],
-    },
-    {
-      title: "Four Events",
-      price: "₹44,999",
-      description: "Perfect for small functions & highlights.",
-      serviceType: "Wedding Instant Reel",
-      isBestseller: true,
-      features: [
-        "4 events covered",
-        "15 Edited Reels delivered (each upto 60 seconds)",
-        "Up to 2 Reel-Makers onsite",
-        "Shot on latest iPhones",
-        "Complementary pictures",
-        "Raw footage included",
-        "LITWORKS Branding included",
-        "Please provide an SD card to receive raw content",
-      ],
-    },
-    {
-      title: "Six Events",
-      price: "₹69,999",
-      description: "Perfect for small functions & highlights.",
-      serviceType: "Wedding Instant Reel",
-      features: [
-        "6 events covered",
-        "25 Edited Reels delivered (each upto 60 seconds)",
-        "Up to 2 Reel-Makers onsite",
-        "Dedicated Content Curator",
-        "Shot on latest iPhones",
-        "Complementary pictures",
-        "Raw footage included",
-        "LITWORKS Branding included",
-        "Please provide an SD card to receive raw content",
-      ],
-    },
-  ];
+  // Static definitions moved to file level scope above component
 
   // Dynamic City options mapping
   const citiesByState: Record<string, string[]> = {
@@ -400,7 +432,7 @@ export default function Pricing() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  const plans = activeTab === "basic" ? basicPlans : weddingPlans;
+  const plans = activeTab === "basic" ? dynamicBasicPlans : dynamicWeddingPlans;
   const showSummaryPreview = name.trim() && phone.trim() && state && city && area.trim() && timeSlot;
 
   return (
