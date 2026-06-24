@@ -1,13 +1,27 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Zap, Users, Target, Scissors, Palette } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  X, Loader2, CheckCircle2, User, Phone, Mail, MapPin, 
+  Calendar, FileText, BookOpen, ArrowUpRight, Zap, Users, 
+  Target, Scissors, Palette
+} from "lucide-react";
+
+interface ServiceItem {
+  icon: any;
+  title: string;
+  items: string[];
+  description: string;
+  tempPrice: number;
+}
 
 export default function Services() {
-  const services = [
+  const services: ServiceItem[] = [
     {
       icon: Zap,
       title: "Instant Reels",
+      tempPrice: 1999,
       items: [
         "Wedding Instant Reels",
         "Birthday Instant Reels",
@@ -20,6 +34,7 @@ export default function Services() {
     {
       icon: Users,
       title: "Social Media Handling",
+      tempPrice: 9999,
       items: [
         "Instagram Management",
         "Facebook Management",
@@ -31,6 +46,7 @@ export default function Services() {
     {
       icon: Target,
       title: "Performance Marketing",
+      tempPrice: 14999,
       items: [
         "Meta Ads (Insta & FB)",
         "Hyper-targeted Lead Generation",
@@ -42,6 +58,7 @@ export default function Services() {
     {
       icon: Scissors,
       title: "Editing Services",
+      tempPrice: 2999,
       items: [
         "Dynamic Reels Editing",
         "Long-form Video Editing",
@@ -52,6 +69,7 @@ export default function Services() {
     {
       icon: Palette,
       title: "Design Services",
+      tempPrice: 1499,
       items: [
         "Creative Poster Designing",
         "Social Media Ad Creatives",
@@ -61,12 +79,139 @@ export default function Services() {
     },
   ];
 
-  const handleScrollToForm = () => {
-    const target = document.querySelector("#book-service");
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+  const [modalStep, setModalStep] = useState<1 | 2>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Form input states
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [date, setDate] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [area, setArea] = useState("");
+  const [requirements, setRequirements] = useState("");
+
+  const citiesByState: Record<string, string[]> = {
+    Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Armoor"],
+    "Andhra Pradesh": ["Vijayawada", "Visakhapatnam (Vizag)"],
+  };
+
+  const handleOpenModal = (service: ServiceItem) => {
+    setSelectedService(service);
+    setModalStep(1);
+    setSubmitSuccess(false);
+    setErrorMessage("");
+    setName("");
+    setPhone("");
+    setEmail("");
+    setDate("");
+    setState("");
+    setCity("");
+    setArea("");
+    setRequirements("");
+  };
+
+  const handleCloseModal = () => {
+    setSelectedService(null);
+  };
+
+  const handleProceedToPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !name.trim() ||
+      !phone.trim() ||
+      !email.trim() ||
+      !state ||
+      !city ||
+      !area.trim() ||
+      !requirements.trim()
+    ) {
+      setErrorMessage("Please fill out all required fields.");
+      return;
+    }
+
+    setErrorMessage("");
+    setIsSubmitting(true);
+    setModalStep(2);
+
+    const finalPrice = selectedService?.tempPrice || 0;
+    const platformFee = Math.round(finalPrice * 0.025);
+    const totalAmount = finalPrice + platformFee;
+
+    const payload = {
+      name,
+      phone,
+      email,
+      state,
+      city,
+      service: selectedService?.title || "Custom Service",
+      notes: `Area/Locality: ${area}\nRequirements:\n${requirements}`,
+      finalPrice: finalPrice,
+      dynamicFields: {
+        preferredStartDate: date || "Not Specified",
+        shootArea: area,
+        serviceRequirements: requirements,
+        calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
+        planTitle: selectedService?.title,
+        bookingDepositPaid: `₹${totalAmount.toLocaleString("en-IN")}`,
+      },
+    };
+
+    try {
+      const response = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok || !resData.success) {
+        setErrorMessage(resData.error || "Failed to initiate payment. Please try again.");
+        setModalStep(1);
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (resData.mock) {
+        setTimeout(() => {
+          window.location.href = `/api/payment/verify?order_id=${resData.order_id}`;
+        }, 1500);
+        return;
+      }
+
+      if (typeof window !== "undefined" && (window as any).Cashfree) {
+        const cashfree = (window as any).Cashfree({
+          mode: resData.environment || "sandbox",
+        });
+        cashfree.checkout({
+          paymentSessionId: resData.payment_session_id,
+          redirectTarget: "_self",
+        });
+      } else {
+        throw new Error("Cashfree SDK not loaded in browser.");
+      }
+    } catch (err: any) {
+      console.error("Checkout initiation error:", err);
+      setErrorMessage(err.message || "Network error. Please try again.");
+      setModalStep(1);
+      setIsSubmitting(false);
     }
   };
+
+  const getTodayDateString = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const showSummaryPreview = name.trim() && phone.trim() && state && city && area.trim() && requirements.trim();
 
   return (
     <section id="services" className="relative py-24 bg-black overflow-hidden border-t border-neutral-900">
@@ -119,11 +264,21 @@ export default function Services() {
 
                 <div>
                   {/* Icon and Title Header */}
-                  <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl bg-brand-orange/5 group-hover:bg-brand-orange/10 flex items-center justify-center text-brand-orange border border-brand-orange/10 group-hover:border-brand-orange/30 transition-colors shadow-[0_0_10px_rgba(255,122,0,0.05)]">
                       <Icon className="w-6 h-6" />
                     </div>
                     <h4 className="text-xl font-bold text-white tracking-wide">{service.title}</h4>
+                  </div>
+
+                  {/* Temporary Price Tag */}
+                  <div className="flex items-baseline gap-1.5 mb-4">
+                    <span className="text-2xl font-extrabold text-brand-orange tracking-tight">
+                      ₹{service.tempPrice.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider">
+                      (Starting Price)
+                    </span>
                   </div>
 
                   <p className="text-neutral-400 font-light text-sm mb-6 leading-relaxed">
@@ -143,7 +298,7 @@ export default function Services() {
 
                 {/* Card CTA */}
                 <button
-                  onClick={handleScrollToForm}
+                  onClick={() => handleOpenModal(service)}
                   className="w-full py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-neutral-300 text-sm font-semibold tracking-wider hover:bg-brand-orange hover:text-black hover:border-brand-orange transition-all duration-300 cursor-pointer"
                 >
                   Book Service
@@ -154,6 +309,314 @@ export default function Services() {
         </div>
 
       </div>
+
+      {/* OVERLAY MODAL FORM */}
+      <AnimatePresence>
+        {selectedService && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.85 }}
+              exit={{ opacity: 0 }}
+              onClick={handleCloseModal}
+              className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-neutral-900 shadow-2xl relative z-10 bg-neutral-950/95 text-left max-h-[90vh] overflow-y-auto no-scrollbar"
+            >
+              {/* Close Button */}
+              <button
+                onClick={handleCloseModal}
+                className="absolute top-4 right-4 p-2 rounded-full border border-neutral-900 text-neutral-400 hover:text-white hover:border-brand-orange transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {submitSuccess ? (
+                <div className="py-8 text-center space-y-4">
+                  <div className="w-14 h-14 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange flex items-center justify-center mx-auto shadow-lg animate-bounce">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <h4 className="text-xl font-black text-white">Booking Confirmed!</h4>
+                  <p className="text-xs text-neutral-400 leading-relaxed font-light">
+                    We have successfully registered your booking request. Our team will contact you on WhatsApp / Phone shortly!
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="w-full py-2.5 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white text-xs font-bold tracking-widest uppercase transition-colors cursor-pointer mt-4"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  {modalStep === 1 && (
+                    <form onSubmit={handleProceedToPayment} className="space-y-5">
+                      <div>
+                        <span className="text-[9px] uppercase tracking-widest text-brand-orange font-bold">
+                          Book Service
+                        </span>
+                        <h4 className="text-lg font-black text-white mt-1">
+                          {selectedService.title}
+                        </h4>
+                        <p className="text-xl font-extrabold text-brand-orange mt-0.5">
+                          ₹{selectedService.tempPrice.toLocaleString("en-IN")} <span className="text-[9px] text-neutral-500 uppercase font-bold">(Est. Starting Price)</span>
+                        </p>
+                      </div>
+
+                      <div className="h-[1px] bg-neutral-900 w-full" />
+
+                      <div className="space-y-4">
+                        {/* Name */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <User className="w-3.5 h-3.5 text-brand-orange" />
+                            Full Name *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Rahul Sharma"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          />
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <Phone className="w-3.5 h-3.5 text-brand-orange" />
+                            WhatsApp / Phone *
+                          </label>
+                          <input
+                            type="tel"
+                            placeholder="10-digit mobile number"
+                            value={phone}
+                            onChange={(e) => phone.length <= 15 && setPhone(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <Mail className="w-3.5 h-3.5 text-brand-orange" />
+                            Email Address *
+                          </label>
+                          <input
+                            type="email"
+                            placeholder="e.g. name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          />
+                        </div>
+
+                        {/* State & City */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
+                              State *
+                            </label>
+                            <select
+                              value={state}
+                              onChange={(e) => {
+                                setState(e.target.value);
+                                setCity("");
+                              }}
+                              required
+                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                            >
+                              <option value="" disabled>Select State</option>
+                              <option value="Telangana">Telangana</option>
+                              <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
+                              City *
+                            </label>
+                            <select
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                              required
+                              disabled={!state}
+                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors disabled:opacity-30"
+                            >
+                              <option value="" disabled>Select City</option>
+                              {state &&
+                                citiesByState[state]?.map((c) => (
+                                  <option key={c} value={c}>
+                                    {c}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Area / Locality */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-brand-orange" />
+                            Area / Locality *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Madhapur, Benz Circle, Armoor Town"
+                            value={area}
+                            onChange={(e) => setArea(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          />
+                        </div>
+
+                        {/* Start Date */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 text-brand-orange" />
+                            Preferred Start Date (Optional)
+                          </label>
+                          <input
+                            type="date"
+                            min={getTodayDateString()}
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            onClick={(e) => {
+                              try { e.currentTarget.showPicker(); } catch (err) {}
+                            }}
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange [color-scheme:dark] cursor-pointer"
+                          />
+                        </div>
+
+                        {/* Requirements / Custom Details */}
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
+                            Project / Service Requirements *
+                          </label>
+                          <textarea
+                            placeholder="Provide details about your project goals, social handles, or guidelines..."
+                            value={requirements}
+                            onChange={(e) => setRequirements(e.target.value)}
+                            required
+                            rows={3}
+                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Summary Preview */}
+                      <AnimatePresence>
+                        {showSummaryPreview && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="p-4 rounded-2xl bg-brand-orange/5 border border-brand-orange/20 space-y-2.5 text-xs overflow-hidden"
+                          >
+                            <h5 className="text-[9px] uppercase tracking-widest text-brand-orange font-bold flex items-center gap-1">
+                              <FileText className="w-3.5 h-3.5" />
+                              Order Summary
+                            </h5>
+                            <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 text-neutral-300 text-[11px] font-light">
+                              <div>
+                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Location</span>
+                                {area}, {city}, {state}
+                              </div>
+                              <div>
+                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Target Date</span>
+                                {date ? date.split("-").reverse().join("/") : "Not Selected"}
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Service</span>
+                                {selectedService.title}
+                              </div>
+                            </div>
+                            
+                            <div className="h-[1px] bg-brand-orange/15 w-full my-1" />
+                            
+                            <div className="space-y-1.5 text-[11px] text-neutral-300 font-light">
+                              <div className="flex justify-between">
+                                <span>Starting Cost:</span>
+                                <span className="text-white font-medium">₹{selectedService.tempPrice.toLocaleString("en-IN")}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="flex items-center gap-1">
+                                  Platform Fee (2.5%):
+                                  <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
+                                </span>
+                                <span className="text-white font-medium">₹{Math.round(selectedService.tempPrice * 0.025).toLocaleString("en-IN")}</span>
+                              </div>
+                              <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
+                              <div className="flex justify-between items-center text-xs font-bold text-white">
+                                <span>Total Booking Amount:</span>
+                                <span className="text-brand-orange text-glow">
+                                  ₹{Math.round(selectedService.tempPrice * 1.025).toLocaleString("en-IN")}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {errorMessage && (
+                        <div className="p-3 rounded-xl bg-red-950/20 border border-red-900/50 text-red-500 text-[11px] font-light text-center">
+                          {errorMessage}
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        <span>Pay ₹{Math.round(selectedService.tempPrice * 1.025).toLocaleString("en-IN")} & Book</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </button>
+                    </form>
+                  )}
+
+                  {modalStep === 2 && (
+                    <div className="py-12 flex flex-col items-center justify-center text-center space-y-6">
+                      <div className="w-16 h-16 rounded-full bg-brand-orange/10 border border-brand-orange/30 text-brand-orange flex items-center justify-center shadow-[0_0_20px_rgba(255,122,0,0.2)]">
+                        <Loader2 className="w-8 h-8 animate-spin" />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <span className="text-[10px] uppercase tracking-widest text-brand-orange font-bold animate-pulse block">
+                          Step 2: Payment Gateway
+                        </span>
+                        <h4 className="text-lg font-black text-white">Connecting to Cashfree</h4>
+                        <p className="text-xs text-neutral-450 font-light leading-relaxed max-w-xs mx-auto">
+                          Please wait while we secure your slot and launch the checkout gateway. Do not close this window.
+                        </p>
+                      </div>
+
+                      {!process.env.NEXT_PUBLIC_CASHFREE_ENV && (
+                        <span className="inline-block px-3 py-1 rounded bg-neutral-900 border border-neutral-850 text-[10px] font-mono text-brand-amber animate-pulse">
+                          Simulating secure payment gateway redirection...
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
