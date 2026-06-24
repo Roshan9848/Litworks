@@ -53,6 +53,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isMaintenance = process.env.NEXT_PUBLIC_MAINTENANCE === "true";
+
   return (
     <html lang="en" className={`${outfit.variable} scroll-smooth`}>
       <head>
@@ -61,8 +63,22 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/favicon.png" />
       </head>
       <body className="bg-black text-white antialiased selection:bg-brand-orange selection:text-black min-h-screen">
-        {children}
-        <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
+        {isMaintenance ? (
+          <div className="fixed inset-0 flex items-center justify-center bg-black z-50 p-4">
+            <div className="relative w-full h-full max-w-5xl flex items-center justify-center">
+              <img
+                src="/stay-tuned.png"
+                alt="LITWORKS - Stay Tuned"
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            {children}
+            <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
+          </>
+        )}
       </body>
     </html>
   );
