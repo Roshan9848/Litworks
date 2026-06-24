@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Play, Pause, Volume2, VolumeX, Loader2, Video } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Loader2 } from "lucide-react";
 
 interface ReelItem {
   url: string;
   title: string;
+  instagramUrl?: string;
 }
 
 export default function ReelsSection() {
@@ -75,6 +76,14 @@ export default function ReelsSection() {
   };
 
   const handleCardClick = (idx: number) => {
+    const reel = reels[idx];
+    const instagramLink = reel.instagramUrl || (reel.url.includes("instagram.com") ? reel.url : "");
+
+    if (instagramLink) {
+      window.open(instagramLink, "_blank");
+      return;
+    }
+
     if (idx === activePlayingIndex) {
       // Toggle play/pause of active video
       setIsPaused(!isPaused);
@@ -136,6 +145,9 @@ export default function ReelsSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto justify-center">
           {reels.slice(0, 3).map((reel, idx) => {
             const isCurrent = idx === activePlayingIndex;
+            const isInstagram = reel.url.includes("instagram.com");
+            const instagramLink = reel.instagramUrl || (isInstagram ? reel.url : "");
+
             return (
               <motion.div
                 key={idx}
@@ -145,30 +157,49 @@ export default function ReelsSection() {
                 transition={{ delay: idx * 0.15, duration: 0.6 }}
                 onClick={() => handleCardClick(idx)}
                 className={`relative aspect-[9/16] rounded-3xl overflow-hidden border bg-neutral-950 shadow-2xl transition-all duration-500 cursor-pointer group select-none ${
-                  isCurrent
+                  isCurrent && !instagramLink
                     ? "border-brand-orange ring-1 ring-brand-orange/45 scale-[1.02] shadow-[0_0_30px_rgba(255,122,0,0.15)]"
-                    : "border-neutral-900 opacity-60 hover:opacity-90 hover:scale-[1.01]"
+                    : "border-neutral-900 opacity-65 hover:opacity-100 hover:border-brand-orange/30 hover:shadow-[0_0_30px_rgba(255,122,0,0.1)]"
                 }`}
               >
-                {/* HTML5 Video Element */}
-                <video
-                  ref={(el) => {
-                    videoRefs.current[idx] = el;
-                  }}
-                  src={reel.url}
-                  playsInline
-                  webkit-playsinline="true"
-                  preload="metadata"
-                  onEnded={() => handleVideoEnded(idx)}
-                  className="w-full h-full object-cover"
-                />
+                {/* Visual rendering */}
+                {isInstagram ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6 text-center space-y-4">
+                    <div className="w-16 h-16 rounded-2xl bg-brand-orange/10 border border-brand-orange/20 flex items-center justify-center text-brand-orange shadow-[0_0_20px_rgba(255,122,0,0.1)] group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+                      </svg>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[9px] uppercase tracking-widest text-brand-orange font-bold font-mono">Watch Video</span>
+                      <p className="text-xs text-neutral-400 font-light max-w-[150px] mx-auto leading-relaxed">Click to view this Reel on Instagram</p>
+                    </div>
+                  </div>
+                ) : (
+                  <video
+                    ref={(el) => {
+                      videoRefs.current[idx] = el;
+                    }}
+                    src={reel.url}
+                    playsInline
+                    webkit-playsinline="true"
+                    preload="metadata"
+                    onEnded={() => handleVideoEnded(idx)}
+                    className="w-full h-full object-cover"
+                  />
+                )}
 
-                {/* Overlays when video is active */}
+                {/* Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 p-6 flex flex-col justify-between opacity-100 transition-opacity duration-300">
                   {/* Top Status & Controls */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/5 rounded-full px-2.5 py-1">
-                      {isCurrent && !isPaused ? (
+                      {instagramLink ? (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
+                          <span className="text-[8px] font-black uppercase tracking-wider text-brand-orange font-mono">Instagram Link</span>
+                        </>
+                      ) : isCurrent && !isPaused ? (
                         <>
                           <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
                           <span className="text-[8px] font-black uppercase tracking-wider text-brand-orange font-mono">Playing</span>
@@ -181,7 +212,7 @@ export default function ReelsSection() {
                       )}
                     </div>
 
-                    {isCurrent && (
+                    {isCurrent && !instagramLink && (
                       <button
                         onClick={toggleMute}
                         className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-brand-orange transition-colors"
@@ -192,7 +223,7 @@ export default function ReelsSection() {
                   </div>
 
                   {/* Play/Pause Button Indicator Overlay (Middle) */}
-                  {isCurrent && isPaused && (
+                  {isCurrent && isPaused && !instagramLink && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                       <div className="w-14 h-14 rounded-full bg-brand-orange text-black flex items-center justify-center shadow-lg">
                         <Play className="w-6 h-6 fill-current ml-0.5" />
@@ -202,7 +233,9 @@ export default function ReelsSection() {
 
                   {/* Bottom Metadata */}
                   <div className="space-y-1.5">
-                    <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono">Reel #{idx + 1}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono">
+                      {instagramLink ? "Reel Link" : `Reel #${idx + 1}`}
+                    </span>
                     <h4 className="text-sm font-bold text-white tracking-wide uppercase line-clamp-1">{reel.title}</h4>
                   </div>
                 </div>

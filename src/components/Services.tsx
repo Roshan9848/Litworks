@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, Loader2, CheckCircle2, User, Phone, Mail, MapPin, 
@@ -17,6 +18,8 @@ interface ServiceItem {
 }
 
 export default function Services() {
+  const router = useRouter();
+  
   const services: ServiceItem[] = [
     {
       icon: Zap,
@@ -101,6 +104,10 @@ export default function Services() {
   };
 
   const handleOpenModal = (service: ServiceItem) => {
+    if (service.title === "Instant Reels") {
+      router.push("/pricing");
+      return;
+    }
     setSelectedService(service);
     setModalStep(1);
     setSubmitSuccess(false);
@@ -264,21 +271,11 @@ export default function Services() {
 
                 <div>
                   {/* Icon and Title Header */}
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 rounded-xl bg-brand-orange/5 group-hover:bg-brand-orange/10 flex items-center justify-center text-brand-orange border border-brand-orange/10 group-hover:border-brand-orange/30 transition-colors shadow-[0_0_10px_rgba(255,122,0,0.05)]">
                       <Icon className="w-6 h-6" />
                     </div>
                     <h4 className="text-xl font-bold text-white tracking-wide">{service.title}</h4>
-                  </div>
-
-                  {/* Temporary Price Tag */}
-                  <div className="flex items-baseline gap-1.5 mb-4">
-                    <span className="text-2xl font-extrabold text-brand-orange tracking-tight">
-                      ₹{service.tempPrice.toLocaleString("en-IN")}
-                    </span>
-                    <span className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider">
-                      (Starting Price)
-                    </span>
                   </div>
 
                   <p className="text-neutral-400 font-light text-sm mb-6 leading-relaxed">
