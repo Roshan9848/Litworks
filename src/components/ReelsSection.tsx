@@ -181,6 +181,8 @@ export default function ReelsSection() {
                       videoRefs.current[idx] = el;
                     }}
                     src={reel.url}
+                    autoPlay={idx === activePlayingIndex}
+                    muted={idx === activePlayingIndex ? isMuted : true}
                     playsInline
                     webkit-playsinline="true"
                     preload="metadata"
