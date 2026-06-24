@@ -3,6 +3,8 @@ import { Outfit } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
