@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Hero() {
   const [heroData, setHeroData] = useState({
@@ -13,6 +14,7 @@ export default function Hero() {
   });
 
   const [statsData, setStatsData] = useState({
+    opacity: 0.8, // placeholder fallback
     projectsCount: "100+",
     deliveryTime: "Mins",
     satisfactionRate: "99%"
@@ -126,18 +128,18 @@ export default function Hero() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <button
-            onClick={() => handleScroll("#pricing")}
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+          <Link
+            href="/pricing"
+            className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center"
           >
             {heroData.primaryBtnText}
-          </button>
-          <button
-            onClick={() => handleScroll("#book-service")}
-            className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+          </Link>
+          <Link
+            href="/services"
+            className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center"
           >
             {heroData.secondaryBtnText}
-          </button>
+          </Link>
         </motion.div>
 
         {/* Sub-text under buttons */}
