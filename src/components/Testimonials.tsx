@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 export default function Testimonials() {
-  const testimonials = [
+  const defaultTestimonials = [
     {
       name: "Rahul Verma",
       role: "Groom",
@@ -50,15 +50,32 @@ export default function Testimonials() {
     },
   ];
 
+  const [dynamicTestimonials, setDynamicTestimonials] = useState(defaultTestimonials);
+  const [heading, setHeading] = useState("Loved by Brands & Individuals");
+  const [subheading, setSubheading] = useState("Testimonials");
   const [activeIndex, setActiveIndex] = useState(0);
-  const cardsPerPage = { mobile: 1, tablet: 2, desktop: 3 };
-  
+
+  useEffect(() => {
+    fetch("/api/website-content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.cms && data.cms.testimonials) {
+          if (data.cms.testimonials.heading) setHeading(data.cms.testimonials.heading);
+          if (data.cms.testimonials.subheading) setSubheading(data.cms.testimonials.subheading);
+          if (data.cms.testimonials.items && data.cms.testimonials.items.length > 0) {
+            setDynamicTestimonials(data.cms.testimonials.items);
+          }
+        }
+      })
+      .catch((e) => console.error("Failed to load dynamic testimonials:", e));
+  }, []);
+
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+    setActiveIndex((prev) => (prev === 0 ? dynamicTestimonials.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+    setActiveIndex((prev) => (prev === dynamicTestimonials.length - 1 ? 0 : prev + 1));
   };
 
   // Auto slide in background
@@ -67,16 +84,14 @@ export default function Testimonials() {
       handleNext();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [dynamicTestimonials]);
 
   return (
     <section id="testimonials" className="relative py-24 bg-black overflow-hidden border-t border-neutral-900">
-      
       {/* Background orange light */}
       <div className="absolute left-1/3 top-1/2 w-[350px] h-[350px] rounded-full bg-brand-orange/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
         {/* Section Heading */}
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
           <div>
@@ -87,7 +102,7 @@ export default function Testimonials() {
               transition={{ duration: 0.6 }}
               className="text-xs uppercase tracking-widest text-brand-orange font-semibold mb-3"
             >
-              Testimonials
+              {subheading}
             </motion.h2>
             <motion.h3
               initial={{ opacity: 0, y: 20 }}
@@ -96,7 +111,7 @@ export default function Testimonials() {
               transition={{ delay: 0.1, duration: 0.6 }}
               className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight"
             >
-              Loved by Brands & Individuals
+              {heading}
             </motion.h3>
           </div>
           
@@ -122,10 +137,10 @@ export default function Testimonials() {
         {/* Carousel Content */}
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Displaying 3 active cards based on activeIndex */}
             {[0, 1, 2].map((offset) => {
-              const targetIndex = (activeIndex + offset) % testimonials.length;
-              const testimonial = testimonials[targetIndex];
+              if (dynamicTestimonials.length === 0) return null;
+              const targetIndex = (activeIndex + offset) % dynamicTestimonials.length;
+              const testimonial = dynamicTestimonials[targetIndex];
               return (
                 <motion.div
                   key={`${testimonial.name}-${offset}`}
@@ -152,9 +167,8 @@ export default function Testimonials() {
 
                   {/* Profile info */}
                   <div className="flex items-center gap-4 border-t border-neutral-900 pt-4">
-                    {/* Circle Placeholder */}
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-orange to-neutral-800 flex items-center justify-center font-bold text-black text-sm shadow-[0_0_10px_rgba(255,122,0,0.15)]">
-                      {testimonial.name.split(" ").map(n => n[0]).join("")}
+                      {testimonial.name ? testimonial.name.split(" ").map(n => n[0]).join("") : "U"}
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-white">{testimonial.name}</h4>
@@ -170,7 +184,7 @@ export default function Testimonials() {
 
           {/* Dots Indicator */}
           <div className="flex justify-center items-center gap-2.5 mt-12">
-            {testimonials.map((_, i) => (
+            {dynamicTestimonials.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setActiveIndex(i)}
@@ -182,7 +196,6 @@ export default function Testimonials() {
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

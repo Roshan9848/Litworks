@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,19 +21,38 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "Services", href: "#book-service" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Why Us", href: "#why-us" },
-    { name: "Book Service", href: "#book-service" },
-    { name: "Contact", href: "#contact" },
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Portfolio", href: "/videos" },
+    { name: "Book Now", href: "/pricing#book-service" },
+    { name: "Contact", href: "/contact" },
   ];
 
-  const handleLinkClick = (href: string) => {
+  const handleLinkClick = (e: React.MouseEvent, href: string) => {
     setIsOpen(false);
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
+    
+    // Smooth scroll if target is on current page
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    } else if (href.includes("#")) {
+      const [path, hash] = href.split("#");
+      if (pathname === path) {
+        e.preventDefault();
+        const target = document.querySelector(`#${hash}`);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    } else if (href === "/") {
+      if (pathname === "/") {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
   };
 
@@ -45,12 +67,9 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo on Left - Extra minimal size (30% smaller, perfectly aligned) */}
-          <a
-            href="#home"
-            onClick={(e) => {
-              e.preventDefault();
-              handleLinkClick("#home");
-            }}
+          <Link
+            href="/"
+            onClick={(e) => handleLinkClick(e, "/")}
             className="flex items-center transition-transform duration-300 hover:scale-105"
           >
             <img
@@ -58,30 +77,34 @@ export default function Navbar() {
               alt="LITWORKS Logo"
               className="h-6 sm:h-7 md:h-8 w-auto object-contain filter drop-shadow-[0_0_6px_rgba(255,122,0,0.3)]"
             />
-          </a>
+          </Link>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(link.href);
-                }}
-                className={`text-xs tracking-widest uppercase font-semibold transition-colors hover:text-brand-orange relative group ${
-                  link.name === "Book Service"
-                    ? "px-5 py-2.5 rounded-full border border-brand-orange/60 bg-brand-orange/10 text-brand-orange hover:bg-brand-orange hover:text-black hover:border-brand-orange shadow-[0_0_15px_rgba(255,122,0,0.2)] hover:shadow-[0_0_20px_rgba(255,122,0,0.4)] transition-all duration-300"
-                    : "text-neutral-300"
-                }`}
-              >
-                {link.name}
-                {link.name !== "Book Service" && (
-                  <span className="absolute left-0 bottom-[-4px] w-0 h-[2px] bg-brand-orange transition-all duration-300 group-hover:w-full" />
-                )}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href.startsWith("/pricing") && pathname === "/pricing");
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleLinkClick(e, link.href)}
+                  className={`text-xs tracking-widest uppercase font-semibold transition-colors hover:text-brand-orange relative group ${
+                    link.name === "Book Now"
+                      ? "px-5 py-2.5 rounded-full border border-brand-orange/60 bg-brand-orange/10 text-brand-orange hover:bg-brand-orange hover:text-black hover:border-brand-orange shadow-[0_0_15px_rgba(255,122,0,0.2)] hover:shadow-[0_0_20px_rgba(255,122,0,0.4)] transition-all duration-300"
+                      : isActive 
+                        ? "text-brand-orange" 
+                        : "text-neutral-300"
+                  }`}
+                >
+                  {link.name}
+                  {link.name !== "Book Now" && (
+                    <span className={`absolute left-0 bottom-[-4px] h-[2px] bg-brand-orange transition-all duration-300 group-hover:w-full ${
+                      isActive ? "w-full" : "w-0"
+                    }`} />
+                  )}
+                </Link>
+              );
+            })}
 
             {/* Instagram Header Link */}
             <a
@@ -119,21 +142,20 @@ export default function Navbar() {
             className="fixed inset-x-0 top-[70px] z-30 md:hidden bg-black/95 backdrop-blur-lg border-b border-neutral-900 py-8 px-6 shadow-2xl flex flex-col gap-6"
           >
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(link.href);
-                }}
+                onClick={(e) => handleLinkClick(e, link.href)}
                 className={`text-sm tracking-widest uppercase font-semibold text-center py-2 transition-colors hover:text-brand-orange ${
-                  link.name === "Book Service"
+                  link.name === "Book Now"
                     ? "mt-4 mx-auto w-full max-w-[260px] rounded-full border border-brand-orange/60 bg-brand-orange/10 py-3.5 text-brand-orange text-center hover:bg-brand-orange hover:text-black transition-all shadow-[0_0_15px_rgba(255,122,0,0.15)]"
-                    : "text-neutral-300"
+                    : pathname === link.href 
+                      ? "text-brand-orange" 
+                      : "text-neutral-300"
                 }`}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
 
             {/* Mobile Instagram Link */}
