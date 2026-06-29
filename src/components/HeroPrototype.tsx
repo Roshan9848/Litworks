@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { RotateCw } from "lucide-react";
 
-export default function Hero() {
+export default function HeroPrototype() {
   const [heroData, setHeroData] = useState({
     badgeText: "100+ Projects Completed • Creative Media Agency",
     heading: "Create Impact Instantly with LITWORKS",

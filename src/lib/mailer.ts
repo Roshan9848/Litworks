@@ -7,6 +7,7 @@ const SMTP_PASS = process.env.SMTP_PASS || "";
 const EMAIL_TO = "litworks.media@gmail.com";
 
 export async function sendBookingEmail(bookingData: any) {
+  const isEnquiry = bookingData.status === "enquiry";
   // If SMTP settings are missing, log and skip gracefully
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
     console.warn(
@@ -49,17 +50,22 @@ export async function sendBookingEmail(bookingData: any) {
       `;
     }
 
+    const headerTitle = isEnquiry ? "New Service Enquiry" : "New Booking Inquiry";
+    const bodyIntro = isEnquiry 
+      ? "You have received a new service enquiry from the LITWORKS website."
+      : "You have received a new service booking inquiry from the LITWORKS website.";
+
     const htmlContent = `
       <div style="background-color: #000000; color: #ffffff; font-family: 'Outfit', sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border-radius: 12px; border: 1px solid #333;">
         <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 20px;">
           <h1 style="color: #ffffff; font-size: 24px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
             LIT<span style="color: #ff7a00;">WORKS</span>
           </h1>
-          <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">New Booking Inquiry</p>
+          <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">${headerTitle}</p>
         </div>
         
         <div style="padding: 20px 0;">
-          <p style="color: #ccc; font-size: 15px; line-height: 1.6;">You have received a new service booking inquiry from the LITWORKS website.</p>
+          <p style="color: #ccc; font-size: 15px; line-height: 1.6;">${bodyIntro}</p>
           
           <table style="width: 100%; border-collapse: collapse; margin-top: 20px; color: #ffffff;">
             <tr>
@@ -106,7 +112,7 @@ export async function sendBookingEmail(bookingData: any) {
 
         <div style="border-top: 1px solid #333; padding-top: 20px; text-align: center; color: #555; font-size: 11px;">
           <p style="margin: 0;">This is an automated notification from LITWORKS Web Portal.</p>
-          <p style="margin: 5px 0 0 0;">© 2025 LITWORKS. All Rights Reserved.</p>
+          <p style="margin: 5px 0 0 0;">All rights reserved litworks @2026</p>
         </div>
       </div>
     `;
@@ -114,8 +120,12 @@ export async function sendBookingEmail(bookingData: any) {
     const mailOptions = {
       from: `"${bookingData.name} via LITWORKS" <${SMTP_USER}>`,
       to: EMAIL_TO,
-      subject: `LITWORKS Booking: ${bookingData.service} - ${bookingData.name}`,
-      text: `New booking inquiry from ${bookingData.name} for ${bookingData.service}. Phone: ${bookingData.phone}, Email: ${bookingData.email}. Location: ${bookingData.city}, ${bookingData.state}.`,
+      subject: isEnquiry
+        ? `LITWORKS Enquiry: ${bookingData.service} - ${bookingData.name}`
+        : `LITWORKS Booking: ${bookingData.service} - ${bookingData.name}`,
+      text: isEnquiry
+        ? `New service enquiry from ${bookingData.name} for ${bookingData.service}. Phone: ${bookingData.phone}, Email: ${bookingData.email}. Location: ${bookingData.city}, ${bookingData.state}.`
+        : `New booking inquiry from ${bookingData.name} for ${bookingData.service}. Phone: ${bookingData.phone}, Email: ${bookingData.email}. Location: ${bookingData.city}, ${bookingData.state}.`,
       html: htmlContent,
     };
 
@@ -149,19 +159,28 @@ export async function sendClientConfirmationEmail(bookingData: any) {
       },
     });
 
+    const isEnquiry = bookingData.status === "enquiry";
+    const headerTitle = isEnquiry ? "Service Enquiry Received" : "Booking Inquiry Received";
+    const bodyIntro = isEnquiry
+      ? `Thank you for reaching out to LITWORKS! We have successfully received your enquiry for <strong>${bookingData.service}</strong>.`
+      : `Thank you for reaching out to LITWORKS! We have successfully received your booking inquiry for <strong>${bookingData.service}</strong>.`;
+    const responseText = isEnquiry
+      ? `Our team is already reviewing your requirements. <strong>Our team will reach out to you as soon as possible</strong>.`
+      : `Our production team is already reviewing your details. As a key service standard, <strong>we typically respond to all inquiries within minutes</strong>. We will connect with you shortly!`;
+
     const clientHtmlContent = `
       <div style="background-color: #000000; color: #ffffff; font-family: 'Outfit', sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border-radius: 12px; border: 1px solid #333;">
         <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 20px;">
           <h1 style="color: #ffffff; font-size: 24px; letter-spacing: 2px; margin: 0; text-transform: uppercase;">
             LIT<span style="color: #ff7a00;">WORKS</span>
           </h1>
-          <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">Booking Inquiry Received</p>
+          <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">${headerTitle}</p>
         </div>
         
         <div style="padding: 20px 0;">
           <h2 style="color: #ff7a00; font-size: 18px; margin-top: 0; font-weight: normal;">Hi ${bookingData.name},</h2>
-          <p style="color: #ccc; font-size: 15px; line-height: 1.6; font-weight: 300;">Thank you for reaching out to LITWORKS! We have successfully received your booking inquiry for <strong>${bookingData.service}</strong>.</p>
-          <p style="color: #ccc; font-size: 15px; line-height: 1.6; font-weight: 300;">Our production team is already reviewing your details. As a key service standard, <strong>we typically respond to all inquiries within minutes</strong>. We will connect with you shortly!</p>
+          <p style="color: #ccc; font-size: 15px; line-height: 1.6; font-weight: 300;">${bodyIntro}</p>
+          <p style="color: #ccc; font-size: 15px; line-height: 1.6; font-weight: 300;">${responseText}</p>
           
           <div style="margin-top: 25px; padding: 15px; background-color: #0a0a0a; border-radius: 8px; border: 1px solid #222;">
             <h3 style="color: #ff7a00; margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Summary of Details</h3>
@@ -188,8 +207,12 @@ export async function sendClientConfirmationEmail(bookingData: any) {
     const mailOptions = {
       from: `"LITWORKS Agency" <${SMTP_USER}>`,
       to: bookingData.email,
-      subject: `LITWORKS Inquiry Confirmed: ${bookingData.service}`,
-      text: `Hi ${bookingData.name}, thank you for reaching out to LITWORKS! We have received your inquiry for ${bookingData.service} and will connect with you within minutes.`,
+      subject: isEnquiry
+        ? `LITWORKS Enquiry Confirmed: ${bookingData.service}`
+        : `LITWORKS Booking Confirmed: ${bookingData.service}`,
+      text: isEnquiry
+        ? `Hi ${bookingData.name}, thank you for reaching out to LITWORKS! We have received your enquiry for ${bookingData.service} and our team will connect with you as soon as possible.`
+        : `Hi ${bookingData.name}, thank you for reaching out to LITWORKS! We have received your inquiry for ${bookingData.service} and will connect with you within minutes.`,
       html: clientHtmlContent,
     };
 

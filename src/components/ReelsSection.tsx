@@ -24,6 +24,18 @@ export default function ReelsSection() {
       url: "https://assets.mixkit.co/videos/preview/mixkit-slow-motion-of-a-dj-hands-at-work-41710-large.mp4",
       title: "Cinematic DJ Promo",
     },
+    {
+      url: "https://assets.mixkit.co/videos/preview/mixkit-holding-a-cell-phone-by-the-sea-at-sunset-41716-large.mp4",
+      title: "Sunset Travel Vibe",
+    },
+    {
+      url: "https://assets.mixkit.co/videos/preview/mixkit-waves-breaking-in-the-blue-ocean-from-above-43022-large.mp4",
+      title: "Drone Ocean Wave",
+    },
+    {
+      url: "https://assets.mixkit.co/videos/preview/mixkit-man-dancing-under-neon-lights-42253-large.mp4",
+      title: "Neon Dance Studio",
+    },
   ];
 
   const [heading, setHeading] = useState("Cinematic Reels in Action");
@@ -46,7 +58,14 @@ export default function ReelsSection() {
           if (data.cms.videos.heading) setHeading(data.cms.videos.heading);
           if (data.cms.videos.subheading) setSubheading(data.cms.videos.subheading);
           if (data.cms.videos.items && data.cms.videos.items.length > 0) {
-            setReels(data.cms.videos.items);
+            const dbItems = data.cms.videos.items;
+            const padded = [...dbItems];
+            for (let i = dbItems.length; i < 6; i++) {
+              if (defaultReels[i]) {
+                padded.push(defaultReels[i]);
+              }
+            }
+            setReels(padded);
           }
         }
       })
@@ -157,8 +176,8 @@ export default function ReelsSection() {
         </div>
 
         {/* Reels 3-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto justify-center">
-          {reels.slice(0, 3).map((reel, idx) => {
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto justify-center">
+          {reels.slice(0, 6).map((reel, idx) => {
             const isCurrent = idx === activePlayingIndex;
             const isInstagram = reel.url.includes("instagram.com");
             const instagramLink = reel.instagramUrl || (isInstagram ? reel.url : "");
@@ -169,13 +188,13 @@ export default function ReelsSection() {
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.15, duration: 0.6 }}
+                transition={{ delay: (idx % 3) * 0.15, duration: 0.6 }}
                 onClick={() => handleCardClick(idx)}
                 className={`relative aspect-[9/16] rounded-3xl overflow-hidden border bg-neutral-950 shadow-2xl transition-all duration-500 group select-none ${
                   isInstagram 
                     ? "border-neutral-900 hover:border-brand-orange/30 hover:shadow-[0_0_30px_rgba(255,122,0,0.1)]"
                     : isCurrent && !instagramLink
-                      ? "border-brand-orange ring-1 ring-brand-orange/45 scale-[1.02] shadow-[0_0_30px_rgba(255,122,0,0.15)]"
+                      ? "border-brand-orange ring-1 ring-brand-orange/45 scale-[1.02] shadow-[0_0_30px_rgba(255,122,0,0.15)] animate-pulse-slow"
                       : "border-neutral-900 opacity-65 hover:opacity-100 hover:border-brand-orange/30 hover:shadow-[0_0_30px_rgba(255,122,0,0.1)]"
                 }`}
               >
@@ -204,9 +223,9 @@ export default function ReelsSection() {
                   />
                 )}
 
-                {/* Overlays (Only show overlay on standard MP4 videos; Instagram has its own UI controls inside the iframe) */}
+                {/* Overlays (Only show overlay on standard MP4 videos) */}
                 {!isInstagram && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 p-6 flex flex-col justify-between opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40 p-6 flex flex-col justify-between opacity-100 transition-opacity duration-300 pointer-events-none">
                     {/* Top Status & Controls */}
                     <div className="flex items-center justify-between pointer-events-auto">
                       <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/5 rounded-full px-2.5 py-1">
@@ -223,32 +242,56 @@ export default function ReelsSection() {
                         ) : (
                           <>
                             <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
-                            <span className="text-[8px] font-black uppercase tracking-wider text-neutral-400 font-mono">Up Next</span>
+                            <span className="text-[8px] font-black uppercase tracking-wider text-neutral-400 font-mono font-bold">Up Next</span>
                           </>
                         )}
                       </div>
-
-                      {isCurrent && !instagramLink && (
-                        <button
-                          onClick={toggleMute}
-                          className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:text-brand-orange transition-colors"
-                        >
-                          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                        </button>
-                      )}
                     </div>
 
-                    {/* Play/Pause Button Indicator Overlay (Middle) */}
-                    {isCurrent && isPaused && !instagramLink && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                        <div className="w-14 h-14 rounded-full bg-brand-orange text-black flex items-center justify-center shadow-lg">
-                          <Play className="w-6 h-6 fill-current ml-0.5" />
-                        </div>
+                    {/* Unified Floating Controller Pill (Middle) */}
+                    <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 pointer-events-none ${isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                      <div className="flex items-center gap-3 bg-black/75 backdrop-blur-md border border-white/10 rounded-full p-2.5 pointer-events-auto shadow-2xl scale-110">
+                        {/* Play/Pause Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isCurrent) {
+                              setIsPaused(!isPaused);
+                            } else {
+                              setActivePlayingIndex(idx);
+                              setIsPaused(false);
+                            }
+                          }}
+                          className="w-10 h-10 rounded-full bg-brand-orange text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-brand-orange/20"
+                          title={isCurrent && !isPaused ? "Pause Reel" : "Play Reel"}
+                        >
+                          {isCurrent && !isPaused ? (
+                            <Pause className="w-4.5 h-4.5 fill-current" />
+                          ) : (
+                            <Play className="w-4.5 h-4.5 fill-current ml-0.5" />
+                          )}
+                        </button>
+
+                        {/* Mute/Unmute Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsMuted(!isMuted);
+                          }}
+                          className="w-10 h-10 rounded-full bg-neutral-900 border border-neutral-800 text-white flex items-center justify-center hover:scale-105 active:scale-95 hover:text-brand-orange transition-all shadow-lg"
+                          title={isMuted ? "Unmute sound" : "Mute sound"}
+                        >
+                          {isMuted ? (
+                            <VolumeX className="w-4.5 h-4.5" />
+                          ) : (
+                            <Volume2 className="w-4.5 h-4.5" />
+                          )}
+                        </button>
                       </div>
-                    )}
+                    </div>
 
                     {/* Bottom Metadata */}
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 pointer-events-auto">
                       <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono">
                         {instagramLink ? "Reel Link" : `Reel #${idx + 1}`}
                       </span>

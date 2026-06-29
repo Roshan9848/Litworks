@@ -182,7 +182,7 @@ export default function Footer() {
         {/* Copyright info */}
         <div className="border-t border-neutral-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-neutral-500 font-light">
-            © 2025 LITWORKS. All Rights Reserved.
+            All rights reserved litworks @2026
           </p>
           <p className="text-xs text-neutral-600 font-light">
             Designed for Instant Digital Impact.

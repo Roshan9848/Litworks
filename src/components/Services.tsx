@@ -87,6 +87,8 @@ export default function Services() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   // Form input states
   const [name, setName] = useState("");
@@ -111,6 +113,7 @@ export default function Services() {
     setSelectedService(service);
     setModalStep(1);
     setSubmitSuccess(false);
+    setAcceptTerms(false);
     setErrorMessage("");
     setName("");
     setPhone("");
@@ -126,8 +129,12 @@ export default function Services() {
     setSelectedService(null);
   };
 
-  const handleProceedToPayment = async (e: React.FormEvent) => {
+  const handleSubmitEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptTerms) {
+      setErrorMessage("Please accept the Terms & Conditions to proceed.");
+      return;
+    }
     if (
       !name.trim() ||
       !phone.trim() ||
@@ -143,11 +150,6 @@ export default function Services() {
 
     setErrorMessage("");
     setIsSubmitting(true);
-    setModalStep(2);
-
-    const finalPrice = selectedService?.tempPrice || 0;
-    const platformFee = Math.round(finalPrice * 0.025);
-    const totalAmount = finalPrice + platformFee;
 
     const payload = {
       name,
@@ -157,19 +159,17 @@ export default function Services() {
       city,
       service: selectedService?.title || "Custom Service",
       notes: `Area/Locality: ${area}\nRequirements:\n${requirements}`,
-      finalPrice: finalPrice,
+      status: "enquiry",
       dynamicFields: {
         preferredStartDate: date || "Not Specified",
         shootArea: area,
         serviceRequirements: requirements,
-        calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedService?.title,
-        bookingDepositPaid: `₹${totalAmount.toLocaleString("en-IN")}`,
       },
     };
 
     try {
-      const response = await fetch("/api/payment/create-order", {
+      const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -178,34 +178,16 @@ export default function Services() {
       const resData = await response.json();
 
       if (!response.ok || !resData.success) {
-        setErrorMessage(resData.error || "Failed to initiate payment. Please try again.");
-        setModalStep(1);
+        setErrorMessage(resData.error || "Failed to submit enquiry. Please try again.");
         setIsSubmitting(false);
         return;
       }
 
-      if (resData.mock) {
-        setTimeout(() => {
-          window.location.href = `/api/payment/verify?order_id=${resData.order_id}`;
-        }, 1500);
-        return;
-      }
-
-      if (typeof window !== "undefined" && (window as any).Cashfree) {
-        const cashfree = (window as any).Cashfree({
-          mode: resData.environment || "sandbox",
-        });
-        cashfree.checkout({
-          paymentSessionId: resData.payment_session_id,
-          redirectTarget: "_self",
-        });
-      } else {
-        throw new Error("Cashfree SDK not loaded in browser.");
-      }
+      setSubmitSuccess(true);
+      setIsSubmitting(false);
     } catch (err: any) {
-      console.error("Checkout initiation error:", err);
+      console.error("Enquiry submission error:", err);
       setErrorMessage(err.message || "Network error. Please try again.");
-      setModalStep(1);
       setIsSubmitting(false);
     }
   };
@@ -298,7 +280,7 @@ export default function Services() {
                   onClick={() => handleOpenModal(service)}
                   className="w-full py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-neutral-300 text-sm font-semibold tracking-wider hover:bg-brand-orange hover:text-black hover:border-brand-orange transition-all duration-300 cursor-pointer"
                 >
-                  Book Service
+                  {service.title === "Instant Reels" ? "Book Service" : "Enquire Now"}
                 </button>
               </motion.div>
             );
@@ -342,9 +324,9 @@ export default function Services() {
                   <div className="w-14 h-14 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange flex items-center justify-center mx-auto shadow-lg animate-bounce">
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
-                  <h4 className="text-xl font-black text-white">Booking Confirmed!</h4>
+                  <h4 className="text-xl font-black text-white">Enquiry Submitted!</h4>
                   <p className="text-xs text-neutral-400 leading-relaxed font-light">
-                    We have successfully registered your booking request. Our team will contact you on WhatsApp / Phone shortly!
+                    Thank you! Our team will reach out to you as soon as possible. A confirmation email has been sent to your inbox.
                   </p>
                   <button
                     onClick={handleCloseModal}
@@ -356,7 +338,7 @@ export default function Services() {
               ) : (
                 <div>
                   {modalStep === 1 && (
-                    <form onSubmit={handleProceedToPayment} className="space-y-5">
+                    <form onSubmit={handleSubmitEnquiry} className="space-y-5">
                       <div>
                         <span className="text-[9px] uppercase tracking-widest text-brand-orange font-bold">
                           Book Service
@@ -364,8 +346,8 @@ export default function Services() {
                         <h4 className="text-lg font-black text-white mt-1">
                           {selectedService.title}
                         </h4>
-                        <p className="text-xl font-extrabold text-brand-orange mt-0.5">
-                          ₹{selectedService.tempPrice.toLocaleString("en-IN")} <span className="text-[9px] text-neutral-500 uppercase font-bold">(Est. Starting Price)</span>
+                        <p className="text-xs text-brand-orange uppercase font-bold tracking-widest mt-1">
+                          Custom Quote / Enquiry
                         </p>
                       </div>
 
@@ -515,59 +497,30 @@ export default function Services() {
                         </div>
                       </div>
 
-                      {/* Summary Preview */}
-                      <AnimatePresence>
-                        {showSummaryPreview && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="p-4 rounded-2xl bg-brand-orange/5 border border-brand-orange/20 space-y-2.5 text-xs overflow-hidden"
+
+
+                      {/* Terms & Conditions Checkbox */}
+                      <div className="flex items-start gap-2.5 pt-1">
+                        <input
+                          type="checkbox"
+                          id="services-accept-terms"
+                          checked={acceptTerms}
+                          onChange={(e) => setAcceptTerms(e.target.checked)}
+                          required
+                          className="w-4 h-4 rounded border-neutral-850 bg-neutral-950 text-brand-orange focus:ring-brand-orange accent-brand-orange mt-0.5 cursor-pointer"
+                        />
+                        <label htmlFor="services-accept-terms" className="text-neutral-450 text-[11px] font-light leading-relaxed select-none">
+                          I accept the{" "}
+                          <button
+                            type="button"
+                            onClick={() => setShowTermsModal(true)}
+                            className="underline text-brand-orange hover:text-white transition-colors cursor-pointer font-medium"
                           >
-                            <h5 className="text-[9px] uppercase tracking-widest text-brand-orange font-bold flex items-center gap-1">
-                              <FileText className="w-3.5 h-3.5" />
-                              Order Summary
-                            </h5>
-                            <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 text-neutral-300 text-[11px] font-light">
-                              <div>
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Location</span>
-                                {area}, {city}, {state}
-                              </div>
-                              <div>
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Target Date</span>
-                                {date ? date.split("-").reverse().join("/") : "Not Selected"}
-                              </div>
-                              <div className="col-span-2">
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Service</span>
-                                {selectedService.title}
-                              </div>
-                            </div>
-                            
-                            <div className="h-[1px] bg-brand-orange/15 w-full my-1" />
-                            
-                            <div className="space-y-1.5 text-[11px] text-neutral-300 font-light">
-                              <div className="flex justify-between">
-                                <span>Starting Cost:</span>
-                                <span className="text-white font-medium">₹{selectedService.tempPrice.toLocaleString("en-IN")}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="flex items-center gap-1">
-                                  Platform Fee (2.5%):
-                                  <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
-                                </span>
-                                <span className="text-white font-medium">₹{Math.round(selectedService.tempPrice * 0.025).toLocaleString("en-IN")}</span>
-                              </div>
-                              <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
-                              <div className="flex justify-between items-center text-xs font-bold text-white">
-                                <span>Total Booking Amount:</span>
-                                <span className="text-brand-orange text-glow">
-                                  ₹{Math.round(selectedService.tempPrice * 1.025).toLocaleString("en-IN")}
-                                </span>
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                            Terms & Conditions
+                          </button>{" "}
+                          *
+                        </label>
+                      </div>
 
                       {errorMessage && (
                         <div className="p-3 rounded-xl bg-red-950/20 border border-red-900/50 text-red-500 text-[11px] font-light text-center">
@@ -577,10 +530,20 @@ export default function Services() {
 
                       <button
                         type="submit"
-                        className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                        disabled={isSubmitting}
+                        className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                       >
-                        <span>Pay ₹{Math.round(selectedService.tempPrice * 1.025).toLocaleString("en-IN")} & Book</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Submitting Enquiry...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Submit Enquiry</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </>
+                        )}
                       </button>
                     </form>
                   )}
@@ -610,6 +573,92 @@ export default function Services() {
                   )}
                 </div>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* TERMS & CONDITIONS MODAL OVERLAY */}
+      <AnimatePresence>
+        {showTermsModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.85 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowTermsModal(false)}
+              className="absolute inset-0 bg-black/95 backdrop-blur-sm"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-neutral-900 shadow-2xl relative z-10 bg-neutral-950/95 text-left max-h-[80vh] overflow-y-auto no-scrollbar"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-full border border-neutral-900 text-neutral-400 hover:text-white hover:border-brand-orange transition-colors cursor-pointer"
+                aria-label="Close Terms modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="space-y-4">
+                <span className="text-[9px] uppercase tracking-widest text-brand-orange font-bold block">LITWORKS Legal</span>
+                <h4 className="text-lg font-black text-white uppercase tracking-wider">Terms & Conditions</h4>
+                
+                <div className="h-[1px] bg-neutral-900 w-full" />
+
+                <div className="space-y-4 text-xs text-neutral-350 leading-relaxed font-light font-sans max-h-[50vh] overflow-y-auto pr-2 no-scrollbar">
+                  <div>
+                    <h5 className="font-bold text-white mb-1">1. Service Scope</h5>
+                    <p>"LITWORKS" refers to LITWORKS Creative Media & Marketing Agency. "Client" refers to any individual or business booking or inquiring about services.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">2. Booking & Cancellation Policy</h5>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li><strong>No Deposits:</strong> LITWORKS does not collect booking deposits. All transaction amounts paid represent booking payments for the packages selected.</li>
+                      <li><strong>Cancellation Within 24 Hours of Booking:</strong> If the Client cancels a booked service package within 24 hours of booking, a 30% cancellation fee will be deducted from the payment, and the remaining 70% will be refunded.</li>
+                      <li><strong>No Refunds After 24 Hours:</strong> Cancellations made more than 24 hours after the booking timestamp are strictly non-refundable.</li>
+                      <li><strong>Late Cancellations (Within 12 Hours of Event):</strong> If a shoot or event is cancelled or rescheduled less than 12 hours before the scheduled start time, the booking is strictly non-refundable, and additional late cancellation/displacement fees may apply.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">3. Onsite Access & Client Cooperation</h5>
+                    <p>The Client is responsible for securing all venue permissions, permissions for photography/videography, and gate passes. LITWORKS is not liable for delayed shoots resulting from venue access delays.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">4. Media Rights & Portfolio Usage</h5>
+                    <p>LITWORKS retains copyright ownership of all captured media. Upon full payment, the Client receives non-exclusive rights to use the final delivered edits for personal or promotional purposes. LITWORKS reserves the right to showcase final delivered media in its agency portfolio, website showcase, and social media channels.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">5. Limitation of Liability</h5>
+                    <p>In the case of severe weather, equipment malfunction, or force majeure, LITWORKS' liability is limited strictly to a refund of the amount paid by the Client (minus any non-refundable cancellation fees if applicable).</p>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAcceptTerms(true);
+                      setShowTermsModal(false);
+                    }}
+                    className="px-6 py-2.5 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    Accept and Close
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}

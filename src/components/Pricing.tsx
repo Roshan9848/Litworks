@@ -219,6 +219,8 @@ export default function Pricing() {
   // Timing slot, add-ons and payment
   const [timeSlot, setTimeSlot] = useState("");
   const [addExtraHour, setAddExtraHour] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const suggestionRef = useRef<HTMLDivElement>(null);
 
@@ -244,6 +246,7 @@ export default function Pricing() {
     setSelectedPlan(plan);
     setModalStep(1);
     setSubmitSuccess(false);
+    setAcceptTerms(false);
     setErrorMessage("");
     setName("");
     setPhone("");
@@ -334,6 +337,10 @@ export default function Pricing() {
 
   const handleProceedToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptTerms) {
+      setErrorMessage("Please accept the Terms & Conditions to proceed.");
+      return;
+    }
     const isCustomEventValid = eventType !== "Other" || customEventType.trim() !== "";
     if (
       !name.trim() ||
@@ -901,6 +908,29 @@ export default function Pricing() {
                         )}
                       </AnimatePresence>
 
+                      {/* Terms & Conditions Checkbox */}
+                      <div className="flex items-start gap-2.5 pt-1 mb-2">
+                        <input
+                          type="checkbox"
+                          id="pricing-accept-terms"
+                          checked={acceptTerms}
+                          onChange={(e) => setAcceptTerms(e.target.checked)}
+                          required
+                          className="w-4 h-4 rounded border-neutral-850 bg-neutral-950 text-brand-orange focus:ring-brand-orange accent-brand-orange mt-0.5 cursor-pointer"
+                        />
+                        <label htmlFor="pricing-accept-terms" className="text-neutral-450 text-[11px] font-light leading-relaxed select-none">
+                          I accept the{" "}
+                          <button
+                            type="button"
+                            onClick={() => setShowTermsModal(true)}
+                            className="underline text-brand-orange hover:text-white transition-colors cursor-pointer font-medium"
+                          >
+                            Terms & Conditions
+                          </button>{" "}
+                          *
+                        </label>
+                      </div>
+
                       {errorMessage && (
                         <div className="p-3 rounded-xl bg-red-950/20 border border-red-900/50 text-red-500 text-[11px] font-light text-center">
                           {errorMessage}
@@ -944,6 +974,92 @@ export default function Pricing() {
                   )}
                 </div>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* TERMS & CONDITIONS MODAL OVERLAY */}
+      <AnimatePresence>
+        {showTermsModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.85 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowTermsModal(false)}
+              className="absolute inset-0 bg-black/95 backdrop-blur-sm"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-neutral-900 shadow-2xl relative z-10 bg-neutral-950/95 text-left max-h-[80vh] overflow-y-auto no-scrollbar"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-full border border-neutral-900 text-neutral-400 hover:text-white hover:border-brand-orange transition-colors cursor-pointer"
+                aria-label="Close Terms modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="space-y-4">
+                <span className="text-[9px] uppercase tracking-widest text-brand-orange font-bold block">LITWORKS Legal</span>
+                <h4 className="text-lg font-black text-white uppercase tracking-wider">Terms & Conditions</h4>
+                
+                <div className="h-[1px] bg-neutral-900 w-full" />
+
+                <div className="space-y-4 text-xs text-neutral-350 leading-relaxed font-light font-sans max-h-[50vh] overflow-y-auto pr-2 no-scrollbar">
+                  <div>
+                    <h5 className="font-bold text-white mb-1">1. Service Scope</h5>
+                    <p>"LITWORKS" refers to LITWORKS Creative Media & Marketing Agency. "Client" refers to any individual or business booking or inquiring about services.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">2. Booking & Cancellation Policy</h5>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li><strong>No Deposits:</strong> LITWORKS does not collect booking deposits. All transaction amounts paid represent booking payments for the packages selected.</li>
+                      <li><strong>Cancellation Within 24 Hours of Booking:</strong> If the Client cancels a booked service package within 24 hours of booking, a 30% cancellation fee will be deducted from the payment, and the remaining 70% will be refunded.</li>
+                      <li><strong>No Refunds After 24 Hours:</strong> Cancellations made more than 24 hours after the booking timestamp are strictly non-refundable.</li>
+                      <li><strong>Late Cancellations (Within 12 Hours of Event):</strong> If a shoot or event is cancelled or rescheduled less than 12 hours before the scheduled start time, the booking is strictly non-refundable, and additional late cancellation/displacement fees may apply.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">3. Onsite Access & Client Cooperation</h5>
+                    <p>The Client is responsible for securing all venue permissions, permissions for photography/videography, and gate passes. LITWORKS is not liable for delayed shoots resulting from venue access delays.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">4. Media Rights & Portfolio Usage</h5>
+                    <p>LITWORKS retains copyright ownership of all captured media. Upon full payment, the Client receives non-exclusive rights to use the final delivered edits for personal or promotional purposes. LITWORKS reserves the right to showcase final delivered media in its agency portfolio, website showcase, and social media channels.</p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-white mb-1">5. Limitation of Liability</h5>
+                    <p>In the case of severe weather, equipment malfunction, or force majeure, LITWORKS' liability is limited strictly to a refund of the amount paid by the Client (minus any non-refundable cancellation fees if applicable).</p>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAcceptTerms(true);
+                      setShowTermsModal(false);
+                    }}
+                    className="px-6 py-2.5 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    Accept and Close
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         )}
