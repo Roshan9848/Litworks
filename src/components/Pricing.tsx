@@ -162,30 +162,47 @@ export default function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
   const [dynamicBasicPlans, setDynamicBasicPlans] = useState<PricingPlan[]>(basicPlans);
   const [dynamicWeddingPlans, setDynamicWeddingPlans] = useState<PricingPlan[]>(weddingPlans);
+  const [citiesByState, setCitiesByState] = useState<Record<string, string[]>>({
+    Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Armoor"],
+    "Andhra Pradesh": ["Vijayawada", "Visakhapatnam (Vizag)"],
+  });
 
   useEffect(() => {
     fetch("/api/website-content")
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.packages) {
-          const basicMapped = data.packages.basic.map((p: any) => ({
-            title: p.title,
-            price: `₹${p.price.toLocaleString("en-IN")}`,
-            description: p.description,
-            serviceType: p.serviceType,
-            isBestseller: p.isBestseller,
-            features: p.features
-          }));
-          const weddingMapped = data.packages.wedding.map((p: any) => ({
-            title: p.title,
-            price: `₹${p.price.toLocaleString("en-IN")}`,
-            description: p.description,
-            serviceType: p.serviceType,
-            isBestseller: p.isBestseller,
-            features: p.features
-          }));
-          if (basicMapped.length > 0) setDynamicBasicPlans(basicMapped);
-          if (weddingMapped.length > 0) setDynamicWeddingPlans(weddingMapped);
+        if (data.success) {
+          if (data.packages) {
+            const basicMapped = data.packages.basic.map((p: any) => ({
+              title: p.title,
+              price: `₹${p.price.toLocaleString("en-IN")}`,
+              description: p.description,
+              serviceType: p.serviceType,
+              isBestseller: p.isBestseller,
+              features: p.features
+            }));
+            const weddingMapped = data.packages.wedding.map((p: any) => ({
+              title: p.title,
+              price: `₹${p.price.toLocaleString("en-IN")}`,
+              description: p.description,
+              serviceType: p.serviceType,
+              isBestseller: p.isBestseller,
+              features: p.features
+            }));
+            if (basicMapped.length > 0) setDynamicBasicPlans(basicMapped);
+            if (weddingMapped.length > 0) setDynamicWeddingPlans(weddingMapped);
+          }
+          if (data.cms && data.cms.locations && data.cms.locations.states) {
+            const newMapping: Record<string, string[]> = {};
+            data.cms.locations.states.forEach((s: any) => {
+              if (s.name) {
+                newMapping[s.name] = s.cities || [];
+              }
+            });
+            if (Object.keys(newMapping).length > 0) {
+              setCitiesByState(newMapping);
+            }
+          }
         }
       })
       .catch((e) => console.error("Failed to load dynamic pricing packages:", e));
@@ -233,14 +250,6 @@ export default function Pricing() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // Static definitions moved to file level scope above component
-
-  // Dynamic City options mapping
-  const citiesByState: Record<string, string[]> = {
-    Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Armoor"],
-    "Andhra Pradesh": ["Vijayawada", "Visakhapatnam (Vizag)"],
-  };
 
   const handleOpenModal = (plan: PricingPlan) => {
     setSelectedPlan(plan);
@@ -748,8 +757,11 @@ export default function Pricing() {
                               className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
                             >
                               <option value="" disabled>Select State</option>
-                              <option value="Telangana">Telangana</option>
-                              <option value="Andhra Pradesh">Andhra Pradesh</option>
+                               {Object.keys(citiesByState).map((st) => (
+                                 <option key={st} value={st}>
+                                   {st}
+                                 </option>
+                               ))}
                             </select>
                           </div>
                           <div>

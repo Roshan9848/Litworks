@@ -95,15 +95,7 @@ export default function Services() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [area, setArea] = useState("");
   const [requirements, setRequirements] = useState("");
-
-  const citiesByState: Record<string, string[]> = {
-    Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Armoor"],
-    "Andhra Pradesh": ["Vijayawada", "Visakhapatnam (Vizag)"],
-  };
 
   const handleOpenModal = (service: ServiceItem) => {
     if (service.title === "Instant Reels") {
@@ -119,9 +111,6 @@ export default function Services() {
     setPhone("");
     setEmail("");
     setDate("");
-    setState("");
-    setCity("");
-    setArea("");
     setRequirements("");
   };
 
@@ -139,9 +128,6 @@ export default function Services() {
       !name.trim() ||
       !phone.trim() ||
       !email.trim() ||
-      !state ||
-      !city ||
-      !area.trim() ||
       !requirements.trim()
     ) {
       setErrorMessage("Please fill out all required fields.");
@@ -155,14 +141,11 @@ export default function Services() {
       name,
       phone,
       email,
-      state,
-      city,
       service: selectedService?.title || "Custom Service",
-      notes: `Area/Locality: ${area}\nRequirements:\n${requirements}`,
+      notes: `Requirements:\n${requirements}`,
       status: "enquiry",
       dynamicFields: {
         preferredStartDate: date || "Not Specified",
-        shootArea: area,
         serviceRequirements: requirements,
         planTitle: selectedService?.title,
       },
@@ -200,7 +183,7 @@ export default function Services() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  const showSummaryPreview = name.trim() && phone.trim() && state && city && area.trim() && requirements.trim();
+  const showSummaryPreview = name.trim() && phone.trim() && requirements.trim();
 
   return (
     <section id="services" className="relative py-24 bg-black overflow-hidden border-t border-neutral-900">
@@ -402,65 +385,7 @@ export default function Services() {
                           />
                         </div>
 
-                        {/* State & City */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                              State *
-                            </label>
-                            <select
-                              value={state}
-                              onChange={(e) => {
-                                setState(e.target.value);
-                                setCity("");
-                              }}
-                              required
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                            >
-                              <option value="" disabled>Select State</option>
-                              <option value="Telangana">Telangana</option>
-                              <option value="Andhra Pradesh">Andhra Pradesh</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                              City *
-                            </label>
-                            <select
-                              value={city}
-                              onChange={(e) => setCity(e.target.value)}
-                              required
-                              disabled={!state}
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors disabled:opacity-30"
-                            >
-                              <option value="" disabled>Select City</option>
-                              {state &&
-                                citiesByState[state]?.map((c) => (
-                                  <option key={c} value={c}>
-                                    {c}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                        </div>
 
-                        {/* Area / Locality */}
-                        <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                            Area / Locality *
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="e.g. Madhapur, Benz Circle, Armoor Town"
-                            value={area}
-                            onChange={(e) => setArea(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                          />
-                        </div>
 
                         {/* Start Date */}
                         <div>

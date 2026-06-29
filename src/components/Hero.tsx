@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
 import { RotateCw } from "lucide-react";
 
@@ -22,8 +22,23 @@ export default function Hero() {
   });
 
   const [isEntryComplete, setIsEntryComplete] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+
+  // Motion values for smooth 3D parallax and scroll-spin
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const mouseXSpring = useSpring(mouseX, { stiffness: 100, damping: 20 });
+  const mouseYSpring = useSpring(mouseY, { stiffness: 100, damping: 20 });
+
+  const { scrollY } = useScroll();
+  // Map scroll distance (0px to 1200px) to one full rotation (0 to 360 deg)
+  const scrollRotateY = useTransform(scrollY, [0, 1200], [0, 360]);
+
+  // Combine scroll rotation and mouse movement offset
+  const rotateY = useTransform([scrollRotateY, mouseXSpring], ([rY, mX]) => (rY as number) + (mX as number));
+  const rotateX = useTransform(mouseYSpring, (mY) => mY as number);
+  const rotateZ = useTransform(mouseXSpring, (mX) => mX * 0.14);
 
   useEffect(() => {
     fetch("/api/website-content")
@@ -40,7 +55,8 @@ export default function Hero() {
   // Restart 3D entry animation spin
   const triggerReplaySpin = () => {
     setIsEntryComplete(false);
-    setMousePos({ x: 0, y: 0 });
+    mouseX.set(0);
+    mouseY.set(0);
   };
 
   // Mouse move parallax coordinates
@@ -49,11 +65,13 @@ export default function Hero() {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMousePos({ x, y });
+    mouseX.set(x * 14);
+    mouseY.set(y * -14);
   };
 
   const handleMouseLeave = () => {
-    setMousePos({ x: 0, y: 0 });
+    mouseX.set(0);
+    mouseY.set(0);
     setIsHovered(false);
   };
 
@@ -201,14 +219,12 @@ export default function Hero() {
               key={isEntryComplete ? "active-interactive" : "entry-spinning"}
               style={{
                 transformStyle: "preserve-3d",
+                ...(isEntryComplete ? { rotateX, rotateY, rotateZ } : {})
               }}
               animate={
                 isEntryComplete
                   ? {
-                      y: [0, -6, 0],
-                      rotateX: mousePos.y * -14,
-                      rotateY: mousePos.x * 14,
-                      rotateZ: mousePos.x * 2.0
+                      y: [0, -6, 0]
                     }
                   : {
                       y: [350, 0],
@@ -221,10 +237,7 @@ export default function Hero() {
               transition={
                 isEntryComplete
                   ? {
-                      y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
-                      rotateX: { type: "tween", ease: "easeOut", duration: 0.4 },
-                      rotateY: { type: "tween", ease: "easeOut", duration: 0.4 },
-                      rotateZ: { type: "tween", ease: "easeOut", duration: 0.4 }
+                      y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" }
                     }
                   : {
                       duration: 1.8,
