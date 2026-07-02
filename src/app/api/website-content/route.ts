@@ -9,6 +9,21 @@ export async function GET(req: NextRequest) {
     }
 
     const { db } = dbConnection;
+    const { searchParams } = new URL(req.url);
+    const packageId = searchParams.get("packageId");
+
+    if (packageId) {
+      const ObjectId = require("mongodb").ObjectId;
+      try {
+        const pkg = await db.collection("packages").findOne({ _id: new ObjectId(packageId) });
+        if (!pkg) {
+          return NextResponse.json({ success: false, error: "Custom package not found" }, { status: 404 });
+        }
+        return NextResponse.json({ success: true, package: pkg });
+      } catch (err) {
+        return NextResponse.json({ success: false, error: "Invalid package ID format" }, { status: 400 });
+      }
+    }
 
     // Fetch CMS settings
     const cmsList = await db.collection("websitecontents").find().toArray();

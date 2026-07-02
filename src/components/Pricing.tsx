@@ -78,12 +78,15 @@ const basicPlans: PricingPlan[] = [
     ],
   },
   {
-    title: "Add On's",
-    price: "₹1,250",
-    description: "Want to Extend? Easy.",
-    serviceType: "Instant Reel",
+    title: "Custom Plan",
+    price: "Custom",
+    description: "Need a tailor-made shoot or multi-day coverage? Request details.",
+    serviceType: "Custom Plan",
     features: [
-      "1 extra reel OR 1 hour extra shoot",
+      "Flexible shoot hours",
+      "Tailored reels & editing style",
+      "No upfront payment required",
+      "Custom quote shared via link later",
     ],
   },
 ];
@@ -166,6 +169,32 @@ export default function Pricing() {
     Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Armoor"],
     "Andhra Pradesh": ["Vijayawada", "Visakhapatnam (Vizag)"],
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const packageId = params.get("packageId");
+      if (packageId) {
+        fetch(`/api/website-content?packageId=${packageId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.package) {
+              const p = data.package;
+              const formattedPlan = {
+                title: p.title,
+                price: `₹${p.price.toLocaleString("en-IN")}`,
+                description: p.description,
+                serviceType: p.serviceType,
+                features: p.features,
+              };
+              setSelectedPlan(formattedPlan);
+              setModalStep(1);
+            }
+          })
+          .catch((err) => console.error("Error loading custom proposal package:", err));
+      }
+    }
+  }, []);
 
   useEffect(() => {
     fetch("/api/website-content")
@@ -279,7 +308,8 @@ export default function Pricing() {
   };
 
   const getNumericPrice = (priceStr: string) => {
-    return parseInt(priceStr.replace(/[^0-9]/g, ""), 10);
+    const val = parseInt(priceStr.replace(/[^0-9]/g, ""), 10);
+    return isNaN(val) ? 0 : val;
   };
 
   const getCalculatedPrice = () => {
@@ -392,9 +422,40 @@ export default function Pricing() {
         extraHourRequested: addExtraHour ? "Yes (+₹899)" : "No",
         calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedPlan?.title,
-        bookingDepositPaid: `₹${totalAmount.toLocaleString("en-IN")}`,
       },
     };
+    if (selectedPlan?.title === "Custom Plan") {
+      try {
+        const response = await fetch("/api/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...payload,
+            amount: 0,
+            paymentStatus: "custom_pending",
+          }),
+        });
+
+        const resData = await response.json();
+
+        if (!response.ok || !resData.success) {
+          setErrorMessage(resData.error || "Failed to submit booking request. Please try again.");
+          setModalStep(1);
+          setIsSubmitting(false);
+          return;
+        }
+
+        setSubmitSuccess(true);
+        setIsSubmitting(false);
+        return;
+      } catch (err: any) {
+        console.error("Custom booking save error:", err);
+        setErrorMessage(err.message || "Network error. Please try again.");
+        setModalStep(1);
+        setIsSubmitting(false);
+        return;
+      }
+    }
 
     try {
       const response = await fetch("/api/payment/create-order", {
