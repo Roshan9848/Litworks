@@ -324,11 +324,13 @@ export default function BookingForm() {
                       }`}
                     >
                       <option value="" disabled>Select Event Type</option>
-                      <option value="Wedding">Wedding</option>
-                      <option value="Car Delivery">Car Delivery</option>
-                      <option value="Birthday">Birthday</option>
-                      <option value="House Warming">House Warming</option>
-                      <option value="Shop Opening">Shop Opening</option>
+                      <option value="New Car / Bike Delivery">New Car / Bike Delivery</option>
+                      <option value="Store / Brand Launch">Store / Brand Launch</option>
+                      <option value="Corporate / Business Event">Corporate / Business Event</option>
+                      <option value="Birthday / Anniversary Party">Birthday / Anniversary Party</option>
+                      <option value="Pre-Wedding / Wedding Event">Pre-Wedding / Wedding Event</option>
+                      <option value="Fashion / Personal Portfolio">Fashion / Personal Portfolio</option>
+                      <option value="Business Promo / Marketing Shoot">Business Promo / Marketing Shoot</option>
                       <option value="Other">Other (Specify below)</option>
                     </select>
                     {errors.eventType && (

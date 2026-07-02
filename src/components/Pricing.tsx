@@ -850,11 +850,13 @@ export default function Pricing() {
                             className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
                           >
                             <option value="" disabled>Select Event Type</option>
-                            <option value="Wedding">Wedding</option>
-                            <option value="Car Delivery">Car Delivery</option>
-                            <option value="Birthday">Birthday</option>
-                            <option value="House Warming">House Warming</option>
-                            <option value="Shop Opening">Shop Opening</option>
+                            <option value="New Car / Bike Delivery">New Car / Bike Delivery</option>
+                            <option value="Store / Brand Launch">Store / Brand Launch</option>
+                            <option value="Corporate / Business Event">Corporate / Business Event</option>
+                            <option value="Birthday / Anniversary Party">Birthday / Anniversary Party</option>
+                            <option value="Pre-Wedding / Wedding Event">Pre-Wedding / Wedding Event</option>
+                            <option value="Fashion / Personal Portfolio">Fashion / Personal Portfolio</option>
+                            <option value="Business Promo / Marketing Shoot">Business Promo / Marketing Shoot</option>
                             <option value="Other">Other (Specify below)</option>
                           </select>
                         </div>
@@ -1058,6 +1060,27 @@ export default function Pricing() {
                             )}
                           </div>
                         )}
+                      </div>
+
+                      {/* Trust Badges Reassurance Row */}
+                      <div className="pt-4 border-t border-neutral-900/60 mt-2.5">
+                        <div className="grid grid-cols-3 gap-2.5 text-center">
+                          <div className="p-2.5 rounded-xl bg-neutral-950/40 border border-neutral-900 flex flex-col items-center justify-center space-y-1">
+                            <span className="text-[14px]">🛡️</span>
+                            <span className="text-[8px] font-bold text-white uppercase tracking-wider block">Vetted Creators</span>
+                            <span className="text-[7px] text-neutral-505 font-light block leading-normal">Background checked & trained</span>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-neutral-950/40 border border-neutral-900 flex flex-col items-center justify-center space-y-1">
+                            <span className="text-[14px]">🎙️</span>
+                            <span className="text-[8px] font-bold text-white uppercase tracking-wider block">Cinematic Gear</span>
+                            <span className="text-[7px] text-neutral-505 font-light block leading-normal">Gimbals, mics & pro iPhones</span>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-neutral-950/40 border border-neutral-900 flex flex-col items-center justify-center space-y-1">
+                            <span className="text-[14px]">🔒</span>
+                            <span className="text-[8px] font-bold text-white uppercase tracking-wider block">Safe Scheduling</span>
+                            <span className="text-[7px] text-neutral-505 font-light block leading-normal">Instant lock & whatsapp prep</span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* SUMMARY PREVIEW BLOCK */}
