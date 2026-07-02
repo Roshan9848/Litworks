@@ -397,6 +397,7 @@ export default function Pricing() {
       return;
     }
     const isCustomEventValid = eventType !== "Other" || customEventType.trim() !== "";
+    const isTimeSlotValid = selectedPlan?.title === "Custom Plan" || !!timeSlot;
     if (
       !name.trim() ||
       !phone.trim() ||
@@ -406,7 +407,7 @@ export default function Pricing() {
       !area.trim() ||
       !eventType ||
       !isCustomEventValid ||
-      !timeSlot
+      !isTimeSlotValid
     ) {
       setErrorMessage("Please fill out all required fields.");
       return;
@@ -432,11 +433,11 @@ export default function Pricing() {
       finalPrice: finalPrice,
       dynamicFields: {
         preferredDate: date || "Not Specified",
-        timeSlot: timeSlot,
+        timeSlot: timeSlot || "Not Applicable",
         shootArea: area,
         eventType: finalEventOccasion,
-        extraHourRequested: addExtraHour ? "Yes (+₹899)" : "No",
-        calculatedTotalPrice: `₹${finalPrice.toLocaleString("en-IN")}`,
+        extraHourRequested: selectedPlan?.title === "Custom Plan" ? "Not Applicable" : (addExtraHour ? "Yes (+₹899)" : "No"),
+        calculatedTotalPrice: selectedPlan?.title === "Custom Plan" ? "Custom Quote" : `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedPlan?.title,
       },
     };
@@ -889,7 +890,7 @@ export default function Pricing() {
                         </div>
 
                         {/* Date and Timing Slot */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className={selectedPlan.title === "Custom Plan" ? "grid grid-cols-1 gap-4" : "grid grid-cols-2 gap-4"}>
                           <div>
                             <label htmlFor="pricing-date" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                               <Calendar className="w-3.5 h-3.5 text-brand-orange" />
@@ -907,30 +908,43 @@ export default function Pricing() {
                               className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange [color-scheme:dark] cursor-pointer"
                             />
                           </div>
-                          <div>
-                            <label htmlFor="pricing-time-slot" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                              <Clock className="w-3.5 h-3.5 text-brand-orange" />
-                              Preferred Slot *
-                            </label>
-                            <select
-                              id="pricing-time-slot"
-                              value={timeSlot}
-                              onChange={(e) => setTimeSlot(e.target.value)}
-                              required
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                            >
-                              <option value="" disabled>Select Time Slot</option>
-                              {getTimeSlotsForPlan().map((slotOption) => (
-                                <option key={slotOption} value={slotOption}>
-                                  {slotOption}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                          {selectedPlan.title !== "Custom Plan" && (
+                            <div>
+                              <label htmlFor="pricing-time-slot" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5 text-brand-orange" />
+                                Preferred Slot *
+                              </label>
+                              <select
+                                id="pricing-time-slot"
+                                value={timeSlot}
+                                onChange={(e) => setTimeSlot(e.target.value)}
+                                required={selectedPlan.title !== "Custom Plan"}
+                                className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                              >
+                                <option value="" disabled>Select Time Slot</option>
+                                {getTimeSlotsForPlan().map((slotOption) => (
+                                  <option key={slotOption} value={slotOption}>
+                                    {slotOption}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                         </div>
 
+                        {selectedPlan.title === "Custom Plan" && (
+                          <div className="pt-2">
+                            <div className="p-3.5 rounded-xl bg-brand-orange/5 border border-brand-orange/20 text-neutral-350 text-[11px] leading-relaxed flex items-start gap-2.5">
+                              <Info className="w-4 h-4 text-brand-orange mt-0.5 flex-shrink-0" />
+                              <span>
+                                <strong>Custom Quote:</strong> Pricing is determined based on total shoot hours, production requirements, and the number of edited reels requested. Submit details to get a tailored proposal.
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Add Extra Hour Checkbox (+899) */}
-                        {selectedPlan.title !== "Add On's" && (
+                        {selectedPlan.title !== "Add On's" && selectedPlan.title !== "Custom Plan" && (
                           <div className="pt-2">
                             <label className="flex items-center gap-3 p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 cursor-pointer hover:border-brand-orange/30 transition-colors">
                               <input 
@@ -968,39 +982,50 @@ export default function Pricing() {
                               </div>
                               <div>
                                 <span className="text-neutral-500 font-bold uppercase text-[9px] block">Date / Schedule</span>
-                                {date ? date.split("-").reverse().join("/") : "Not Selected"} @ {timeSlot.split(" ")[0]}
+                                {date ? date.split("-").reverse().join("/") : "Not Selected"} {timeSlot ? `@ ${timeSlot.split(" ")[0]}` : ""}
                               </div>
                               <div>
                                 <span className="text-neutral-500 font-bold uppercase text-[9px] block">Plan Selection</span>
                                 {selectedPlan.title}
                               </div>
-                              <div>
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Extra Hour Add-on</span>
-                                {addExtraHour ? "Yes (+₹899)" : "No"}
-                              </div>
+                              {selectedPlan.title !== "Custom Plan" && (
+                                <div>
+                                  <span className="text-neutral-500 font-bold uppercase text-[9px] block">Extra Hour Add-on</span>
+                                  {addExtraHour ? "Yes (+₹899)" : "No"}
+                                </div>
+                              )}
 
                             </div>
                             <div className="h-[1px] bg-brand-orange/15 w-full my-1" />
-                            <div className="space-y-1.5 text-[11px] text-neutral-300 font-light">
-                              <div className="flex justify-between">
-                                <span>Base Shoot Cost:</span>
-                                <span className="text-white font-medium">₹{getCalculatedPrice().toLocaleString("en-IN")}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="flex items-center gap-1">
-                                  Platform Fee (2.5%):
-                                  <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
-                                </span>
-                                <span className="text-white font-medium">₹{Math.round(getCalculatedPrice() * 0.025).toLocaleString("en-IN")}</span>
-                              </div>
-                              <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
+                            {selectedPlan.title === "Custom Plan" ? (
                               <div className="flex justify-between items-center text-xs font-bold text-white">
-                                <span>Total Amount to Pay:</span>
+                                <span>Total Booking Amount:</span>
                                 <span className="text-brand-orange text-glow">
-                                  ₹{Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")}
+                                  Custom Quote (TBD)
                                 </span>
                               </div>
-                            </div>
+                            ) : (
+                              <div className="space-y-1.5 text-[11px] text-neutral-300 font-light">
+                                <div className="flex justify-between">
+                                  <span>Base Shoot Cost:</span>
+                                  <span className="text-white font-medium">₹{getCalculatedPrice().toLocaleString("en-IN")}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="flex items-center gap-1">
+                                    Platform Fee (2.5%):
+                                    <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
+                                  </span>
+                                  <span className="text-white font-medium">₹{Math.round(getCalculatedPrice() * 0.025).toLocaleString("en-IN")}</span>
+                                </div>
+                                <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
+                                <div className="flex justify-between items-center text-xs font-bold text-white">
+                                  <span>Total Amount to Pay:</span>
+                                  <span className="text-brand-orange text-glow">
+                                    ₹{Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -1038,7 +1063,11 @@ export default function Pricing() {
                         type="submit"
                         className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
                       >
-                        <span>Pay ₹{Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")} & Confirm Slot</span>
+                        <span>
+                          {selectedPlan.title === "Custom Plan"
+                            ? "Request Custom Quote"
+                            : `Pay ₹${Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")} & Confirm Slot`}
+                        </span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </form>
