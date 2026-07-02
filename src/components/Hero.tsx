@@ -32,8 +32,8 @@ export default function Hero() {
   const mouseYSpring = useSpring(mouseY, { stiffness: 100, damping: 20 });
 
   const { scrollY } = useScroll();
-  // Map scroll distance (0px to 1200px) to one full rotation (0 to 360 deg)
-  const scrollRotateY = useTransform(scrollY, [0, 1200], [0, 360]);
+  // Map scroll distance (0px to 500px) to one full rotation (0 to 360 deg)
+  const scrollRotateY = useTransform(scrollY, [0, 500], [0, 360]);
 
   // Combine scroll rotation and mouse movement offset
   const rotateY = useTransform([scrollRotateY, mouseXSpring], ([rY, mX]) => (rY as number) + (mX as number));
