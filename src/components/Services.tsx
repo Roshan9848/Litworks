@@ -339,11 +339,12 @@ export default function Services() {
                       <div className="space-y-4">
                         {/* Name */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="service-name" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <User className="w-3.5 h-3.5 text-brand-orange" />
                             Full Name *
                           </label>
                           <input
+                            id="service-name"
                             type="text"
                             placeholder="e.g. Rahul Sharma"
                             value={name}
@@ -355,11 +356,12 @@ export default function Services() {
 
                         {/* Phone */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="service-phone" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <Phone className="w-3.5 h-3.5 text-brand-orange" />
                             WhatsApp / Phone *
                           </label>
                           <input
+                            id="service-phone"
                             type="tel"
                             placeholder="10-digit mobile number"
                             value={phone}
@@ -371,11 +373,12 @@ export default function Services() {
 
                         {/* Email */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="service-email" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <Mail className="w-3.5 h-3.5 text-brand-orange" />
                             Email Address *
                           </label>
                           <input
+                            id="service-email"
                             type="email"
                             placeholder="e.g. name@example.com"
                             value={email}
@@ -385,15 +388,14 @@ export default function Services() {
                           />
                         </div>
 
-
-
                         {/* Start Date */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="service-date" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <Calendar className="w-3.5 h-3.5 text-brand-orange" />
                             Preferred Start Date (Optional)
                           </label>
                           <input
+                            id="service-date"
                             type="date"
                             min={getTodayDateString()}
                             value={date}
@@ -407,11 +409,12 @@ export default function Services() {
 
                         {/* Requirements / Custom Details */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="service-requirements" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
                             Project / Service Requirements *
                           </label>
                           <textarea
+                            id="service-requirements"
                             placeholder="Provide details about your project goals, social handles, or guidelines..."
                             value={requirements}
                             onChange={(e) => setRequirements(e.target.value)}

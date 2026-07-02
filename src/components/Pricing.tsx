@@ -649,11 +649,12 @@ export default function Pricing() {
                       <div className="space-y-4">
                         {/* Full Name */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="pricing-name" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <User className="w-3.5 h-3.5 text-brand-orange" />
                             Full Name *
                           </label>
                           <input
+                            id="pricing-name"
                             type="text"
                             placeholder="e.g. Rahul Sharma"
                             value={name}
@@ -665,11 +666,12 @@ export default function Pricing() {
 
                         {/* WhatsApp/Phone */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="pricing-phone" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <Phone className="w-3.5 h-3.5 text-brand-orange" />
                             WhatsApp / Phone *
                           </label>
                           <input
+                            id="pricing-phone"
                             type="tel"
                             placeholder="10-digit mobile number"
                             value={phone}
@@ -681,11 +683,12 @@ export default function Pricing() {
 
                         {/* Email Address */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="pricing-email" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <Mail className="w-3.5 h-3.5 text-brand-orange" />
                             Email Address *
                           </label>
                           <input
+                            id="pricing-email"
                             type="email"
                             placeholder="e.g. name@example.com"
                             value={email}
@@ -697,11 +700,12 @@ export default function Pricing() {
 
                         {/* Type of Event */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="pricing-event-type" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
                             Type of Event / Occasion *
                           </label>
                           <select
+                            id="pricing-event-type"
                             value={eventType}
                             onChange={(e) => {
                               setEventType(e.target.value);
@@ -725,11 +729,12 @@ export default function Pricing() {
                         {/* Custom Event Type Input */}
                         {eventType === "Other" && (
                           <div className="animate-fadeIn">
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <label htmlFor="pricing-custom-event-type" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                               <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
                               Specify Event Type *
                             </label>
                             <input
+                              id="pricing-custom-event-type"
                               type="text"
                               placeholder="e.g. Corporate Event, Anniversary"
                               value={customEventType}
@@ -743,11 +748,12 @@ export default function Pricing() {
                         {/* State & City (Location info at top of location section) */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <label htmlFor="pricing-state" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5 text-brand-orange" />
                               State *
                             </label>
                             <select
+                              id="pricing-state"
                               value={state}
                               onChange={(e) => {
                                 setState(e.target.value);
@@ -765,11 +771,12 @@ export default function Pricing() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <label htmlFor="pricing-city" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5 text-brand-orange" />
                               City *
                             </label>
                             <select
+                              id="pricing-city"
                               value={city}
                               onChange={(e) => setCity(e.target.value)}
                               required
@@ -789,11 +796,12 @@ export default function Pricing() {
 
                         {/* Manual Area / Locality */}
                         <div>
-                          <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                          <label htmlFor="pricing-area" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5 text-brand-orange" />
                             Area / Locality *
                           </label>
                           <input
+                            id="pricing-area"
                             type="text"
                             placeholder="e.g. Madhapur, Gachibowli, Armoor Town"
                             value={area}
@@ -803,16 +811,15 @@ export default function Pricing() {
                           />
                         </div>
 
-
-
                         {/* Date and Timing Slot */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <label htmlFor="pricing-date" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                               <Calendar className="w-3.5 h-3.5 text-brand-orange" />
                               Event Date (Optional)
                             </label>
                             <input
+                              id="pricing-date"
                               type="date"
                               min={getTodayDateString()}
                               value={date}
@@ -824,11 +831,12 @@ export default function Pricing() {
                             />
                           </div>
                           <div>
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <label htmlFor="pricing-time-slot" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
                               <Clock className="w-3.5 h-3.5 text-brand-orange" />
                               Preferred Slot *
                             </label>
                             <select
+                              id="pricing-time-slot"
                               value={timeSlot}
                               onChange={(e) => setTimeSlot(e.target.value)}
                               required

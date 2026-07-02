@@ -184,11 +184,12 @@ export default function BookingForm() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Full Name */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                    <label htmlFor="booking-name" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <User className="w-3.5 h-3.5 text-brand-orange" />
                       Full Name *
                     </label>
                     <input
+                      id="booking-name"
                       type="text"
                       placeholder="e.g. Sneha Reddy"
                       {...register("name", { required: "Full name is required" })}
@@ -203,11 +204,12 @@ export default function BookingForm() {
 
                   {/* WhatsApp/Phone */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                    <label htmlFor="booking-phone" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-brand-orange" />
                       WhatsApp / Phone *
                     </label>
                     <input
+                      id="booking-phone"
                       type="tel"
                       placeholder="e.g. 98665XXXXX"
                       {...register("phone", {
@@ -230,11 +232,12 @@ export default function BookingForm() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Service Option Selector */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                    <label htmlFor="booking-service" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
                       Service Required *
                     </label>
                     <select
+                      id="booking-service"
                       {...register("service", { required: "Please select a service" })}
                       className={`w-full px-5 py-3.5 rounded-xl bg-neutral-950 border text-white text-xs focus:outline-none transition-colors ${
                         errors.service ? "border-red-500/50 focus:border-red-500" : "border-neutral-850 focus:border-brand-orange"
@@ -261,11 +264,12 @@ export default function BookingForm() {
 
                   {/* Event/Shoot Date (Same day allowed) */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                    <label htmlFor="booking-date" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-brand-orange" />
                       Preferred Date (Same day ok)
                     </label>
                     <input
+                      id="booking-date"
                       type="date"
                       min={getTodayDateString()}
                       onClick={(e) => {
@@ -282,11 +286,12 @@ export default function BookingForm() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Email (Required) */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                    <label htmlFor="booking-email" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5 text-brand-orange" />
                       Email Address *
                     </label>
                     <input
+                      id="booking-email"
                       type="email"
                       placeholder="e.g. name@example.com"
                       {...register("email", {
@@ -307,11 +312,12 @@ export default function BookingForm() {
 
                   {/* Type of Event Selector */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                    <label htmlFor="booking-event-type" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                       <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
                       Type of Event / Occasion *
                     </label>
                     <select
+                      id="booking-event-type"
                       {...register("eventType", { required: "Please select an event type" })}
                       className={`w-full px-5 py-3.5 rounded-xl bg-neutral-950 border text-white text-xs focus:outline-none transition-colors ${
                         errors.eventType ? "border-red-500/50 focus:border-red-500" : "border-neutral-850 focus:border-brand-orange"
@@ -335,11 +341,12 @@ export default function BookingForm() {
                   {/* Custom Event Type Input */}
                   {eventTypeVal === "Other" && (
                     <div className="animate-fadeIn">
-                      <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+                      <label htmlFor="booking-custom-event-type" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
                         <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
                         Specify Event Type *
                       </label>
                       <input
+                        id="booking-custom-event-type"
                         type="text"
                         placeholder="e.g. Corporate Event, Anniversary, Baby Shower"
                         {...register("customEventType", { required: "Event type specification is required when 'Other' is selected" })}
@@ -355,10 +362,11 @@ export default function BookingForm() {
 
                   {/* Requirements Textbox */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2">
+                    <label htmlFor="booking-notes" className="block text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2">
                       Brief description of your requirements / Location details
                     </label>
                     <textarea
+                      id="booking-notes"
                       rows={4}
                       placeholder="Tell us what you are planning (e.g. Location: Madhapur, Occasion: Wedding Reception, Special requests: Drone shots, 3 reels needed)..."
                       {...register("notes")}

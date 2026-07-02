@@ -57,12 +57,118 @@ export default function RootLayout({
 }>) {
   const isMaintenance = process.env.NEXT_PUBLIC_MAINTENANCE === "true";
 
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "LITWORKS",
+    "image": "https://litworks.agency/logo.png",
+    "@id": "https://litworks.agency/#localbusiness",
+    "url": "https://litworks.agency",
+    "telephone": "+919110797354",
+    "email": "litworks.media@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Madhapur",
+      "addressLocality": "Hyderabad",
+      "addressRegion": "Telangana",
+      "postalCode": "500081",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 17.4483,
+      "longitude": 78.3915
+    },
+    "areaServed": [
+      {
+        "@type": "AdministrativeArea",
+        "name": "Telangana"
+      },
+      {
+        "@type": "AdministrativeArea",
+        "name": "Andhra Pradesh"
+      }
+    ],
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "opens": "00:00",
+      "closes": "23:59"
+    },
+    "sameAs": [
+      "https://www.instagram.com/litworks.media/"
+    ]
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is an Instant Reel?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "An Instant Reel is short-form video content shot, compiled, and edited on-site during your event (weddings, birthdays, car deliveries, or business launches). Our team works live to deliver cinematic, post-ready reels within hours, allowing you to publish and share the moments while the buzz is still active."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which cities do you serve?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We currently serve key cities in Telangana (Hyderabad, Karimnagar, Nizamabad, Armoor) and Andhra Pradesh (Vijayawada, Visakhapatnam/Vizag). If you are looking for services in these regions, we deploy our teams directly to your location."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you handle Instagram pages?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we handle complete social media page management for Instagram and Facebook. This includes custom content planning, post grid layout designs, graphic asset creation, copy writing, and systematic posting to grow organic engagement."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you run Meta Ads?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely. We run highly targeted performance marketing campaigns across Meta (Facebook & Instagram Ads). We specialize in lead generation, sales conversion, website traffic growth, and localized brand awareness campaigns customized to your monthly budget."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How fast is delivery?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For our 'Instant' services (like Instant Reels), delivery happens on the same day—often within 2 to 4 hours of the shoot. For larger video editing projects, posters, or monthly management accounts, delivery ranges from 24 to 72 hours based on mutual alignment."
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en" className={`${outfit.variable} scroll-smooth`}>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" href="/favicon.png" />
         <link rel="apple-touch-icon" href="/favicon.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
       </head>
       <body className="bg-black text-white antialiased selection:bg-brand-orange selection:text-black min-h-screen">
         {isMaintenance ? (
