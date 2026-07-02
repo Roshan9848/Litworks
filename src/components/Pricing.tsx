@@ -284,6 +284,13 @@ export default function Pricing() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
 
+  // Coupon Code States
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: "percentage" | "fixed"; value: number } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponSuccess, setCouponSuccess] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
   const suggestionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -317,10 +324,44 @@ export default function Pricing() {
     setIsLocationVerified(false);
     setTimeSlot("");
     setAddExtraHour(false);
+    setCouponCode("");
+    setAppliedCoupon(null);
+    setCouponError("");
+    setCouponSuccess("");
   };
 
   const handleCloseModal = () => {
     setSelectedPlan(null);
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsValidatingCoupon(true);
+    setCouponError("");
+    setCouponSuccess("");
+    try {
+      const res = await fetch(`/api/coupons?code=${couponCode.trim()}`);
+      const data = await res.json();
+      if (data.success && data.coupon) {
+        setAppliedCoupon(data.coupon);
+        setCouponSuccess(`Coupon code "${data.coupon.code.toUpperCase()}" applied successfully!`);
+      } else {
+        setCouponError(data.error || "Invalid or expired coupon code.");
+        setAppliedCoupon(null);
+      }
+    } catch (e) {
+      setCouponError("Failed to validate coupon code. Please try again.");
+      setAppliedCoupon(null);
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponSuccess("");
+    setCouponError("");
   };
 
   const getNumericPrice = (priceStr: string) => {
@@ -332,6 +373,16 @@ export default function Pricing() {
     if (!selectedPlan) return 0;
     const base = getNumericPrice(selectedPlan.price);
     return addExtraHour ? base + 899 : base;
+  };
+
+  const getCouponDiscount = () => {
+    if (!selectedPlan || !appliedCoupon) return 0;
+    const basePrice = getCalculatedPrice();
+    if (appliedCoupon.type === "percentage") {
+      return Math.round(basePrice * (appliedCoupon.value / 100));
+    } else {
+      return Math.min(appliedCoupon.value, basePrice);
+    }
   };
 
   const handleLocationChange = (val: string) => {
@@ -418,7 +469,9 @@ export default function Pricing() {
     setModalStep(2); // Go to Payment step
 
     const finalEventOccasion = eventType === "Other" ? customEventType : eventType;
-    const finalPrice = getCalculatedPrice();
+    const basePrice = getCalculatedPrice();
+    const discount = getCouponDiscount();
+    const finalPrice = Math.max(0, basePrice - discount);
     const platformFee = Math.round(finalPrice * 0.025);
     const totalAmount = finalPrice + platformFee;
 
@@ -429,7 +482,7 @@ export default function Pricing() {
       state,
       city,
       service: selectedPlan?.serviceType || "Instant Reel",
-      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}`,
+      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon.code} (₹${discount} off)` : ""}`,
       finalPrice: finalPrice,
       dynamicFields: {
         preferredDate: date || "Not Specified",
@@ -439,6 +492,8 @@ export default function Pricing() {
         extraHourRequested: selectedPlan?.title === "Custom Plan" ? "Not Applicable" : (addExtraHour ? "Yes (+₹899)" : "No"),
         calculatedTotalPrice: selectedPlan?.title === "Custom Plan" ? "Custom Quote" : `₹${finalPrice.toLocaleString("en-IN")}`,
         planTitle: selectedPlan?.title,
+        couponApplied: appliedCoupon ? appliedCoupon.code : "None",
+        couponDiscount: appliedCoupon ? `₹${discount}` : "₹0",
       },
     };
     if (selectedPlan?.title === "Custom Plan") {
@@ -960,6 +1015,49 @@ export default function Pricing() {
                             </label>
                           </div>
                         )}
+
+                        {/* Coupons Coupon Validation Input */}
+                        {selectedPlan.title !== "Custom Plan" && (
+                          <div className="space-y-2 pt-2">
+                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold">
+                              Have a promo code?
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="e.g. FIRST500"
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                disabled={!!appliedCoupon || isValidatingCoupon}
+                                className="flex-1 px-4 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange uppercase font-mono tracking-wider disabled:opacity-50"
+                              />
+                              {appliedCoupon ? (
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveCoupon}
+                                  className="px-4 py-2.5 rounded-xl bg-red-950/20 border border-red-900/40 text-red-500 font-bold text-xs uppercase tracking-wider hover:bg-red-950 hover:text-white transition-colors cursor-pointer"
+                                >
+                                  Remove
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={handleApplyCoupon}
+                                  disabled={isValidatingCoupon || !couponCode.trim()}
+                                  className="px-5 py-2.5 rounded-xl bg-brand-orange text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all disabled:opacity-50 disabled:hover:bg-brand-orange cursor-pointer"
+                                >
+                                  {isValidatingCoupon ? "Applying..." : "Apply"}
+                                </button>
+                              )}
+                            </div>
+                            {couponError && (
+                              <p className="text-red-500 text-[10px] mt-1 font-mono font-semibold">{couponError}</p>
+                            )}
+                            {couponSuccess && (
+                              <p className="text-emerald-400 text-[10px] mt-1 font-mono font-semibold">{couponSuccess}</p>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* SUMMARY PREVIEW BLOCK */}
@@ -1010,18 +1108,24 @@ export default function Pricing() {
                                   <span>Base Shoot Cost:</span>
                                   <span className="text-white font-medium">₹{getCalculatedPrice().toLocaleString("en-IN")}</span>
                                 </div>
+                                {appliedCoupon && (
+                                  <div className="flex justify-between text-emerald-455 font-bold">
+                                    <span>Coupon Discount ({appliedCoupon.code}):</span>
+                                    <span>-₹{getCouponDiscount().toLocaleString("en-IN")}</span>
+                                  </div>
+                                )}
                                 <div className="flex justify-between">
                                   <span className="flex items-center gap-1">
                                     Platform Fee (2.5%):
                                     <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
                                   </span>
-                                  <span className="text-white font-medium">₹{Math.round(getCalculatedPrice() * 0.025).toLocaleString("en-IN")}</span>
+                                  <span className="text-white font-medium">₹{Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 0.025).toLocaleString("en-IN")}</span>
                                 </div>
                                 <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
                                 <div className="flex justify-between items-center text-xs font-bold text-white">
                                   <span>Total Amount to Pay:</span>
                                   <span className="text-brand-orange text-glow">
-                                    ₹{Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")}
+                                    ₹{Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")}
                                   </span>
                                 </div>
                               </div>
@@ -1066,7 +1170,7 @@ export default function Pricing() {
                         <span>
                           {selectedPlan.title === "Custom Plan"
                             ? "Request Custom Quote"
-                            : `Pay ₹${Math.round(getCalculatedPrice() * 1.025).toLocaleString("en-IN")} & Confirm Slot`}
+                            : `Pay ₹${Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")} & Confirm Slot`}
                         </span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>

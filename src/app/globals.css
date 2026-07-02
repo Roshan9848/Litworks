@@ -109,3 +109,15 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   }
 }
 
+/* Custom continuous marquee animation for announcement strip */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+
