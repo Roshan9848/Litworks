@@ -202,14 +202,30 @@ export default function Pricing() {
       .then((data) => {
         if (data.success) {
           if (data.packages) {
-            const basicMapped = data.packages.basic.map((p: any) => ({
-              title: p.title,
-              price: `₹${p.price.toLocaleString("en-IN")}`,
-              description: p.description,
-              serviceType: p.serviceType,
-              isBestseller: p.isBestseller,
-              features: p.features
-            }));
+            const basicMapped = data.packages.basic
+              .filter((p: any) => !p.title.toLowerCase().includes("add on"))
+              .map((p: any) => ({
+                title: p.title,
+                price: `₹${p.price.toLocaleString("en-IN")}`,
+                description: p.description,
+                serviceType: p.serviceType,
+                isBestseller: p.isBestseller,
+                features: p.features
+              }));
+
+            basicMapped.push({
+              title: "Custom Plan",
+              price: "Custom",
+              description: "Need a tailor-made shoot or multi-day coverage? Request details.",
+              serviceType: "Custom Plan",
+              features: [
+                "Flexible shoot hours",
+                "Tailored reels & editing style",
+                "No upfront payment required",
+                "Custom quote shared via link later"
+              ]
+            });
+
             const weddingMapped = data.packages.wedding.map((p: any) => ({
               title: p.title,
               price: `₹${p.price.toLocaleString("en-IN")}`,
