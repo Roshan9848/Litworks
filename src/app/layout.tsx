@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import GlassyDock from "@/components/GlassyDock";
 
 export const dynamic = "force-dynamic";
 
@@ -184,6 +185,7 @@ export default function RootLayout({
         ) : (
           <>
             {children}
+            <GlassyDock />
             <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
           </>
         )}

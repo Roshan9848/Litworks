@@ -33,12 +33,47 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           {/* Background Ambient Glow */}
           <div className="absolute w-[300px] h-[300px] rounded-full bg-brand-orange/5 blur-3xl animate-pulse" />
           
-          <div className="relative flex flex-col items-center max-w-xs px-4">
+          <div className="relative flex flex-col items-center justify-center">
+            {/* Custom SVG path outline drawing box loader */}
+            <svg
+              width="180"
+              height="180"
+              viewBox="0 0 100 100"
+              className="overflow-visible"
+            >
+              {/* Outer drawing path box */}
+              <motion.rect
+                x="5"
+                y="5"
+                width="90"
+                height="90"
+                rx="20"
+                fill="none"
+                stroke="url(#orangeGradient)"
+                strokeWidth="2.5"
+                initial={{ pathLength: 0, opacity: 0.3 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  duration: 2.0,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatType: "loop"
+                }}
+              />
+              <defs>
+                <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FF7A00" />
+                  <stop offset="100%" stopColor="#FFC700" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Centered Litworks logo appearing after delay */}
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.75, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="relative w-48 h-48"
+              transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
+              className="absolute w-24 h-24"
             >
               <Image
                 src="/logo.png"

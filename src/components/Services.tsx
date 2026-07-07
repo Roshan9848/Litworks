@@ -17,6 +17,77 @@ interface ServiceItem {
   tempPrice: number;
 }
 
+const ServiceCard = ({ service, index, onOpenModal }: { service: ServiceItem, index: number, onOpenModal: (s: ServiceItem) => void }) => {
+  const Icon = service.icon;
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const xc = rect.width / 2;
+    const yc = rect.height / 2;
+    setRotateX((yc - y) / 16);
+    setRotateY((x - xc) / 16);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-15px" }}
+      transition={{ delay: index * 0.08, duration: 0.6, ease: "easeOut" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transformStyle: "preserve-3d",
+        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        transition: "transform 0.1s ease-out, border-color 0.3s ease, shadow 0.3s ease",
+      }}
+      className="glass-panel group relative rounded-2xl p-8 flex flex-col justify-between overflow-hidden border border-neutral-900 shadow-lg hover:border-brand-orange/30 hover:shadow-[0_0_40px_-10px_rgba(255,122,0,0.18)]"
+    >
+      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand-orange/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+
+      <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-brand-orange/5 group-hover:bg-brand-orange/10 flex items-center justify-center text-brand-orange border border-brand-orange/10 group-hover:border-brand-orange/30 transition-colors shadow-[0_0_10px_rgba(255,122,0,0.05)]">
+            <Icon className="w-6 h-6" />
+          </div>
+          <h4 className="text-xl font-bold text-white tracking-wide">{service.title}</h4>
+        </div>
+
+        <p className="text-neutral-400 font-light text-sm mb-6 leading-relaxed">
+          {service.description}
+        </p>
+
+        <ul className="space-y-3 mb-8">
+          {service.items.map((item) => (
+            <li key={item} className="flex items-center gap-3 text-sm text-neutral-300 font-light">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <button
+        onClick={() => onOpenModal(service)}
+        style={{ transform: "translateZ(20px)" }}
+        className="w-full py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-neutral-300 text-sm font-semibold tracking-wider hover:bg-brand-orange hover:text-black hover:border-brand-orange transition-all duration-300 cursor-pointer shadow-md"
+      >
+        {service.title === "Instant Reels" ? "Book Service" : "Enquire Now"}
+      </button>
+    </motion.div>
+  );
+};
+
 export default function Services() {
   const router = useRouter();
   
@@ -220,54 +291,14 @@ export default function Services() {
 
         {/* Services Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => {
-            const Icon = service.icon;
-            return (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-15px" }}
-                transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
-                className="glass-panel group relative rounded-2xl p-8 flex flex-col justify-between overflow-hidden border border-neutral-900 transition-all duration-300 hover:border-brand-orange/30 hover:shadow-[0_0_40px_-10px_rgba(255,122,0,0.15)] hover:-translate-y-1"
-              >
-                {/* Decorative border highlight */}
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand-orange/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-
-                <div>
-                  {/* Icon and Title Header */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-brand-orange/5 group-hover:bg-brand-orange/10 flex items-center justify-center text-brand-orange border border-brand-orange/10 group-hover:border-brand-orange/30 transition-colors shadow-[0_0_10px_rgba(255,122,0,0.05)]">
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <h4 className="text-xl font-bold text-white tracking-wide">{service.title}</h4>
-                  </div>
-
-                  <p className="text-neutral-400 font-light text-sm mb-6 leading-relaxed">
-                    {service.description}
-                  </p>
-
-                  {/* Service Items List */}
-                  <ul className="space-y-3 mb-8">
-                    {service.items.map((item) => (
-                      <li key={item} className="flex items-center gap-3 text-sm text-neutral-300 font-light">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand-orange" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Card CTA */}
-                <button
-                  onClick={() => handleOpenModal(service)}
-                  className="w-full py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-neutral-300 text-sm font-semibold tracking-wider hover:bg-brand-orange hover:text-black hover:border-brand-orange transition-all duration-300 cursor-pointer"
-                >
-                  {service.title === "Instant Reels" ? "Book Service" : "Enquire Now"}
-                </button>
-              </motion.div>
-            );
-          })}
+          {services.map((service, index) => (
+            <ServiceCard
+              key={service.title}
+              service={service}
+              index={index}
+              onOpenModal={handleOpenModal}
+            />
+          ))}
         </div>
 
       </div>

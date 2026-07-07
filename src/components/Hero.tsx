@@ -97,7 +97,7 @@ export default function Hero() {
             y: [0, -30, 0],
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[350px] h-[350px] rounded-full bg-brand-orange/10 blur-[120px]"
+          className="absolute top-1/4 left-1/4 w-[350px] h-[350px] rounded-full bg-brand-orange/10 blur-[120px] anim-float"
         />
         <motion.div
           animate={{
@@ -106,7 +106,7 @@ export default function Hero() {
             y: [0, 50, 0],
           }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-brand-orange/5 blur-[150px]"
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-brand-orange/5 blur-[150px] anim-float"
         />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
       </div>
@@ -126,22 +126,26 @@ export default function Hero() {
         </motion.div>
 
         {/* Main Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.8 }}
-          className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1] max-w-4xl"
-        >
-          {heroData.heading.includes("LITWORKS") ? (
-            <>
-              {heroData.heading.split("LITWORKS")[0]}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-orange to-brand-orange drop-shadow-[0_0_30px_rgba(255,122,0,0.3)]">LITWORKS</span>
-              {heroData.heading.split("LITWORKS")[1]}
-            </>
-          ) : (
-            heroData.heading
-          )}
-        </motion.h1>
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-6 leading-[0.95] max-w-4xl flex flex-col items-center select-none">
+          <motion.span
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="inline-block"
+          >
+            {heroData.heading.includes("with") ? heroData.heading.split("with")[0] : "Create Impact"}
+          </motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="inline-block text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.25)] hover:[-webkit-text-stroke:1.5px_var(--color-brand-orange)] transition-colors duration-300 uppercase mt-2.5"
+          >
+            {heroData.heading.includes("with") 
+              ? `with ${heroData.heading.split("with")[1] || "LITWORKS"}` 
+              : "Instantly with LITWORKS"}
+          </motion.span>
+        </h1>
 
         {/* Subheading */}
         <motion.p
