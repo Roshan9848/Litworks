@@ -173,23 +173,9 @@ export default function Hero() {
           </Link>
         </motion.div>
 
-        {/* Middle Animation Section (Flipping iPhone Mockup) */}
+        {/* Middle Animation Section (Cinematic iPhone Mockup) */}
         <div className="relative w-full h-[400px] sm:h-[480px] md:h-[500px] flex flex-col items-center justify-center overflow-visible mb-12 z-20">
           
-          {/* Action to replay the 3D flip animation */}
-          {isEntryComplete && (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              whileHover={{ opacity: 0.9, scale: 1.05 }}
-              onClick={triggerReplaySpin}
-              className="absolute top-0 right-4 sm:right-16 z-30 p-2 bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800 rounded-full text-white flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-mono transition-all"
-            >
-              <RotateCw className="w-3.5 h-3.5" />
-              Replay Spin
-            </motion.button>
-          )}
-
           {/* Interactive Mouse Hover Parallax Shield */}
           <div
             onMouseMove={handleMouseMove}
@@ -222,11 +208,16 @@ export default function Hero() {
                 rotateY,
                 rotateZ
               }}
+              initial={{ y: 80, opacity: 0, scale: 0.95 }}
               animate={{
-                y: [0, -10, 0]
+                y: [0, -10, 0],
+                opacity: 1,
+                scale: 1
               }}
               transition={{
-                y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                opacity: { duration: 0.8 },
+                scale: { duration: 0.8 }
               }}
               className="relative w-[215px] sm:w-[245px] aspect-[9/16] overflow-visible z-10"
             >
