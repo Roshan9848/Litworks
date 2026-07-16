@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
-import { RotateCw } from "lucide-react";
+import { RotateCw, Heart, MessageCircle, Send, Bookmark, Sparkles, Play } from "lucide-react";
 
 export default function Hero() {
   const [heroData, setHeroData] = useState({
@@ -31,15 +31,10 @@ export default function Hero() {
   const mouseXSpring = useSpring(mouseX, { stiffness: 100, damping: 20 });
   const mouseYSpring = useSpring(mouseY, { stiffness: 100, damping: 20 });
 
-  const { scrollY } = useScroll();
-  // Map scroll distance (0px to 250px) to one full rotation (0 to 360 deg) for fast completion
-  const rawScrollRotateY = useTransform(scrollY, [0, 250], [0, 360]);
-  const scrollRotateY = useSpring(rawScrollRotateY, { stiffness: 90, damping: 20 });
-
-  // Combine scroll rotation and mouse movement offset
-  const rotateY = useTransform([scrollRotateY, mouseXSpring], ([rY, mX]) => (rY as number) + (mX as number));
+  // Mouse-based 3D responsive parallax tilt (no scroll Y rotation to avoid mobile jitter)
+  const rotateY = useTransform(mouseXSpring, (mX) => mX as number);
   const rotateX = useTransform(mouseYSpring, (mY) => mY as number);
-  const rotateZ = useTransform(mouseXSpring, (mX) => mX * 0.14);
+  const rotateZ = useTransform(mouseXSpring, (mX) => mX * 0.12);
 
   useEffect(() => {
     fetch("/api/website-content")
@@ -219,51 +214,23 @@ export default function Hero() {
               />
             </div>
 
-            {/* The 3D Flipping & Rising iPhone container */}
+            {/* The Floating iPhone Mockup container */}
             <motion.div
-              key={isEntryComplete ? "active-interactive" : "entry-spinning"}
               style={{
                 transformStyle: "preserve-3d",
-                ...(isEntryComplete ? { rotateX, rotateY, rotateZ } : {})
+                rotateX,
+                rotateY,
+                rotateZ
               }}
-              animate={
-                isEntryComplete
-                  ? {
-                      y: [0, -6, 0]
-                    }
-                  : {
-                      y: [350, 0],
-                      rotateY: [180, 0],
-                      rotateX: [20, 0],
-                      scale: [0.85, 1],
-                      opacity: [0, 1]
-                    }
-              }
-              transition={
-                isEntryComplete
-                  ? {
-                      y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" }
-                    }
-                  : {
-                      duration: 1.8,
-                      ease: [0.16, 1, 0.3, 1]
-                    }
-              }
-              onAnimationComplete={() => {
-                if (!isEntryComplete) setIsEntryComplete(true);
+              animate={{
+                y: [0, -10, 0]
               }}
-              className="relative w-[210px] sm:w-[235px] aspect-[9/16] overflow-visible"
+              transition={{
+                y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className="relative w-[215px] sm:w-[245px] aspect-[9/16] overflow-visible z-10"
             >
-              
-              {/* ================= FRONT SIDE (The Screen with Quote & Animated Mesh) ================= */}
-              <div
-                style={{
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  transform: "rotateY(0deg)",
-                }}
-                className="absolute inset-0 w-full h-full p-[6px] bg-neutral-950 border-2 border-brand-orange/40 rounded-[2.3rem] shadow-[0_0_30px_rgba(255,122,0,0.25)] z-20 flex flex-col justify-between"
-              >
+              <div className="absolute inset-0 w-full h-full p-[6px] bg-neutral-950 border-2 border-brand-orange/40 rounded-[2.3rem] shadow-[0_0_40px_rgba(255,122,0,0.25)] flex flex-col justify-between overflow-hidden">
                 {/* Screen Bezel */}
                 <div className="w-full h-full rounded-[1.8rem] overflow-hidden bg-neutral-950 relative flex flex-col justify-between">
                   
@@ -273,137 +240,89 @@ export default function Hero() {
                     <div className="w-0.5 h-0.5 bg-brand-orange/40 rounded-full absolute right-1.5 animate-pulse" />
                   </div>
 
-                  {/* Shifting Mesh Gradient in Background */}
-                  <div className="absolute inset-0 z-10 overflow-hidden bg-neutral-950 pointer-events-none">
-                    {/* Orange Sphere */}
-                    <motion.div
-                      animate={{
-                        x: [-15, 15, -15],
-                        y: [-25, 25, -25],
-                      }}
-                      transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute -top-6 -left-6 w-32 h-32 rounded-full bg-brand-orange/15 blur-xl"
-                    />
-                    {/* Gold Sphere */}
-                    <motion.div
-                      animate={{
-                        x: [15, -15, 15],
-                        y: [20, -20, 20],
-                      }}
-                      transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute -bottom-8 -right-8 w-36 h-36 rounded-full bg-orange-400/10 blur-2xl"
-                    />
-                    {/* Violet/Magenta Sphere */}
-                    <motion.div
-                      animate={{
-                        scale: [1, 1.25, 1],
-                        opacity: [0.08, 0.15, 0.08],
-                      }}
-                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute top-1/3 left-1/4 w-28 h-28 rounded-full bg-violet-600/10 blur-2xl"
-                    />
-                  </div>
-
-                  {/* Contrast Vignette */}
-                  <div className="absolute inset-0 z-15 bg-gradient-to-b from-black/40 via-transparent to-black/70 pointer-events-none" />
-
                   {/* Real-looking Status Bar */}
-                  <div className="relative z-30 px-5 pt-3 pb-1 flex items-center justify-between text-white/90 font-sans text-[10px] font-semibold tracking-tight pointer-events-none select-none">
-                    {/* Time */}
+                  <div className="relative z-40 px-5 pt-3 pb-1 flex items-center justify-between text-white/90 font-sans text-[10px] font-semibold tracking-tight pointer-events-none select-none">
                     <span>9:41</span>
-                    
-                    {/* Status Icons */}
-                    <div className="flex items-center gap-1.5 text-white/90">
-                      {/* Signal Strength (Cellular) */}
+                    <div className="flex items-center gap-1.5">
                       <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                         <path d="M2 22h20V2z" className="opacity-30" />
                         <path d="M2 22h16V6z" />
                       </svg>
-                      {/* Wifi Icon */}
-                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 21l-12-12c4-4 10-6 12-6s8 2 12 6l-12 12zm0-18c-3.5 0-6.8 1.5-9.2 4l9.2 9.2 9.2-9.2c-2.4-2.5-5.7-4-9.2-4z" className="opacity-35" />
-                        <path d="M12 21l-8-8c2.5-2.5 6.5-3.5 8-3.5s5.5 1 8 3.5l-8 8zm0-12c-1.5 0-3.5.5-4.7 1.7l4.7 4.7 4.7-4.7c-1.2-1.2-3.2-1.7-4.7-1.7z" />
-                      </svg>
-                      {/* Battery Icon */}
                       <div className="flex items-center">
                         <div className="w-[18px] h-[9px] border border-white/80 rounded-[3px] p-[0.5px] flex items-center">
                           <div className="h-full w-[80%] bg-white rounded-[1.5px]" />
                         </div>
-                        <div className="w-[1px] h-[3px] bg-white/80 rounded-r-xs" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Center CTA (Typography & Link Button) */}
-                  <div className="relative z-30 flex-grow flex flex-col items-center justify-center px-5 text-center select-none">
-                    <p className="text-xs sm:text-sm font-semibold tracking-wider text-white/90 leading-relaxed font-sans mb-4">
-                      Want to view our work?
+                  {/* HTML5 Video Loop (Reels Simulation) */}
+                  <div className="absolute inset-0 w-full h-full z-10 overflow-hidden bg-black pointer-events-none">
+                    <video
+                      src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-in-a-rainy-night-42260-large.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover scale-[1.02]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
+                  </div>
+
+                  {/* Instagram-style Actions Vertical Panel */}
+                  <div className="absolute right-3.5 bottom-24 z-30 flex flex-col items-center gap-4 text-white pointer-events-auto">
+                    <div className="flex flex-col items-center gap-1 cursor-pointer group/icon">
+                      <Heart className="w-5 h-5 text-white fill-white/10 group-hover/icon:text-brand-orange group-hover/icon:fill-brand-orange transition-colors filter drop-shadow" />
+                      <span className="text-[8px] font-mono font-bold tracking-tight text-white/90">12.4K</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 cursor-pointer group/icon">
+                      <MessageCircle className="w-5 h-5 text-white fill-white/10 group-hover/icon:text-brand-orange group-hover/icon:fill-brand-orange transition-colors filter drop-shadow" />
+                      <span className="text-[8px] font-mono font-bold tracking-tight text-white/90">482</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 cursor-pointer group/icon">
+                      <Send className="w-[18px] h-[18px] text-white group-hover/icon:text-brand-orange transition-colors filter drop-shadow" />
+                    </div>
+                    <div className="flex flex-col items-center gap-1 cursor-pointer group/icon">
+                      <Bookmark className="w-5 h-5 text-white fill-white/10 group-hover/icon:text-brand-orange group-hover/icon:fill-brand-orange transition-colors filter drop-shadow" />
+                    </div>
+                  </div>
+
+                  {/* Instagram-style Creator Bottom Card & CTA */}
+                  <div className="absolute inset-x-0 bottom-4 z-30 px-4 flex flex-col gap-2.5 text-left pointer-events-auto">
+                    {/* Creator info */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-brand-orange border border-brand-orange/30 flex items-center justify-center font-bold text-[8px] text-black">
+                        LW
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] font-extrabold text-white flex items-center gap-1 leading-none">
+                          @litworks.media
+                          <Sparkles className="w-2.5 h-2.5 text-brand-orange fill-brand-orange" />
+                        </p>
+                        <span className="text-[7px] text-white/50 font-medium font-mono uppercase tracking-wider">Cinematic Agency</span>
+                      </div>
+                    </div>
+
+                    {/* Caption */}
+                    <p className="text-[9px] text-white/90 leading-relaxed font-sans font-medium line-clamp-2">
+                      Capturing instant reels that convert. Boost your brand today ⚡
                     </p>
+
+                    {/* View Portfolio Link button */}
                     <Link
                       href="/videos"
-                      className="px-5 py-2.5 rounded-full bg-brand-orange text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(255,122,0,0.5)] active:scale-95 transition-all cursor-pointer inline-flex items-center justify-center"
+                      className="mt-1 w-full py-2.5 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-[9px] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_4px_15px_rgba(255,122,0,0.3)] hover:scale-[1.02]"
                     >
-                      View Portfolio
+                      <Play className="w-3.5 h-3.5 fill-black text-black" />
+                      <span>View Portfolio</span>
                     </Link>
                   </div>
 
-                  {/* Screen Footer branding */}
-                  <div className="relative z-30 p-4 pb-5 text-center pointer-events-none">
-                    <p className="text-[7px] uppercase tracking-[0.2em] text-white/30 font-bold font-mono">
-                      LITWORKS MEDIA
-                    </p>
-                  </div>
-
                   {/* Home Indicator Slider */}
-                  <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/70 rounded-full z-30 pointer-events-none" />
+                  <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-16 h-1 bg-white/50 rounded-full z-35 pointer-events-none" />
 
                 </div>
               </div>
-
-              {/* ================= BACK SIDE (The iPhone Hardware Shell) ================= */}
-              <div
-                style={{
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
-                }}
-                className="absolute inset-0 w-full h-full bg-gradient-to-br from-neutral-950 to-neutral-900 border-2 border-brand-orange/40 rounded-[2.3rem] shadow-[0_0_30px_rgba(255,122,0,0.25)] z-10 flex flex-col items-center justify-between p-7 pointer-events-none"
-              >
-                {/* Camera Module */}
-                <div className="self-start w-22 h-22 bg-neutral-900/80 border border-neutral-800 rounded-2xl p-2.5 grid grid-cols-2 gap-2.5 relative shadow-inner">
-                  <div className="w-7 h-7 rounded-full bg-black border-2 border-neutral-800 flex items-center justify-center relative">
-                    <div className="w-3 h-3 rounded-full bg-neutral-950 flex items-center justify-center">
-                      <div className="w-1 h-1 rounded-full bg-blue-900/35 absolute top-1 left-1.5" />
-                    </div>
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-black border-2 border-neutral-800 flex items-center justify-center relative">
-                    <div className="w-3 h-3 rounded-full bg-neutral-950 flex items-center justify-center">
-                      <div className="w-1 h-1 rounded-full bg-blue-900/35 absolute top-1 left-1.5" />
-                    </div>
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-black border-2 border-neutral-800 flex items-center justify-center relative">
-                    <div className="w-3 h-3 rounded-full bg-neutral-950 flex items-center justify-center">
-                      <div className="w-1 h-1 rounded-full bg-blue-900/35 absolute top-1 left-1.5" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-between py-0.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-neutral-350 border border-neutral-400" />
-                    <div className="w-3.5 h-3.5 rounded-full bg-neutral-950 border border-neutral-850" />
-                  </div>
-                </div>
-
-                {/* LitWorks logo backplate */}
-                <div className="flex flex-col items-center justify-center gap-1.5">
-                  <div className="w-10 h-10 rounded-full border border-brand-orange/30 bg-brand-orange/5 flex items-center justify-center shadow-[0_0_15px_rgba(255,122,0,0.1)]">
-                    <span className="text-[8px] font-black text-brand-orange font-mono">LIT</span>
-                  </div>
-                  <span className="text-[6px] text-neutral-600 font-mono uppercase tracking-widest">Designed by LitWorks</span>
-                </div>
-
-                <div className="w-10 h-0.5 bg-neutral-850 rounded-full" />
-
-              </div>
-
             </motion.div>
 
           </div>
@@ -411,7 +330,7 @@ export default function Hero() {
           {/* Swipe indicator text under phone */}
           <div className="flex flex-col items-center gap-1.5 mt-6 z-20 relative pointer-events-none">
             <span className="text-[9px] text-neutral-500 uppercase tracking-[0.2em] font-mono animate-pulse">
-              Hover to Rotate in 3D
+              Hover screen to tilt in 3D
             </span>
           </div>
 
