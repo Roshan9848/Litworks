@@ -58,7 +58,7 @@ export async function sendBookingEmail(bookingData: any) {
     const htmlContent = `
       <div style="background-color: #000000; color: #ffffff; font-family: 'Outfit', sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border-radius: 12px; border: 1px solid #333;">
         <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 20px;">
-          <img src="https://litworks.agency/logo.png" alt="LITWORKS" style="height: 38px; width: auto; display: block; margin: 0 auto 10px;" />
+          <img src="https://litworks.media/logo.png" alt="LITWORKS" style="height: 38px; width: auto; display: block; margin: 0 auto 10px;" />
           <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">${headerTitle}</p>
         </div>
         
@@ -169,7 +169,7 @@ export async function sendClientConfirmationEmail(bookingData: any) {
     const clientHtmlContent = `
       <div style="background-color: #000000; color: #ffffff; font-family: 'Outfit', sans-serif; padding: 30px; max-width: 600px; margin: 0 auto; border-radius: 12px; border: 1px solid #333;">
         <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 20px;">
-          <img src="https://litworks.agency/logo.png" alt="LITWORKS" style="height: 38px; width: auto; display: block; margin: 0 auto 10px;" />
+          <img src="https://litworks.media/logo.png" alt="LITWORKS" style="height: 38px; width: auto; display: block; margin: 0 auto 10px;" />
           <p style="color: #888; font-size: 12px; margin: 5px 0 0 0;">${headerTitle}</p>
         </div>
         
