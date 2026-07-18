@@ -156,8 +156,8 @@ export default function ReelsSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto justify-center">
           {reels.slice(0, 6).map((reel, idx) => {
             const isCurrent = idx === activePlayingIndex;
-            const isInstagram = reel.url.includes("instagram.com");
-            const instagramLink = reel.instagramUrl || (isInstagram ? reel.url : "");
+            const isInstagramUrl = reel.url.includes("instagram.com");
+            const instagramLink = reel.instagramUrl || (isInstagramUrl ? reel.url : "");
 
             return (
               <motion.div
@@ -166,108 +166,142 @@ export default function ReelsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: (idx % 3) * 0.15, duration: 0.6 }}
-                onClick={() => handleCardClick(idx)}
+                onClick={() => !isInstagramUrl && handleCardClick(idx)}
                 className={`relative aspect-[9/16] rounded-3xl overflow-hidden border bg-neutral-950 shadow-2xl transition-all duration-500 group select-none ${
-                  isCurrent
+                  isCurrent && !isInstagramUrl
                     ? "border-brand-orange ring-1 ring-brand-orange/45 scale-[1.02] shadow-[0_0_30px_rgba(255,122,0,0.15)] animate-pulse-slow"
                     : "border-neutral-900 opacity-70 hover:opacity-100 hover:border-brand-orange/30 hover:shadow-[0_0_30px_rgba(255,122,0,0.1)]"
                 }`}
               >
-                {/* Visual rendering - Standard HTML5 Video Player */}
-                <video
-                  ref={(el) => {
-                    videoRefs.current[idx] = el;
-                  }}
-                  src={reel.url}
-                  autoPlay={idx === activePlayingIndex}
-                  muted={idx === activePlayingIndex ? isMuted : true}
-                  playsInline
-                  webkit-playsinline="true"
-                  preload="metadata"
-                  onEnded={() => handleVideoEnded(idx)}
-                  className="w-full h-full object-cover"
-                />
+                {isInstagramUrl ? (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(instagramLink, "_blank");
+                    }}
+                    className="absolute inset-0 w-full h-full bg-neutral-950 flex flex-col items-center justify-center p-6 text-center cursor-pointer"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/20 via-transparent to-black/80 z-0 pointer-events-none" />
+                    
+                    <div className="relative z-10 flex flex-col items-center justify-center">
+                      <div className="w-14 h-14 rounded-full bg-brand-orange/10 border border-brand-orange/20 flex items-center justify-center text-brand-orange mb-4 group-hover:scale-110 group-hover:bg-brand-orange/20 transition-all duration-300">
+                        <Play className="w-5 h-5 fill-current ml-0.5" />
+                      </div>
+                      <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono mb-2">Watch on Instagram</span>
+                      <p className="text-[10px] text-neutral-400 font-medium leading-relaxed max-w-[180px] mb-6">
+                        Click to view this premium reel directly on Instagram.
+                      </p>
+                    </div>
 
-                {/* Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40 p-6 flex flex-col justify-between opacity-100 transition-opacity duration-300 pointer-events-none">
-                  {/* Top Status & Controls */}
-                  <div className="flex items-center justify-between pointer-events-auto">
-                    <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/5 rounded-full px-2.5 py-1">
-                      {isCurrent && !isPaused ? (
-                        <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
-                          <span className="text-[8px] font-black uppercase tracking-wider text-brand-orange font-mono">Playing</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
-                          <span className="text-[8px] font-black uppercase tracking-wider text-neutral-400 font-mono font-bold">Up Next</span>
-                        </>
-                      )}
+                    <div className="absolute bottom-6 left-6 right-6 text-left z-10 space-y-1">
+                      <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono">
+                        Reel #{idx + 1}
+                      </span>
+                      <h4 className="text-xs font-bold text-white tracking-wide uppercase line-clamp-1">{reel.title}</h4>
+                      <span className="inline-block text-[8px] font-black uppercase text-brand-orange hover:text-white transition-colors pt-1">
+                        Open Reel ↗
+                      </span>
                     </div>
                   </div>
+                ) : (
+                  <>
+                    {/* Visual rendering - Standard HTML5 Video Player */}
+                    <video
+                      ref={(el) => {
+                        videoRefs.current[idx] = el;
+                      }}
+                      src={reel.url}
+                      autoPlay={idx === activePlayingIndex}
+                      muted={idx === activePlayingIndex ? isMuted : true}
+                      playsInline
+                      webkit-playsinline="true"
+                      preload="metadata"
+                      onEnded={() => handleVideoEnded(idx)}
+                      className="w-full h-full object-cover"
+                    />
 
-                  {/* Unified Floating Controller Pill (Middle) */}
-                  <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 pointer-events-none ${isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
-                    <div className="flex items-center gap-3 bg-black/75 backdrop-blur-md border border-white/10 rounded-full p-2.5 pointer-events-auto shadow-2xl scale-110">
-                      {/* Play/Pause Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isCurrent) {
-                            setIsPaused(!isPaused);
-                          } else {
-                            setActivePlayingIndex(idx);
-                            setIsPaused(false);
-                          }
-                        }}
-                        className="w-10 h-10 rounded-full bg-brand-orange text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-brand-orange/20"
-                        title={isCurrent && !isPaused ? "Pause Reel" : "Play Reel"}
-                      >
-                        {isCurrent && !isPaused ? (
-                          <Pause className="w-4.5 h-4.5 fill-current" />
-                        ) : (
-                          <Play className="w-4.5 h-4.5 fill-current ml-0.5" />
-                        )}
-                      </button>
+                    {/* Overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40 p-6 flex flex-col justify-between opacity-100 transition-opacity duration-300 pointer-events-none">
+                      {/* Top Status & Controls */}
+                      <div className="flex items-center justify-between pointer-events-auto">
+                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/5 rounded-full px-2.5 py-1">
+                          {isCurrent && !isPaused ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
+                              <span className="text-[8px] font-black uppercase tracking-wider text-brand-orange font-mono">Playing</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
+                              <span className="text-[8px] font-black uppercase tracking-wider text-neutral-400 font-mono font-bold">Up Next</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
 
-                      {/* Mute/Unmute Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsMuted(!isMuted);
-                        }}
-                        className="w-10 h-10 rounded-full bg-neutral-900 border border-neutral-800 text-white flex items-center justify-center hover:scale-105 active:scale-95 hover:text-brand-orange transition-all shadow-lg"
-                        title={isMuted ? "Unmute sound" : "Mute sound"}
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-4.5 h-4.5" />
-                        ) : (
-                          <Volume2 className="w-4.5 h-4.5" />
+                      {/* Unified Floating Controller Pill (Middle) */}
+                      <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 pointer-events-none ${isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                        <div className="flex items-center gap-3 bg-black/75 backdrop-blur-md border border-white/10 rounded-full p-2.5 pointer-events-auto shadow-2xl scale-110">
+                          {/* Play/Pause Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (isCurrent) {
+                                  setIsPaused(!isPaused);
+                              } else {
+                                setActivePlayingIndex(idx);
+                                setIsPaused(false);
+                              }
+                            }}
+                            className="w-10 h-10 rounded-full bg-brand-orange text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-brand-orange/20"
+                            title={isCurrent && !isPaused ? "Pause Reel" : "Play Reel"}
+                          >
+                            {isCurrent && !isPaused ? (
+                              <Pause className="w-4.5 h-4.5 fill-current" />
+                            ) : (
+                              <Play className="w-4.5 h-4.5 fill-current ml-0.5" />
+                            )}
+                          </button>
+
+                          {/* Mute/Unmute Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsMuted(!isMuted);
+                            }}
+                            className="w-10 h-10 rounded-full bg-neutral-900 border border-neutral-800 text-white flex items-center justify-center hover:scale-105 active:scale-95 hover:text-brand-orange transition-all shadow-lg"
+                            title={isMuted ? "Unmute sound" : "Mute sound"}
+                          >
+                            {isMuted ? (
+                              <VolumeX className="w-4.5 h-4.5" />
+                            ) : (
+                              <Volume2 className="w-4.5 h-4.5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Bottom Metadata */}
+                      <div className="space-y-1.5 pointer-events-auto flex flex-col items-start">
+                        <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono">
+                          Reel #{idx + 1}
+                        </span>
+                        <h4 className="text-sm font-bold text-white tracking-wide uppercase line-clamp-1">{reel.title}</h4>
+                        {instagramLink && (
+                          <a
+                            href={instagramLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-wider text-brand-orange hover:text-white transition-colors pt-1"
+                          >
+                            View on Instagram ↗
+                          </a>
                         )}
-                      </button>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Bottom Metadata */}
-                  <div className="space-y-1.5 pointer-events-auto flex flex-col items-start">
-                    <span className="text-[9px] uppercase tracking-widest text-brand-orange font-black font-mono">
-                      Reel #{idx + 1}
-                    </span>
-                    <h4 className="text-sm font-bold text-white tracking-wide uppercase line-clamp-1">{reel.title}</h4>
-                    {instagramLink && (
-                      <a
-                        href={instagramLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 text-[8px] font-black uppercase tracking-wider text-brand-orange hover:text-white transition-colors pt-1"
-                      >
-                        View on Instagram ↗
-                      </a>
-                    )}
-                  </div>
-                </div>
+                  </>
+                )}
               </motion.div>
             );
           })}
