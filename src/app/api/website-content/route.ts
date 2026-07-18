@@ -19,7 +19,11 @@ export async function GET(req: NextRequest) {
         if (!pkg) {
           return NextResponse.json({ success: false, error: "Custom package not found" }, { status: 404 });
         }
-        return NextResponse.json({ success: true, package: pkg });
+        const response = NextResponse.json({ success: true, package: pkg });
+        response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+        response.headers.set("Pragma", "no-cache");
+        response.headers.set("Expires", "0");
+        return response;
       } catch (err) {
         return NextResponse.json({ success: false, error: "Invalid package ID format" }, { status: 400 });
       }
@@ -43,7 +47,7 @@ export async function GET(req: NextRequest) {
     const basicPackages = packages.filter((p) => p.category === "basic");
     const weddingPackages = packages.filter((p) => p.category === "wedding");
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       cms: cmsMap,
       packages: {
@@ -51,6 +55,10 @@ export async function GET(req: NextRequest) {
         wedding: weddingPackages
       }
     });
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+    return response;
   } catch (error: any) {
     console.error("Website content API error:", error);
     return NextResponse.json({ success: false, error: error.message || "Internal Server Error" }, { status: 500 });
