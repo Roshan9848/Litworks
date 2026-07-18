@@ -240,7 +240,7 @@ export default function ReelsSection() {
                       </div>
 
                       {/* Unified Floating Controller Pill (Middle) */}
-                      <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 pointer-events-none ${isCurrent ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                      <div className="absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 pointer-events-none opacity-0 group-hover:opacity-100">
                         <div className="flex items-center gap-3 bg-black/75 backdrop-blur-md border border-white/10 rounded-full p-2.5 pointer-events-auto shadow-2xl scale-110">
                           {/* Play/Pause Button */}
                           <button
