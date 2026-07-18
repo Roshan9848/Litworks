@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
 import { RotateCw, Heart, MessageCircle, Send, Bookmark, Sparkles, Play } from "lucide-react";
@@ -36,6 +36,9 @@ export default function Hero() {
   const rotateX = useTransform(mouseYSpring, (mY) => mY as number);
   const rotateZ = useTransform(mouseXSpring, (mX) => mX * 0.12);
 
+  const [mockupVideoUrl, setMockupVideoUrl] = useState("https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-in-a-rainy-night-42260-large.mp4");
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   useEffect(() => {
     fetch("/api/website-content")
       .then((res) => res.json())
@@ -43,10 +46,27 @@ export default function Hero() {
         if (data.success && data.cms) {
           if (data.cms.hero) setHeroData(data.cms.hero);
           if (data.cms.stats) setStatsData(data.cms.stats);
+          if (data.cms.videos && data.cms.videos.items && data.cms.videos.items.length > 0) {
+            const firstDirect = data.cms.videos.items.find((item: any) => item.url && !item.url.includes("instagram.com"));
+            if (firstDirect) {
+              setMockupVideoUrl(firstDirect.url);
+            }
+          }
         }
       })
       .catch((e) => console.error("Failed to load hero CMS data:", e));
   }, []);
+
+  // Explicitly ensure the mockup video autoplays and loops on mount
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = true;
+      video.play().catch((err) => {
+        console.log("Mockup video autoplay failed, retrying on interaction:", err);
+      });
+    }
+  }, [mockupVideoUrl]);
 
   // Restart 3D entry animation spin
   const triggerReplaySpin = () => {
@@ -296,11 +316,14 @@ export default function Hero() {
                   {/* HTML5 Video Loop (Reels Simulation) */}
                   <div className="absolute inset-0 w-full h-full z-10 overflow-hidden bg-black pointer-events-none">
                     <video
-                      src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-in-a-rainy-night-42260-large.mp4"
+                      ref={videoRef}
+                      src={mockupVideoUrl}
                       autoPlay
                       loop
                       muted
                       playsInline
+                      webkit-playsinline="true"
+                      preload="auto"
                       className="w-full h-full object-cover scale-[1.02]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
