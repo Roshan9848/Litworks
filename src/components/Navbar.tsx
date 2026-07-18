@@ -71,24 +71,8 @@ export default function Navbar() {
 
   return (
     <>
-      {announcement?.active && (
-        <div className="fixed top-0 left-0 right-0 h-9 bg-brand-orange text-black flex items-center overflow-hidden z-50 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest select-none shadow-lg">
-          <div className="animate-marquee py-2 whitespace-nowrap">
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-            <span className="mx-6">{announcement.text}</span>
-          </div>
-        </div>
-      )}
       <header
-        className={`fixed left-0 right-0 z-40 transition-all duration-300 ${
-          announcement?.active ? "top-9" : "top-0"
-        } ${
+        className={`fixed left-0 right-0 z-40 top-0 transition-all duration-300 ${
           isScrolled
             ? "bg-black/75 backdrop-blur-md border-b border-white/10 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
             : "bg-transparent py-6"

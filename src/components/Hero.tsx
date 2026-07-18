@@ -76,130 +76,175 @@ export default function Hero() {
     if (target) {
       target.scrollIntoView({ behavior: "smooth" });
     }
-  };
+  };  return (
+    <>
+      {/* Fold 1: Minimalist Hero Section (Pure Black Background) */}
+      <section
+        id="home"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black pt-28 pb-12"
+      >
+        {/* Background Grid - Pure Black minimalist theme */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#090909_1px,transparent_1px),linear-gradient(to_bottom,#090909_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-35" />
+        </div>
 
-  return (
-    <section
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black pt-28 pb-16"
-    >
-      {/* Background Animated Glows */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Content Container (Centered vertical column layout) */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-center text-center">
+          
+          {/* Small badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange/5 text-xs text-brand-orange uppercase tracking-widest font-semibold mb-6"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
+            {heroData.badgeText}
+          </motion.div>
+
+          {/* Main Heading */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-6 leading-[0.95] max-w-4xl flex flex-col items-center select-none">
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-block"
+            >
+              {heroData.heading.includes("with") ? heroData.heading.split("with")[0] : "Create Impact"}
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-block text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.25)] hover:[-webkit-text-stroke:1.5px_var(--color-brand-orange)] transition-colors duration-300 uppercase mt-2.5"
+            >
+              {heroData.heading.includes("with") 
+                ? `with ${heroData.heading.split("with")[1] || "LITWORKS"}` 
+                : "Instantly with LITWORKS"}
+            </motion.span>
+          </h1>
+
+          {/* Subheading */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-base sm:text-lg md:text-xl text-neutral-400 max-w-3xl mb-10 leading-relaxed font-light font-sans"
+          >
+            {heroData.subheading}
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-14"
+          >
+            <Link
+              href="/pricing"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center"
+            >
+              {heroData.primaryBtnText}
+            </Link>
+            <Link
+              href="/services"
+              className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center"
+            >
+              {heroData.secondaryBtnText}
+            </Link>
+          </motion.div>
+
+          {/* Stats Row inside Fold 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-md px-6 py-4 rounded-2xl bg-neutral-950/60 border border-neutral-905/80 backdrop-blur-md shadow-2xl mb-6"
+          >
+            <div className="text-center">
+              <h4 className="text-xl sm:text-2xl font-black text-brand-orange text-glow">{statsData.projectsCount}</h4>
+              <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Completed Projects</p>
+            </div>
+            <div className="text-center border-x border-neutral-900">
+              <h4 className="text-xl sm:text-2xl font-black text-white">{statsData.deliveryTime}</h4>
+              <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Reel Delivery</p>
+            </div>
+            <div className="text-center">
+              <h4 className="text-xl sm:text-2xl font-black text-white">{statsData.satisfactionRate}</h4>
+              <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Happy Clients</p>
+            </div>
+          </motion.div>
+
+        </div>
+
+        {/* Mouse scroll indicator */}
         <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[350px] h-[350px] rounded-full bg-brand-orange/10 blur-[120px] anim-float"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            x: [0, -50, 0],
-            y: [0, 50, 0],
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-brand-orange/5 blur-[150px] anim-float"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 cursor-pointer"
+          onClick={() => handleScroll("#about")}
+        >
+          <span className="text-[9px] tracking-widest text-neutral-600 uppercase">Scroll Down</span>
+          <div className="w-5 h-9 rounded-full border border-neutral-800 flex justify-center p-1">
+            <motion.div
+              animate={{
+                y: [0, 10, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="w-1.5 h-1.5 rounded-full bg-brand-orange"
+            />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Marquee Divider Ribbon (Premier League Style Horizontal Strip) */}
+      <div className="w-full bg-neutral-950 border-y border-neutral-900/80 py-4 overflow-hidden select-none relative z-20">
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-12 mx-6 text-[10px] sm:text-xs tracking-[0.2em] font-extrabold uppercase text-white font-mono">
+              <span className="text-brand-orange">Launch Offer</span>
+              <span className="text-neutral-800">•</span>
+              <span>Flat ₹500 Off on First Booking</span>
+              <span className="text-neutral-800">•</span>
+              <span className="text-brand-orange">Cinematic Production</span>
+              <span className="text-neutral-800">•</span>
+              <span>Delivered in Minutes</span>
+              <span className="text-neutral-800">•</span>
+              <span className="text-brand-orange">Vetted Creators</span>
+              <span className="text-neutral-800">•</span>
+              <span>Professional Editing</span>
+              <span className="text-neutral-800">•</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Content Container (Centered vertical column layout) */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-center text-center">
-        
-        {/* Small badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange/5 text-xs text-brand-orange uppercase tracking-widest font-semibold mb-6"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
-          {heroData.badgeText}
-        </motion.div>
+      {/* Fold 2: Cinematic Showcase Section (Mockup with minimal glow backdrop) */}
+      <section className="relative py-24 bg-black overflow-hidden flex flex-col items-center justify-center text-center border-b border-neutral-900/40">
+        {/* Minimal ambient glow behind the mockup */}
+        <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
+          <div className="w-[180px] sm:w-[220px] aspect-[9/16] bg-brand-orange/[0.04] rounded-[3rem] blur-[100px]" />
+        </div>
 
-        {/* Main Heading */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-6 leading-[0.95] max-w-4xl flex flex-col items-center select-none">
-          <motion.span
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-block"
-          >
-            {heroData.heading.includes("with") ? heroData.heading.split("with")[0] : "Create Impact"}
-          </motion.span>
-          <motion.span
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-block text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.25)] hover:[-webkit-text-stroke:1.5px_var(--color-brand-orange)] transition-colors duration-300 uppercase mt-2.5"
-          >
-            {heroData.heading.includes("with") 
-              ? `with ${heroData.heading.split("with")[1] || "LITWORKS"}` 
-              : "Instantly with LITWORKS"}
-          </motion.span>
-        </h1>
+        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-center">
+          <span className="text-[9px] uppercase tracking-[0.25em] text-neutral-500 font-extrabold mb-10 block font-mono">
+            Experience the Quality ⚡
+          </span>
 
-        {/* Subheading */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-base sm:text-lg md:text-xl text-neutral-400 max-w-3xl mb-10 leading-relaxed font-light"
-        >
-          {heroData.subheading}
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-12"
-        >
-          <Link
-            href="/pricing"
-            className="w-full sm:w-auto px-8 py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center"
-          >
-            {heroData.primaryBtnText}
-          </Link>
-          <Link
-            href="/services"
-            className="w-full sm:w-auto px-8 py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center"
-          >
-            {heroData.secondaryBtnText}
-          </Link>
-        </motion.div>
-
-        {/* Middle Animation Section (Cinematic iPhone Mockup) */}
-        <div className="relative w-full h-[400px] sm:h-[480px] md:h-[500px] flex flex-col items-center justify-center overflow-visible mb-12 z-20">
-          
           {/* Interactive Mouse Hover Parallax Shield */}
           <div
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleMouseLeave}
-            className="relative flex items-center justify-center w-full h-full overflow-visible"
+            className="relative flex items-center justify-center w-full overflow-visible"
             style={{ perspective: 1200 }}
           >
-            
-            {/* Ambient Back Glow behind the iPhone */}
-            <div className="absolute w-[220px] sm:w-[245px] aspect-[9/16] pointer-events-none z-0">
-              <motion.div
-                animate={{
-                  scale: isHovered ? 1.15 : 1.0,
-                  opacity: [0.35, 0.45, 0.35]
-                }}
-                transition={{
-                  scale: { duration: 0.3 },
-                  opacity: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                }}
-                className="absolute -inset-10 bg-brand-orange/20 rounded-[3rem] blur-3xl z-0"
-              />
-            </div>
-
             {/* The Floating iPhone Mockup container */}
             <motion.div
               style={{
@@ -208,20 +253,21 @@ export default function Hero() {
                 rotateY,
                 rotateZ
               }}
-              initial={{ y: 80, opacity: 0, scale: 0.95 }}
-              animate={{
+              initial={{ y: 50, opacity: 0, scale: 0.96 }}
+              whileInView={{
                 y: [0, -10, 0],
                 opacity: 1,
                 scale: 1
               }}
+              viewport={{ once: true }}
               transition={{
                 y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                opacity: { duration: 0.8 },
-                scale: { duration: 0.8 }
+                opacity: { duration: 0.6 },
+                scale: { duration: 0.6 }
               }}
               className="relative w-[215px] sm:w-[245px] aspect-[9/16] overflow-visible z-10"
             >
-              <div className="absolute inset-0 w-full h-full p-[6px] bg-neutral-950 border-2 border-brand-orange/40 rounded-[2.3rem] shadow-[0_0_40px_rgba(255,122,0,0.25)] flex flex-col justify-between overflow-hidden">
+              <div className="absolute inset-0 w-full h-full p-[6px] bg-neutral-950 border-2 border-brand-orange/40 rounded-[2.3rem] shadow-[0_0_30px_rgba(255,122,0,0.15)] flex flex-col justify-between overflow-hidden">
                 {/* Screen Bezel */}
                 <div className="w-full h-full rounded-[1.8rem] overflow-hidden bg-neutral-950 relative flex flex-col justify-between">
                   
@@ -286,7 +332,7 @@ export default function Hero() {
                         LW
                       </div>
                       <div className="overflow-hidden">
-                        <p className="text-[10px] font-extrabold text-white flex items-center gap-1 leading-none">
+                        <p className="text-[10px] font-extrabold text-white flex items-center gap-1 leading-none font-sans">
                           @litworks.media
                           <Sparkles className="w-2.5 h-2.5 text-brand-orange fill-brand-orange" />
                         </p>
@@ -315,75 +361,21 @@ export default function Hero() {
                 </div>
               </div>
             </motion.div>
-
           </div>
 
-          {/* Swipe indicator text under phone */}
-          <div className="flex flex-col items-center gap-1.5 mt-6 z-20 relative pointer-events-none">
+          <div className="flex flex-col items-center gap-1.5 mt-8 z-20 relative pointer-events-none">
             <span className="text-[9px] text-neutral-500 uppercase tracking-[0.2em] font-mono animate-pulse">
               Hover screen to tilt in 3D
             </span>
           </div>
 
+          <div className="text-[11px] sm:text-xs text-neutral-550 tracking-wider font-light mt-6 flex items-center justify-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]" />
+            Inquiry response & reel delivery in minutes!
+          </div>
+
         </div>
-
-        {/* Sub-text under buttons / Scroll Info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-[11px] sm:text-xs text-neutral-400 tracking-wider font-light mb-8 flex items-center justify-center gap-2"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]" />
-          Inquiry response & reel delivery in minutes!
-        </motion.div>
-
-        {/* Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-md px-6 py-4 rounded-2xl bg-neutral-950/60 border border-neutral-900 backdrop-blur-md shadow-2xl"
-        >
-          <div className="text-center">
-            <h4 className="text-xl sm:text-2xl font-black text-brand-orange text-glow">{statsData.projectsCount}</h4>
-            <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Completed Projects</p>
-          </div>
-          <div className="text-center border-x border-neutral-900">
-            <h4 className="text-xl sm:text-2xl font-black text-white">{statsData.deliveryTime}</h4>
-            <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Reel Delivery</p>
-          </div>
-          <div className="text-center">
-            <h4 className="text-xl sm:text-2xl font-black text-white">{statsData.satisfactionRate}</h4>
-            <p className="text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase font-light mt-1">Happy Clients</p>
-          </div>
-        </motion.div>
-
-      </div>
-
-      {/* Mouse scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
-        transition={{ delay: 0.8, duration: 0.8 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 cursor-pointer"
-        onClick={() => handleScroll("#about")}
-      >
-        <span className="text-[9px] tracking-widest text-neutral-600 uppercase">Scroll Down</span>
-        <div className="w-5 h-9 rounded-full border border-neutral-800 flex justify-center p-1">
-          <motion.div
-            animate={{
-              y: [0, 10, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="w-1.5 h-1.5 rounded-full bg-brand-orange"
-          />
-        </div>
-      </motion.div>
-    </section>
+      </section>
+    </>
   );
 }

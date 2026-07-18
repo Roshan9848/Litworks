@@ -15,6 +15,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Populate required fields for Mongoose compatibility in admin portal
+    if (!body.orderId) {
+      body.orderId = `LIT-CUSTOM-${Date.now()}`;
+    }
+    if (!body.bookingStatus) {
+      body.bookingStatus = 'Pending';
+    }
+    if (!body.createdAt) {
+      body.createdAt = new Date();
+    }
+    if (!body.updatedAt) {
+      body.updatedAt = new Date();
+    }
+
     // Save booking (this handles MongoDB and falls back to local file if needed)
     const result = await saveBooking(body);
 
