@@ -122,26 +122,35 @@ export default function Hero() {
             {heroData.badgeText}
           </motion.div>
 
-          {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white mb-3 sm:mb-4 leading-[0.92] max-w-4xl flex flex-col items-center select-none">
+          {/* Main Heading (3-Line Cinematic Layout matching reference design) */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-3 sm:mb-4 leading-[0.92] max-w-4xl flex flex-col items-center select-none">
             <motion.span
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="inline-block"
             >
-              {heroData.heading.includes("with") ? heroData.heading.split("with")[0] : "Create Impact"}
+              CREATE IMPACT
             </motion.span>
             <motion.span
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-block mt-0.5 sm:mt-1 text-white"
+            >
+              INSTANTLY
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="inline-block text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)] hover:[-webkit-text-stroke:1.5px_var(--color-brand-orange)] transition-colors duration-300 uppercase mt-1 sm:mt-2 cursor-pointer"
-              style={{ paintOrder: "stroke fill" }}
+              style={{
+                fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                paintOrder: "stroke fill"
+              }}
             >
-              {heroData.heading.includes("with") 
-                ? `with ${heroData.heading.split("with")[1] || "LITWORKS"}` 
-                : "Instantly with LITWORKS"}
+              WITH LITWORKS
             </motion.span>
           </h1>
 
