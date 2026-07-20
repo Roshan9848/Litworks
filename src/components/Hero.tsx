@@ -101,7 +101,7 @@ export default function Hero() {
       {/* Fold 1: Minimalist Hero Section (Pure Black Background) */}
       <section
         id="home"
-        className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-black pt-20 sm:pt-24 pb-10"
+        className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-black pt-16 sm:pt-20 pb-8"
       >
         {/* Background Grid - Pure Black minimalist theme */}
         <div className="absolute inset-0 z-0 pointer-events-none">
@@ -123,7 +123,7 @@ export default function Hero() {
           </motion.div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-3 sm:mb-4 leading-[0.92] max-w-4xl flex flex-col items-center select-none">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white mb-3 sm:mb-4 leading-[0.92] max-w-4xl flex flex-col items-center select-none">
             <motion.span
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -136,7 +136,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-block text-transparent [-webkit-text-stroke:1.5px_#FF7A00] hover:text-brand-orange transition-all duration-300 uppercase mt-1 sm:mt-2 filter drop-shadow-[0_0_20px_rgba(255,122,0,0.35)] cursor-pointer"
+              className="inline-block text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.45)] hover:[-webkit-text-stroke:1.5px_var(--color-brand-orange)] transition-colors duration-300 uppercase mt-1 sm:mt-2 cursor-pointer"
               style={{ paintOrder: "stroke fill" }}
             >
               {heroData.heading.includes("with") 
@@ -150,7 +150,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-base sm:text-lg md:text-xl text-neutral-400 max-w-3xl mb-4 sm:mb-6 leading-relaxed font-light font-sans"
+            className="text-sm sm:text-base md:text-lg text-neutral-400 max-w-2xl mb-4 sm:mb-6 leading-relaxed font-light font-sans"
           >
             {heroData.subheading}
           </motion.p>
@@ -164,13 +164,13 @@ export default function Hero() {
           >
             <Link
               href="/pricing"
-              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
+              className="w-full sm:w-auto px-8 py-3 sm:py-3.5 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
             >
               {heroData.primaryBtnText}
             </Link>
             <Link
               href="/services"
-              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
+              className="w-full sm:w-auto px-8 py-3 sm:py-3.5 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
             >
               {heroData.secondaryBtnText}
             </Link>
