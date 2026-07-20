@@ -631,21 +631,22 @@ export default function Pricing() {
         </div>
 
         {/* Plan Cards Grid */}
-        <div 
-          className={`grid grid-cols-1 gap-8 items-stretch justify-center mx-auto ${
-            activeTab === "basic" 
-              ? "md:grid-cols-3 max-w-5xl" 
-              : "md:grid-cols-2 lg:grid-cols-4 max-w-7xl"
-          }`}
-        >
-          <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            className={`grid grid-cols-1 gap-8 items-stretch justify-center mx-auto ${
+              activeTab === "basic" 
+                ? "md:grid-cols-3 max-w-5xl" 
+                : "md:grid-cols-2 lg:grid-cols-4 max-w-7xl"
+            }`}
+          >
             {plans.map((plan, index) => (
-              <motion.div
+              <div
                 key={plan.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="glass-panel group relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between border border-neutral-900 hover:border-brand-orange/30 hover:shadow-[0_0_30px_rgba(255,122,0,0.1)] transition-all duration-300 h-full min-h-[520px]"
               >
                 {/* Accent glow line on top of card */}
@@ -706,10 +707,10 @@ export default function Pricing() {
                     ))}
                   </ul>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
-        </div>
+          </motion.div>
+        </AnimatePresence>
 
       </div>
 

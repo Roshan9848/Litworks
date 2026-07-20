@@ -38,20 +38,21 @@ const ServiceCard = ({ service, index, onOpenModal }: { service: ServiceItem, in
     setRotateY(0);
   };
 
+  const isTilting = rotateX !== 0 || rotateY !== 0;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-15px" }}
-      transition={{ delay: index * 0.08, duration: 0.6, ease: "easeOut" }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ delay: Math.min(index * 0.06, 0.3), duration: 0.5, ease: "easeOut" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        transformStyle: "preserve-3d",
-        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        transform: isTilting ? `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)` : "none",
         transition: "transform 0.1s ease-out, border-color 0.3s ease, shadow 0.3s ease",
       }}
-      className="glass-panel group relative rounded-2xl p-8 flex flex-col justify-between overflow-hidden border border-neutral-900 shadow-lg hover:border-brand-orange/30 hover:shadow-[0_0_40px_-10px_rgba(255,122,0,0.18)]"
+      className="glass-panel group relative rounded-2xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden border border-neutral-900 shadow-lg hover:border-brand-orange/30 hover:shadow-[0_0_40px_-10px_rgba(255,122,0,0.18)]"
     >
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-brand-orange/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
 

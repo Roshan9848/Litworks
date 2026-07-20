@@ -6,7 +6,7 @@
   --color-brand-orange: #FF7A00;
   --color-glass-bg: rgba(10, 10, 10, 0.7);
   --color-glass-border: rgba(255, 255, 255, 0.1);
-  --font-sans: 'Outfit', var(--font-geist-sans), sans-serif;
+  --font-sans: var(--font-outfit), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 :root {
@@ -14,11 +14,13 @@
   --foreground: #ffffff;
 }
 
-body {
+html, body {
   background-color: #000000;
   color: #ffffff;
   overflow-x: hidden;
   font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Custom scrollbar */
@@ -47,7 +49,7 @@ body {
 
 /* Glassmorphism utility */
 .glass-panel {
-  background: rgba(15, 15, 15, 0.7);
+  background: rgba(15, 15, 15, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -81,31 +83,18 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background-color: rgba(255, 122, 0, 0.2);
 }
 
-/* Mobile performance optimizations */
+/* Mobile performance & ambient glow optimizations */
 @media (max-width: 1024px) {
-  /* Disable heavy GPU backdrop blurs on mobile/tablet devices */
-  .glass-panel,
-  .backdrop-blur,
-  .backdrop-blur-sm,
-  .backdrop-blur-md,
-  .backdrop-blur-lg,
-  .backdrop-blur-xl,
-  .backdrop-blur-2xl,
-  .backdrop-blur-3xl {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  
-  /* Fallback opaque background for glass panels to maintain readability */
   .glass-panel {
-    background: rgba(12, 12, 12, 0.96) !important;
+    background: rgba(12, 12, 12, 0.95);
   }
 
-  /* Disable large background blur glow elements which cause scroll lag on mobile GPUs */
+  /* Optimized ambient glow lighting for mobile GPUs */
   .blur-\[100px\],
   .blur-\[120px\],
   .blur-\[150px\] {
-    display: none !important;
+    opacity: 0.4;
+    filter: blur(40px) !important;
   }
 }
 

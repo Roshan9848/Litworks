@@ -162,10 +162,10 @@ export default function ReelsSection() {
             return (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: (idx % 3) * 0.15, duration: 0.6 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ delay: Math.min((idx % 3) * 0.1, 0.3), duration: 0.5, ease: "easeOut" }}
                 onClick={() => !isInstagramUrl && handleCardClick(idx)}
                 className={`relative aspect-[9/16] rounded-3xl overflow-hidden border bg-neutral-950 shadow-2xl transition-all duration-500 group select-none ${
                   isCurrent && !isInstagramUrl
