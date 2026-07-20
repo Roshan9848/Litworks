@@ -101,29 +101,30 @@ export default function Hero() {
       {/* Fold 1: Minimalist Hero Section (Pure Black Background) */}
       <section
         id="home"
-        className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-black pt-16 sm:pt-20 pb-8"
+        className="relative min-h-[100dvh] flex flex-col justify-between items-center overflow-hidden bg-black pt-20 sm:pt-24 pb-6 sm:pb-10"
       >
-        {/* Background Grid - Pure Black minimalist theme */}
+        {/* Background Grid & Ambient Glow - Pure Black minimalist theme */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#090909_1px,transparent_1px),linear-gradient(to_bottom,#090909_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-35" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[480px] h-[300px] sm:h-[480px] bg-brand-orange/10 rounded-full blur-[100px]" />
         </div>
 
         {/* Content Container (Centered vertical column layout) */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex flex-col items-center justify-center text-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex-1 flex flex-col items-center justify-center text-center my-auto py-4">
           
           {/* Small badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange/5 text-xs text-brand-orange uppercase tracking-widest font-semibold mb-3 sm:mb-4"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange/5 text-xs text-brand-orange uppercase tracking-widest font-semibold mb-4 sm:mb-5"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
             {heroData.badgeText}
           </motion.div>
 
           {/* Main Heading (3-Line Cinematic Layout matching reference design) */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-3 sm:mb-4 leading-[0.92] max-w-4xl flex flex-col items-center select-none">
+          <h1 className="text-[38px] xs:text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight text-white mb-4 sm:mb-5 leading-[0.92] max-w-4xl flex flex-col items-center select-none">
             <motion.span
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -159,7 +160,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-sm sm:text-base md:text-lg text-neutral-400 max-w-2xl mb-4 sm:mb-6 leading-relaxed font-light font-sans"
+            className="text-sm sm:text-base md:text-lg text-neutral-400 max-w-xl sm:max-w-2xl mb-6 sm:mb-8 leading-relaxed font-light font-sans"
           >
             {heroData.subheading}
           </motion.p>
@@ -169,17 +170,17 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-5 sm:mb-6"
+            className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 w-full sm:w-auto mb-7 sm:mb-9"
           >
             <Link
               href="/pricing"
-              className="w-full sm:w-auto px-8 py-3 sm:py-3.5 rounded-full bg-brand-orange text-black font-bold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
+              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full bg-brand-orange text-black font-extrabold tracking-wider hover:bg-white hover:text-black hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
             >
               {heroData.primaryBtnText}
             </Link>
             <Link
               href="/services"
-              className="w-full sm:w-auto px-8 py-3 sm:py-3.5 rounded-full border border-neutral-850 bg-neutral-950 text-white font-bold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
+              className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full border border-neutral-800 bg-neutral-950/90 text-white font-extrabold tracking-wider hover:bg-neutral-900 hover:border-neutral-700 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center text-sm sm:text-base"
             >
               {heroData.secondaryBtnText}
             </Link>
@@ -190,7 +191,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-md px-6 py-3.5 sm:py-4 rounded-2xl bg-neutral-950/60 border border-neutral-905/80 backdrop-blur-md shadow-2xl mb-2 sm:mb-4"
+            className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-md px-6 py-4 rounded-2xl bg-neutral-950/80 border border-neutral-900 backdrop-blur-md shadow-2xl mb-4 sm:mb-6"
           >
             <div className="text-center">
               <h4 className="text-xl sm:text-2xl font-black text-brand-orange text-glow">{statsData.projectsCount}</h4>
