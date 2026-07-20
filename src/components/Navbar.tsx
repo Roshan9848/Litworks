@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -79,18 +79,30 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          {/* Logo on Left - Extra minimal size (30% smaller, perfectly aligned) */}
-          <Link
-            href="/"
-            onClick={(e) => handleLinkClick(e, "/")}
-            className="flex items-center transition-transform duration-300 hover:scale-105"
-          >
-            <img
-              src="/logo.png"
-              alt="LITWORKS Logo"
-              className="h-6 sm:h-7 md:h-8 w-auto object-contain filter drop-shadow-[0_0_6px_rgba(255,122,0,0.3)]"
-            />
-          </Link>
+          {/* Logo & Sub-Page Back Arrow on Left */}
+          <div className="flex items-center gap-3">
+            {pathname !== "/" && (
+              <Link
+                href="/"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-neutral-800 bg-neutral-950/80 text-neutral-300 hover:text-brand-orange hover:border-brand-orange/40 transition-all text-xs font-semibold tracking-wider uppercase group shadow-lg"
+                aria-label="Back to Home"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-brand-orange transition-transform duration-300 group-hover:-translate-x-1" />
+                <span className="text-[10px] font-mono tracking-widest uppercase">Home</span>
+              </Link>
+            )}
+            <Link
+              href="/"
+              onClick={(e) => handleLinkClick(e, "/")}
+              className="flex items-center transition-transform duration-300 hover:scale-105"
+            >
+              <img
+                src="/logo.png"
+                alt="LITWORKS Logo"
+                className="h-6 sm:h-7 md:h-8 w-auto object-contain filter drop-shadow-[0_0_6px_rgba(255,122,0,0.3)]"
+              />
+            </Link>
+          </div>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-8">

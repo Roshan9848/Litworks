@@ -101,7 +101,7 @@ export default function Hero() {
       {/* Fold 1: Minimalist Hero Section (Pure Black Background) */}
       <section
         id="home"
-        className="relative min-h-[100dvh] flex flex-col justify-between items-center overflow-hidden bg-black pt-20 sm:pt-24 pb-6 sm:pb-10"
+        className="relative min-h-[100dvh] flex flex-col justify-between items-center overflow-hidden bg-black pt-16 sm:pt-24 pb-6 sm:pb-10"
       >
         {/* Background Grid & Ambient Glow - Pure Black minimalist theme */}
         <div className="absolute inset-0 z-0 pointer-events-none">
@@ -110,7 +110,7 @@ export default function Hero() {
         </div>
 
         {/* Content Container (Centered vertical column layout) */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex-1 flex flex-col items-center justify-center text-center my-auto py-4">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex-1 flex flex-col items-center justify-center text-center my-auto pt-2 sm:pt-0 py-4">
           
           {/* Small badge */}
           <motion.div
