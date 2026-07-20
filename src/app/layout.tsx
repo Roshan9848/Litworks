@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import GlassyDock from "@/components/GlassyDock";
+import PullToRefresh from "@/components/PullToRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -191,6 +192,7 @@ export default function RootLayout({
           </div>
         ) : (
           <>
+            <PullToRefresh />
             {children}
             <GlassyDock />
             <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="beforeInteractive" />
