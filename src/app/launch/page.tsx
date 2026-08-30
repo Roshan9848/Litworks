@@ -3,19 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import {
   Zap,
-  Sparkles,
-  ShieldCheck,
-  Radio,
-  Share2,
-  RotateCcw,
-  CheckCircle2,
-  Flame,
-  ArrowRight,
   Volume2,
-  VolumeX
+  VolumeX,
+  Radio,
+  Sparkles,
+  Flame
 } from "lucide-react";
 
 export default function MobileLaunchExperiencePage() {
@@ -24,7 +18,6 @@ export default function MobileLaunchExperiencePage() {
   const [isHolding, setIsHolding] = useState(false);
   const [isLaunched, setIsLaunched] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [copied, setCopied] = useState(false);
 
   const holdIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -32,12 +25,14 @@ export default function MobileLaunchExperiencePage() {
   const gainRef = useRef<GainNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Initialize Web Audio API for cinematic sound FX without external assets
+  // Initialize Web Audio API for cinematic audio synthesis without external files
   const initAudio = useCallback(() => {
     if (typeof window === "undefined" || !soundEnabled) return;
     try {
       if (!audioCtxRef.current) {
-        const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const AudioContextClass =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
         audioCtxRef.current = new AudioContextClass();
       }
       if (audioCtxRef.current.state === "suspended") {
@@ -59,11 +54,11 @@ export default function MobileLaunchExperiencePage() {
       const gain = ctx.createGain();
 
       osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(80, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 3);
+      osc.frequency.setValueAtTime(70, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 3.0);
 
       gain.gain.setValueAtTime(0.01, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 3);
+      gain.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 3.0);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -99,23 +94,23 @@ export default function MobileLaunchExperiencePage() {
       if (!audioCtxRef.current) return;
       const ctx = audioCtxRef.current;
 
-      // Bass boom synth
+      // Deep bass boom synth
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(160, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(25, ctx.currentTime + 1.2);
+      osc.frequency.setValueAtTime(180, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 1.4);
 
-      gain.gain.setValueAtTime(0.6, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+      gain.gain.setValueAtTime(0.7, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.4);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 1.3);
+      osc.stop(ctx.currentTime + 1.5);
 
       // Noise sparkle blast
-      const bufferSize = ctx.sampleRate * 0.5;
+      const bufferSize = ctx.sampleRate * 0.6;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const output = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
@@ -125,8 +120,8 @@ export default function MobileLaunchExperiencePage() {
       whiteNoise.buffer = buffer;
 
       const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.3, ctx.currentTime);
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+      noiseGain.gain.setValueAtTime(0.35, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
 
       whiteNoise.connect(noiseGain);
       noiseGain.connect(ctx.destination);
@@ -158,21 +153,21 @@ export default function MobileLaunchExperiencePage() {
     }
 
     const particles: Particle[] = [];
-    const colors = ["#FF7A00", "#FFA133", "#FFD700", "#FF4500", "#FFFFFF", "#FF3B00"];
+    const colors = ["#FF7A00", "#FFA133", "#FFD700", "#FF4500", "#FFFFFF", "#FF5500"];
 
-    // Spawn 160 explosion particles
-    for (let i = 0; i < 180; i++) {
+    // Spawn 200 explosion particles
+    for (let i = 0; i < 220; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 12 + 2;
+      const speed = Math.random() * 14 + 3;
       particles.push({
         x: canvas.width / 2,
-        y: canvas.height * 0.45,
+        y: canvas.height * 0.48,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 2,
         size: Math.random() * 4 + 2,
         color: colors[Math.floor(Math.random() * colors.length)],
         alpha: 1,
-        decay: Math.random() * 0.015 + 0.008
+        decay: Math.random() * 0.018 + 0.01
       });
     }
 
@@ -186,14 +181,14 @@ export default function MobileLaunchExperiencePage() {
           aliveCount++;
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.15; // Gravity
+          p.vy += 0.18; // Gravity
           p.vx *= 0.98;
           p.alpha -= p.decay;
 
           ctx.save();
           ctx.globalAlpha = Math.max(0, p.alpha);
           ctx.fillStyle = p.color;
-          ctx.shadowBlur = 12;
+          ctx.shadowBlur = 14;
           ctx.shadowColor = p.color;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -214,7 +209,7 @@ export default function MobileLaunchExperiencePage() {
     };
   }, [isLaunched]);
 
-  // Press & Hold Logic
+  // Press & Hold Logic (Smooth 3.0s duration)
   const handleHoldStart = () => {
     if (isLaunched) return;
     setIsHolding(true);
@@ -225,15 +220,15 @@ export default function MobileLaunchExperiencePage() {
     }
 
     const startTime = Date.now();
-    const duration = 2400; // 2.4 seconds to charge to 100%
+    const duration = 3000; // 3.0 seconds smooth charging time for reel filming
 
     holdIntervalRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const pct = Math.min(100, Math.round((elapsed / duration) * 100));
       setProgress(pct);
 
-      // Light haptic pulse as charge builds up
-      if (pct % 25 === 0 && typeof navigator !== "undefined" && navigator.vibrate) {
+      // Periodic haptic feedback as energy charges
+      if (pct % 20 === 0 && typeof navigator !== "undefined" && navigator.vibrate) {
         navigator.vibrate(40);
       }
 
@@ -245,10 +240,15 @@ export default function MobileLaunchExperiencePage() {
         setIsLaunched(true);
         setIsHolding(false);
 
-        // Big celebration haptic pattern
+        // Climax haptic pattern
         if (typeof navigator !== "undefined" && navigator.vibrate) {
-          navigator.vibrate([100, 50, 150, 50, 300]);
+          navigator.vibrate([100, 50, 150, 50, 400]);
         }
+
+        // Direct smooth redirect to live website home page after dramatic explosion
+        setTimeout(() => {
+          router.push("/?launched=true");
+        }, 1400);
       }
     }, 25);
   };
@@ -261,248 +261,202 @@ export default function MobileLaunchExperiencePage() {
       clearInterval(holdIntervalRef.current);
       holdIntervalRef.current = null;
     }
-    // Quickly drain progress if released early
+    // Drain progress if released early
     setProgress(0);
   };
 
-  const handleResetForRetake = () => {
-    setIsLaunched(false);
-    setProgress(0);
-    setIsHolding(false);
-    stopChargingSound();
-  };
-
-  const handleShare = async () => {
-    const shareData = {
-      title: "LitWorks Media is Live!",
-      text: "🚀 LitWorks Media is officially LIVE! Launched at Pune Ganesh Utsav 2026. Use code BAPPA20 for 20% off Instant Reels packages.",
-      url: "https://litworks.media"
-    };
-
-    if (typeof navigator !== "undefined" && navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch {
-        // User cancelled share
-      }
-    } else {
-      navigator.clipboard.writeText(shareData.url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const radius = 68;
+  const radius = 78;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="relative min-h-screen w-full bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none">
-      {/* Dynamic Canvas for Launch Fireworks */}
+    <div className="relative h-screen w-full bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none">
+      {/* Dynamic Canvas for Launch Particle Shockwave */}
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-40" />
 
       {/* Background Ambient Glows & Saffron Sparks */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#FF7A00]/15 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#FF4500]/20 rounded-full blur-[140px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,122,0,0.06)_1px,transparent_1px)] bg-[size:24px_24px] opacity-40" />
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[420px] h-[420px] bg-[#FF7A00]/15 rounded-full blur-[130px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] bg-[#FF7A00]/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[420px] h-[420px] bg-[#FF4500]/20 rounded-full blur-[140px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,122,0,0.08)_1px,transparent_1px)] bg-[size:28px_28px] opacity-40" />
       </div>
 
-      {/* Top HUD Status Bar */}
-      <header className="relative z-20 px-6 pt-6 pb-2 flex items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-md">
+      {/* Flash Shockwave Overlay on Launch */}
+      {isLaunched && (
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FF7A00]/30 via-white/20 to-black z-30 pointer-events-none animate-fadeIn" />
+      )}
+
+      {/* Top Header Bar */}
+      <header className="relative z-20 px-6 pt-6 pb-3 flex items-center justify-between border-b border-white/10 bg-black/40 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="relative flex h-2.5 w-2.5">
-            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${isLaunched ? "bg-emerald-400" : "bg-[#FF7A00]"} opacity-75`} />
-            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isLaunched ? "bg-emerald-500" : "bg-[#FF7A00]"}`} />
+          <div className="relative w-8 h-8 rounded-lg bg-black border border-white/15 p-1 flex items-center justify-center shadow-[0_0_15px_rgba(255,122,0,0.3)]">
+            <Image
+              src="/logo.png"
+              alt="LitWorks Logo"
+              width={24}
+              height={24}
+              className="object-contain"
+              priority
+            />
           </div>
-          <span className="text-[11px] font-mono tracking-widest text-neutral-400 font-bold uppercase">
-            {isLaunched ? "BROADCAST LIVE" : "TELEMETRY ARMED"}
+          <span className="text-sm font-black tracking-wider text-white uppercase font-sans">
+            LitWorks<span className="text-[#FF7A00]">.</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
+          <div className="px-3 py-1 rounded-full bg-neutral-950/90 border border-[#FF7A00]/40 text-[10px] font-mono text-[#FF7A00] font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,122,0,0.2)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF7A00] animate-pulse" />
+            <span>PUNE GANESH UTSAV</span>
+          </div>
+
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className="p-2 rounded-full bg-neutral-900/80 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+            className="p-2 rounded-full bg-neutral-950 border border-white/10 text-neutral-400 hover:text-white transition-colors"
             title={soundEnabled ? "Mute sound FX" : "Enable sound FX"}
           >
             {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-[#FF7A00]" /> : <VolumeX className="w-3.5 h-3.5" />}
           </button>
-          <div className="px-3 py-1 rounded-full bg-neutral-900/90 border border-[#FF7A00]/30 text-[10px] font-mono text-[#FF7A00] font-bold">
-            PUNE // GANESH UTSAV
-          </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center max-w-md mx-auto w-full py-4">
-        {!isLaunched ? (
-          /* STATE 1: PRE-LAUNCH / ARMED SCREEN */
-          <div className="w-full flex flex-col items-center animate-fadeIn">
-            {/* Logo and Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-sm">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF7A00]" />
-              <span className="text-xs font-semibold tracking-wider text-neutral-300 uppercase">
-                Official Production Deployment
-              </span>
-            </div>
-
-            <div className="relative w-20 h-20 mb-4 rounded-2xl bg-black border border-white/15 p-3 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.25)]">
-              <Image
-                src="/logo.png"
-                alt="LitWorks Logo"
-                width={56}
-                height={56}
-                className="object-contain"
-                priority
-              />
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white mb-2 leading-none">
-              LitWorks <span className="text-[#FF7A00]">Media</span>
-            </h1>
-
-            <p className="text-xs sm:text-sm text-neutral-400 max-w-xs mb-8 leading-relaxed font-sans">
-              With the auspicious blessings of <span className="text-white font-bold">Lord Ganesha</span>, tap & hold the ignition beacon to deploy the live platform.
-            </p>
-
-            {/* THE CIRCULAR HOLD-TO-LAUNCH TRIGGER */}
-            <div className="relative flex items-center justify-center mb-8">
-              {/* Outer Radar Rings */}
-              <div className={`absolute w-56 h-56 rounded-full border border-[#FF7A00]/20 transition-all duration-700 ${isHolding ? "scale-110 border-[#FF7A00]/50 animate-spin" : "scale-100"}`} />
-              <div className="absolute w-48 h-48 rounded-full border border-dashed border-neutral-800 animate-[spin_16s_linear_infinite]" />
-
-              {/* SVG Progress Circle */}
-              <svg className="w-44 h-44 -rotate-90">
-                <circle
-                  cx="88"
-                  cy="88"
-                  r={radius}
-                  stroke="#1a1a1a"
-                  strokeWidth="8"
-                  fill="transparent"
-                />
-                <circle
-                  cx="88"
-                  cy="88"
-                  r={radius}
-                  stroke="#FF7A00"
-                  strokeWidth="8"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  className="transition-all duration-75"
-                />
-              </svg>
-
-              {/* Center Trigger Button */}
-              <div
-                onMouseDown={handleHoldStart}
-                onMouseUp={handleHoldEnd}
-                onMouseLeave={handleHoldEnd}
-                onTouchStart={handleHoldStart}
-                onTouchEnd={handleHoldEnd}
-                className={`absolute w-32 h-32 rounded-full cursor-pointer flex flex-col items-center justify-center transition-all duration-300 select-none shadow-[0_0_35px_rgba(255,122,0,0.3)] active:scale-95 ${
-                  isHolding
-                    ? "bg-gradient-to-b from-[#FF7A00] to-[#E05300] scale-95 shadow-[0_0_55px_rgba(255,122,0,0.7)]"
-                    : "bg-neutral-950 border-2 border-[#FF7A00]/60 hover:border-[#FF7A00]"
-                }`}
-              >
-                <Zap className={`w-8 h-8 mb-1 transition-colors ${isHolding ? "text-black animate-pulse" : "text-[#FF7A00]"}`} />
-                <span className={`text-[11px] font-black uppercase tracking-wider font-mono ${isHolding ? "text-black" : "text-white"}`}>
-                  {isHolding ? `${progress}%` : "HOLD TO"}
-                </span>
-                <span className={`text-[9px] font-bold uppercase tracking-widest ${isHolding ? "text-black/80" : "text-[#FF7A00]"}`}>
-                  {isHolding ? "CHARGING" : "LAUNCH"}
-                </span>
-              </div>
-            </div>
-
-            {/* Instructions Bar */}
-            <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
-              <Radio className="w-3.5 h-3.5 text-[#FF7A00] animate-pulse" />
-              <span>Press & hold for 2.4s to broadcast live</span>
-            </div>
+      {/* Main Center Stage */}
+      <main className="relative z-20 flex-1 flex flex-col items-center justify-center px-6 text-center max-w-sm mx-auto w-full">
+        {/* Title Headline (Clean, Bold, Zero Instructions) */}
+        <div className="mb-8 animate-fadeIn">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 mb-3 backdrop-blur-md">
+            <Sparkles className="w-3 h-3 text-[#FF7A00]" />
+            <span className="text-[10px] font-mono font-bold tracking-widest text-neutral-300 uppercase">
+              {isLaunched ? "DEPLOYMENT SUCCESSFUL" : "SYSTEM ONLINE // STANDBY"}
+            </span>
           </div>
-        ) : (
-          /* STATE 2: POST-LAUNCH SUCCESS CELEBRATION */
-          <div className="w-full flex flex-col items-center animate-scaleIn">
-            <div className="w-20 h-20 rounded-full bg-[#FF7A00]/20 border-2 border-[#FF7A00] flex items-center justify-center mb-5 shadow-[0_0_50px_rgba(255,122,0,0.6)]">
-              <Flame className="w-10 h-10 text-[#FF7A00] animate-bounce" />
-            </div>
 
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold font-mono uppercase mb-3">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Broadcast Confirmed: We Are Live</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white mb-2 leading-tight">
-              LITWORKS IS <span className="text-[#FF7A00]">LIVE!</span>
-            </h1>
-
-            <p className="text-sm font-semibold text-[#FFA133] mb-3">
-              ॐ गं गणपतये नमः | GANPATI BAPPA MORYA! 🌺
-            </p>
-
-            <p className="text-xs text-neutral-400 max-w-xs mb-6 leading-relaxed">
-              India’s fastest Instant Reels production agency is now accepting booking orders across all categories.
-            </p>
-
-            {/* Launch Offer Promo Banner */}
-            <div className="w-full p-4 rounded-2xl bg-gradient-to-r from-[#FF7A00]/20 via-black to-[#FF7A00]/20 border border-[#FF7A00]/40 mb-6 shadow-xl">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#FF7A00] font-bold block mb-1">
-                Ganesh Utsav Launch Special
-              </span>
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-black font-mono text-white tracking-wider">
-                  CODE: BAPPA20
-                </span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#FF7A00] text-black uppercase">
-                  Flat 20% OFF
-                </span>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="w-full space-y-3">
-              <Link
-                href="/"
-                className="w-full py-4 px-6 rounded-2xl bg-[#FF7A00] hover:bg-white text-black font-extrabold text-sm uppercase tracking-wider transition-all duration-300 shadow-[0_0_30px_rgba(255,122,0,0.4)] flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>Enter Live Platform</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-
-              <button
-                onClick={handleShare}
-                className="w-full py-3.5 px-6 rounded-2xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Share2 className="w-4 h-4 text-[#FF7A00]" />
-                <span>{copied ? "Link Copied to Clipboard!" : "Share Launch Reel Link"}</span>
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Bottom Footer Info & Retake Reset */}
-      <footer className="relative z-20 px-6 py-4 border-t border-white/5 bg-black/60 backdrop-blur-md flex items-center justify-between text-[11px] font-mono text-neutral-500">
-        <div className="flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-neutral-400" />
-          <span>LITWORKS MEDIA © 2026</span>
+          <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white leading-none">
+            {isLaunched ? (
+              <span className="text-[#FF7A00] animate-pulse">LITWORKS IS LIVE!</span>
+            ) : (
+              <>
+                LAUNCHING <span className="text-[#FF7A00]">LITWORKS</span>
+              </>
+            )}
+          </h1>
+          <p className="text-xs text-neutral-400 mt-2 font-mono uppercase tracking-wider">
+            Pune Ganesh Utsav | Media Revolution
+          </p>
         </div>
 
-        {isLaunched && (
-          <button
-            onClick={handleResetForRetake}
-            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 transition-colors cursor-pointer"
-            title="Reset to record another reel take"
+        {/* THE CIRCULAR LIGHTNING IGNITION BUTTON */}
+        <div className="relative flex items-center justify-center my-2">
+          {/* Outer Orbit Glowing Tech Rings */}
+          <div
+            className={`absolute w-64 h-64 rounded-full border border-[#FF7A00]/20 transition-all duration-700 ${
+              isHolding
+                ? "scale-110 border-[#FF7A00]/60 animate-spin"
+                : "scale-100"
+            }`}
+          />
+          <div className="absolute w-56 h-56 rounded-full border border-dashed border-white/15 animate-[spin_20s_linear_infinite]" />
+
+          {/* SVG Circular Progress Meter */}
+          <svg className="w-52 h-52 -rotate-90 drop-shadow-[0_0_25px_rgba(255,122,0,0.3)]">
+            <circle
+              cx="104"
+              cy="104"
+              r={radius}
+              stroke="#171717"
+              strokeWidth="10"
+              fill="transparent"
+            />
+            <circle
+              cx="104"
+              cy="104"
+              r={radius}
+              stroke="#FF7A00"
+              strokeWidth="10"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              fill="transparent"
+              className="transition-all duration-75"
+            />
+          </svg>
+
+          {/* Inner Interactive Trigger Circle */}
+          <div
+            onMouseDown={handleHoldStart}
+            onMouseUp={handleHoldEnd}
+            onMouseLeave={handleHoldEnd}
+            onTouchStart={handleHoldStart}
+            onTouchEnd={handleHoldEnd}
+            className={`absolute w-36 h-36 rounded-full cursor-pointer flex flex-col items-center justify-center transition-all duration-300 select-none shadow-[0_0_40px_rgba(255,122,0,0.35)] active:scale-95 ${
+              isLaunched
+                ? "bg-gradient-to-b from-[#FF7A00] to-[#E05300] scale-105 shadow-[0_0_70px_rgba(255,122,0,0.9)]"
+                : isHolding
+                ? "bg-gradient-to-b from-[#FF7A00] to-[#E05300] scale-95 shadow-[0_0_60px_rgba(255,122,0,0.8)]"
+                : "bg-neutral-950 border-2 border-[#FF7A00]/70 hover:border-[#FF7A00]"
+            }`}
           >
-            <RotateCcw className="w-3 h-3 text-[#FF7A00]" />
-            <span>Retake</span>
-          </button>
-        )}
+            {isLaunched ? (
+              <>
+                <Flame className="w-10 h-10 text-black mb-1 animate-bounce" />
+                <span className="text-xs font-black uppercase tracking-wider font-mono text-black">
+                  REDIRECTING...
+                </span>
+              </>
+            ) : (
+              <>
+                <Zap
+                  className={`w-9 h-9 mb-1 transition-transform ${
+                    isHolding ? "text-black scale-110 animate-pulse" : "text-[#FF7A00]"
+                  }`}
+                />
+                <span
+                  className={`text-xs font-black uppercase tracking-wider font-mono ${
+                    isHolding ? "text-black text-sm" : "text-white"
+                  }`}
+                >
+                  {isHolding ? `${progress}%` : "HOLD TO"}
+                </span>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-widest ${
+                    isHolding ? "text-black/80 font-mono" : "text-[#FF7A00]"
+                  }`}
+                >
+                  {isHolding ? "CHARGING" : "LAUNCH"}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Live Status Pulse */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-xs font-mono text-neutral-400">
+          <Radio className={`w-3.5 h-3.5 ${isHolding ? "text-white animate-spin" : "text-[#FF7A00] animate-pulse"}`} />
+          <span>{isLaunched ? "INITIALIZING PRODUCTION PIPELINE..." : isHolding ? "CHARGING SATELLITE BROADCAST..." : "READY FOR DIRECT DEPLOYMENT"}</span>
+        </div>
+      </main>
+
+      {/* Bottom Telemetry HUD Grid */}
+      <footer className="relative z-20 px-6 py-4 border-t border-white/10 bg-black/60 backdrop-blur-xl">
+        <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-neutral-400">
+          <div className="p-2.5 rounded-xl bg-neutral-950/80 border border-white/5 flex items-center justify-between">
+            <span className="text-neutral-500">GATEWAY:</span>
+            <span className="text-white font-bold">PUNE 5G</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-neutral-950/80 border border-white/5 flex items-center justify-between">
+            <span className="text-neutral-500">SERVERS:</span>
+            <span className="text-emerald-400 font-bold">ARMED</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-neutral-950/80 border border-white/5 flex items-center justify-between">
+            <span className="text-neutral-500">PROMO:</span>
+            <span className="text-[#FF7A00] font-bold">BAPPA20</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-neutral-950/80 border border-white/5 flex items-center justify-between">
+            <span className="text-neutral-500">BROADCAST:</span>
+            <span className="text-white font-bold">4K CLOUD</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
