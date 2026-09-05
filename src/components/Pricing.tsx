@@ -443,24 +443,12 @@ export default function Pricing() {
 
   const handleProceedToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!acceptTerms) {
-      setErrorMessage("Please accept the Terms & Conditions to proceed.");
+    if (!name.trim()) {
+      setErrorMessage("Please enter your name.");
       return;
     }
-    const isCustomEventValid = eventType !== "Other" || customEventType.trim() !== "";
-    const isTimeSlotValid = selectedPlan?.title === "Custom Plan" || !!timeSlot;
-    if (
-      !name.trim() ||
-      !phone.trim() ||
-      !email.trim() ||
-      !state ||
-      !city ||
-      !area.trim() ||
-      !eventType ||
-      !isCustomEventValid ||
-      !isTimeSlotValid
-    ) {
-      setErrorMessage("Please fill out all required fields.");
+    if (!phone.trim() || phone.replace(/\D/g, "").length < 10) {
+      setErrorMessage("Please enter a valid 10-digit WhatsApp/Phone number.");
       return;
     }
 
@@ -468,7 +456,11 @@ export default function Pricing() {
     setIsSubmitting(true);
     setModalStep(2); // Go to Payment step
 
-    const finalEventOccasion = eventType === "Other" ? customEventType : eventType;
+    const finalState = state || "Maharashtra";
+    const finalCity = city || area || "Pune";
+    const finalArea = area || city || "Client Location";
+    const finalEmail = email.trim() || `${phone.replace(/\D/g, "")}@customer.litworks.media`;
+    const finalEventOccasion = eventType === "Other" ? (customEventType || "Custom Occasion") : (eventType || "Event Shoot");
     const basePrice = getCalculatedPrice();
     const discount = getCouponDiscount();
     const finalPrice = Math.max(0, basePrice - discount);
@@ -476,18 +468,18 @@ export default function Pricing() {
     const totalAmount = finalPrice + platformFee;
 
     const payload = {
-      name,
-      phone,
-      email,
-      state,
-      city,
+      name: name.trim(),
+      phone: phone.trim(),
+      email: finalEmail,
+      state: finalState,
+      city: finalCity,
       service: selectedPlan?.serviceType || "Instant Reel",
-      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nArea/Locality: ${area}\nEvent Type/Occasion: ${finalEventOccasion}${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon.code} (₹${discount} off)` : ""}`,
+      notes: `Selected Plan: ${activeTab === "basic" ? "Basic" : "Wedding"} - ${selectedPlan?.title} (${selectedPlan?.price})\nLocation: ${finalCity} - ${finalArea}\nEvent Occasion: ${finalEventOccasion}${appliedCoupon ? `\nCoupon Applied: ${appliedCoupon.code} (₹${discount} off)` : ""}`,
       finalPrice: finalPrice,
       dynamicFields: {
-        preferredDate: date || "Not Specified",
-        timeSlot: timeSlot || "Not Applicable",
-        shootArea: area,
+        preferredDate: date || getTodayDateString(),
+        timeSlot: timeSlot || "Flexible",
+        shootArea: finalArea,
         eventType: finalEventOccasion,
         extraHourRequested: selectedPlan?.title === "Custom Plan" ? "Not Applicable" : (addExtraHour ? "Yes (+₹899)" : "No"),
         calculatedTotalPrice: selectedPlan?.title === "Custom Plan" ? "Custom Quote" : `₹${finalPrice.toLocaleString("en-IN")}`,
@@ -765,439 +757,209 @@ export default function Pricing() {
                   {/* STEP 1: Details Entry */}
                   {modalStep === 1 && (
                     <form onSubmit={handleProceedToPayment} className="space-y-5">
-                      <div>
-                        <span className="text-[9px] uppercase tracking-widest text-brand-orange font-bold">
-                          Book Instantly
-                        </span>
-                        <h4 className="text-lg font-black text-white mt-1">
-                          {selectedPlan.title}
-                        </h4>
-                        <p className="text-xl font-extrabold text-brand-orange mt-0.5">
-                          ₹{getCalculatedPrice().toLocaleString("en-IN")} <span className="text-[9px] text-neutral-500 uppercase font-bold">(Incl. GST)</span>
-                        </p>
+                      {/* Plan Header */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] uppercase font-mono tracking-widest text-brand-orange font-bold flex items-center gap-1">
+                            <Zap className="w-3 h-3" />
+                            Express 30s Booking
+                          </span>
+                          <h4 className="text-xl font-black text-white mt-0.5">
+                            {selectedPlan.title}
+                          </h4>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-black text-brand-orange">
+                            ₹{Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")}
+                          </p>
+                          <span className="text-[9px] text-neutral-400 font-mono">Incl. GST & Fees</span>
+                        </div>
                       </div>
 
                       <div className="h-[1px] bg-neutral-900 w-full" />
 
-                      {/* Form fields */}
-                      <div className="space-y-4">
-                        {/* Full Name */}
-                        <div>
-                          <label htmlFor="pricing-name" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                            <User className="w-3.5 h-3.5 text-brand-orange" />
-                            Full Name *
-                          </label>
-                          <input
-                            id="pricing-name"
-                            type="text"
-                            placeholder="e.g. Rahul Sharma"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                          />
-                        </div>
-
-                        {/* WhatsApp/Phone */}
-                        <div>
-                          <label htmlFor="pricing-phone" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                            <Phone className="w-3.5 h-3.5 text-brand-orange" />
-                            WhatsApp / Phone *
-                          </label>
-                          <input
-                            id="pricing-phone"
-                            type="tel"
-                            placeholder="10-digit mobile number"
-                            value={phone}
-                            onChange={(e) => phone.length <= 15 && setPhone(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                          />
-                        </div>
-
-                        {/* Email Address */}
-                        <div>
-                          <label htmlFor="pricing-email" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                            <Mail className="w-3.5 h-3.5 text-brand-orange" />
-                            Email Address *
-                          </label>
-                          <input
-                            id="pricing-email"
-                            type="email"
-                            placeholder="e.g. name@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                          />
-                        </div>
-
-                        {/* Type of Event */}
-                        <div>
-                          <label htmlFor="pricing-event-type" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                            <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
-                            Type of Event / Occasion *
-                          </label>
-                          <select
-                            id="pricing-event-type"
-                            value={eventType}
-                            onChange={(e) => {
-                              setEventType(e.target.value);
-                              if (e.target.value !== "Other") {
-                                setCustomEventType("");
-                              }
-                            }}
-                            required
-                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                          >
-                            <option value="" disabled>Select Event Type</option>
-                            <option value="New Car / Bike Delivery">New Car / Bike Delivery</option>
-                            <option value="Store / Brand Launch">Store / Brand Launch</option>
-                            <option value="Corporate / Business Event">Corporate / Business Event</option>
-                            <option value="Birthday / Anniversary Party">Birthday / Anniversary Party</option>
-                            <option value="Pre-Wedding / Wedding Event">Pre-Wedding / Wedding Event</option>
-                            <option value="Fashion / Personal Portfolio">Fashion / Personal Portfolio</option>
-                            <option value="Business Promo / Marketing Shoot">Business Promo / Marketing Shoot</option>
-                            <option value="Other">Other (Specify below)</option>
-                          </select>
-                        </div>
-
-                        {/* Custom Event Type Input */}
-                        {eventType === "Other" && (
-                          <div className="animate-fadeIn">
-                            <label htmlFor="pricing-custom-event-type" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                              <BookOpen className="w-3.5 h-3.5 text-brand-orange" />
-                              Specify Event Type *
+                      {/* Streamlined Form Fields */}
+                      <div className="space-y-3.5">
+                        {/* Full Name & Phone in 2-col layout */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label htmlFor="pricing-name" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
+                              <User className="w-3.5 h-3.5 text-brand-orange" />
+                              Full Name *
                             </label>
                             <input
-                              id="pricing-custom-event-type"
+                              id="pricing-name"
                               type="text"
-                              placeholder="e.g. Corporate Event, Anniversary"
-                              value={customEventType}
-                              onChange={(e) => setCustomEventType(e.target.value)}
+                              placeholder="e.g. Rahul Sharma"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
                               required
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
                             />
                           </div>
-                        )}
 
-                        {/* State & City (Location info at top of location section) */}
-                        <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label htmlFor="pricing-state" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                              State *
+                            <label htmlFor="pricing-phone" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
+                              <Phone className="w-3.5 h-3.5 text-brand-orange" />
+                              WhatsApp Number *
                             </label>
-                            <select
-                              id="pricing-state"
-                              value={state}
-                              onChange={(e) => {
-                                setState(e.target.value);
-                                setCity(""); // reset city
-                              }}
+                            <input
+                              id="pricing-phone"
+                              type="tel"
+                              placeholder="10-digit mobile number"
+                              value={phone}
+                              onChange={(e) => phone.length <= 15 && setPhone(e.target.value)}
                               required
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                            >
-                              <option value="" disabled>Select State</option>
-                               {Object.keys(citiesByState).map((st) => (
-                                 <option key={st} value={st}>
-                                   {st}
-                                 </option>
-                               ))}
-                            </select>
-                          </div>
-                          <div>
-                            <label htmlFor="pricing-city" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                              City *
-                            </label>
-                            <select
-                              id="pricing-city"
-                              value={city}
-                              onChange={(e) => setCity(e.target.value)}
-                              required
-                              disabled={!state}
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors disabled:opacity-30"
-                            >
-                              <option value="" disabled>Select City</option>
-                              {state &&
-                                citiesByState[state]?.map((c) => (
-                                  <option key={c} value={c}>
-                                    {c}
-                                  </option>
-                                ))}
-                            </select>
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors font-mono"
+                            />
                           </div>
                         </div>
 
-                        {/* Manual Area / Locality */}
-                        <div>
-                          <label htmlFor="pricing-area" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                            Area / Locality *
-                          </label>
-                          <input
-                            id="pricing-area"
-                            type="text"
-                            placeholder="e.g. Madhapur, Gachibowli, Armoor Town"
-                            value={area}
-                            onChange={(e) => setArea(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                          />
-                        </div>
-
-                        {/* Date and Timing Slot */}
-                        <div className={selectedPlan.title === "Custom Plan" ? "grid grid-cols-1 gap-4" : "grid grid-cols-2 gap-4"}>
+                        {/* Date & City in 2-col layout */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label htmlFor="pricing-date" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
+                            <label htmlFor="pricing-date" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
                               <Calendar className="w-3.5 h-3.5 text-brand-orange" />
-                              Event Date (Optional)
+                              Shoot Date *
                             </label>
                             <input
                               id="pricing-date"
                               type="date"
                               min={getTodayDateString()}
-                              value={date}
+                              value={date || getTodayDateString()}
                               onChange={(e) => setDate(e.target.value)}
                               onClick={(e) => {
                                 try { e.currentTarget.showPicker(); } catch (err) {}
                               }}
-                              className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange [color-scheme:dark] cursor-pointer"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange [color-scheme:dark] cursor-pointer"
                             />
                           </div>
-                          {selectedPlan.title !== "Custom Plan" && (
-                            <div>
-                              <label htmlFor="pricing-time-slot" className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold mb-1.5 flex items-center gap-1">
-                                <Clock className="w-3.5 h-3.5 text-brand-orange" />
-                                Preferred Slot *
-                              </label>
-                              <select
-                                id="pricing-time-slot"
-                                value={timeSlot}
-                                onChange={(e) => setTimeSlot(e.target.value)}
-                                required={selectedPlan.title !== "Custom Plan"}
-                                className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                              >
-                                <option value="" disabled>Select Time Slot</option>
-                                {getTimeSlotsForPlan().map((slotOption) => (
-                                  <option key={slotOption} value={slotOption}>
-                                    {slotOption}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
+
+                          <div>
+                            <label htmlFor="pricing-city" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
+                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
+                              City / Shoot Location
+                            </label>
+                            <input
+                              id="pricing-city"
+                              type="text"
+                              placeholder="e.g. Pune, Hyderabad, Mumbai"
+                              value={city}
+                              onChange={(e) => {
+                                setCity(e.target.value);
+                                setArea(e.target.value);
+                              }}
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                            />
+                          </div>
                         </div>
 
-                        {selectedPlan.title === "Custom Plan" && (
-                          <div className="pt-2">
-                            <div className="p-3.5 rounded-xl bg-brand-orange/5 border border-brand-orange/20 text-neutral-350 text-[11px] leading-relaxed flex items-start gap-2.5">
-                              <Info className="w-4 h-4 text-brand-orange mt-0.5 flex-shrink-0" />
-                              <span>
-                                <strong>Custom Quote:</strong> Pricing is determined based on total shoot hours, production requirements, and the number of edited reels requested. Submit details to get a tailored proposal.
-                              </span>
-                            </div>
+                        {/* Quick Occasion Chips (1-tap selection) */}
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-neutral-400 mb-1.5 font-sans">
+                            Occasion / Event Type
+                          </label>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[
+                              "🚗 Car Delivery",
+                              "🎂 Birthday",
+                              "💍 Wedding",
+                              "🏢 Brand Launch",
+                              "✨ Portfolio",
+                              "🎉 Other"
+                            ].map((opt) => {
+                              const cleanOpt = opt.split(" ")[1] || opt;
+                              const isSelected = eventType === cleanOpt || (eventType === "" && cleanOpt === "Car");
+                              return (
+                                <button
+                                  type="button"
+                                  key={opt}
+                                  onClick={() => setEventType(cleanOpt)}
+                                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                                    isSelected
+                                      ? "bg-brand-orange text-black border border-brand-orange font-extrabold shadow-[0_0_10px_rgba(255,122,0,0.3)]"
+                                      : "bg-neutral-900 border border-neutral-800 text-neutral-300 hover:border-neutral-700 hover:text-white"
+                                  }`}
+                                >
+                                  {opt}
+                                </button>
+                              );
+                            })}
                           </div>
-                        )}
+                        </div>
 
-                        {/* Add Extra Hour Checkbox (+899) */}
-                        {selectedPlan.title !== "Add On's" && selectedPlan.title !== "Custom Plan" && (
-                          <div className="pt-2">
-                            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 cursor-pointer hover:border-brand-orange/30 transition-colors">
-                              <input 
-                                type="checkbox" 
-                                checked={addExtraHour}
-                                onChange={(e) => setAddExtraHour(e.target.checked)}
-                                className="accent-brand-orange w-4 h-4 cursor-pointer" 
-                              />
-                              <div>
-                                <p className="text-xs font-bold text-white">Add Extra Shoot Hour (+₹899)</p>
-                                <p className="text-[9px] text-neutral-500 font-light mt-0.5">Extend your shoot on-site easily</p>
-                              </div>
-                            </label>
-                          </div>
-                        )}
-
-                        {/* Coupons Coupon Validation Input */}
+                        {/* 1-Tap Coupon Shortcut */}
                         {selectedPlan.title !== "Custom Plan" && (
-                          <div className="space-y-2 pt-2">
-                            <label className="block text-[9px] uppercase tracking-widest text-neutral-400 font-bold">
-                              Have a promo code?
-                            </label>
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="e.g. FIRST500"
-                                value={couponCode}
-                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                disabled={!!appliedCoupon || isValidatingCoupon}
-                                className="flex-1 px-4 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange uppercase font-mono tracking-wider disabled:opacity-50"
-                              />
-                              {appliedCoupon ? (
+                          <div className="pt-1">
+                            {!appliedCoupon ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCouponCode("BAPPA20");
+                                  handleApplyCoupon();
+                                }}
+                                className="w-full p-2.5 rounded-xl bg-brand-orange/10 border border-brand-orange/30 text-brand-orange hover:bg-brand-orange/20 transition-all flex items-center justify-between text-xs font-bold cursor-pointer"
+                              >
+                                <span className="flex items-center gap-1.5">
+                                  <Zap className="w-3.5 h-3.5 text-brand-orange" />
+                                  <span>Tap to apply <strong>BAPPA20</strong> for 20% OFF</span>
+                                </span>
+                                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-brand-orange text-black font-extrabold">
+                                  Apply
+                                </span>
+                              </button>
+                            ) : (
+                              <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 flex items-center justify-between text-xs">
+                                <span>🎉 Coupon <strong>{appliedCoupon.code}</strong> applied (-₹{getCouponDiscount().toLocaleString("en-IN")})</span>
                                 <button
                                   type="button"
                                   onClick={handleRemoveCoupon}
-                                  className="px-4 py-2.5 rounded-xl bg-red-950/20 border border-red-900/40 text-red-500 font-bold text-xs uppercase tracking-wider hover:bg-red-950 hover:text-white transition-colors cursor-pointer"
+                                  className="text-[10px] uppercase text-red-400 hover:underline font-bold"
                                 >
                                   Remove
                                 </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={handleApplyCoupon}
-                                  disabled={isValidatingCoupon || !couponCode.trim()}
-                                  className="px-5 py-2.5 rounded-xl bg-brand-orange text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all disabled:opacity-50 disabled:hover:bg-brand-orange cursor-pointer"
-                                >
-                                  {isValidatingCoupon ? "Applying..." : "Apply"}
-                                </button>
-                              )}
-                            </div>
-                            {couponError && (
-                              <p className="text-red-500 text-[10px] mt-1 font-mono font-semibold">{couponError}</p>
-                            )}
-                            {couponSuccess && (
-                              <p className="text-emerald-400 text-[10px] mt-1 font-mono font-semibold">{couponSuccess}</p>
+                              </div>
                             )}
                           </div>
                         )}
-                      </div>
-
-                      {/* Trust Badges Reassurance Row */}
-                      <div className="pt-4 border-t border-neutral-900/60 mt-2.5">
-                        <div className="grid grid-cols-3 gap-2.5 text-center">
-                          <div className="p-2.5 rounded-xl bg-neutral-950/40 border border-neutral-900 flex flex-col items-center justify-center space-y-1">
-                            <span className="text-[14px]">🛡️</span>
-                            <span className="text-[8px] font-bold text-white uppercase tracking-wider block">Vetted Creators</span>
-                            <span className="text-[7px] text-neutral-505 font-light block leading-normal">Background checked & trained</span>
-                          </div>
-                          <div className="p-2.5 rounded-xl bg-neutral-950/40 border border-neutral-900 flex flex-col items-center justify-center space-y-1">
-                            <span className="text-[14px]">🎙️</span>
-                            <span className="text-[8px] font-bold text-white uppercase tracking-wider block">Cinematic Gear</span>
-                            <span className="text-[7px] text-neutral-505 font-light block leading-normal">Gimbals, mics & pro iPhones</span>
-                          </div>
-                          <div className="p-2.5 rounded-xl bg-neutral-950/40 border border-neutral-900 flex flex-col items-center justify-center space-y-1">
-                            <span className="text-[14px]">🔒</span>
-                            <span className="text-[8px] font-bold text-white uppercase tracking-wider block">Safe Scheduling</span>
-                            <span className="text-[7px] text-neutral-505 font-light block leading-normal">Instant lock & whatsapp prep</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* SUMMARY PREVIEW BLOCK */}
-                      <AnimatePresence>
-                        {showSummaryPreview && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="p-4 rounded-2xl bg-brand-orange/5 border border-brand-orange/20 space-y-2.5 text-xs overflow-hidden"
-                          >
-                            <h5 className="text-[9px] uppercase tracking-widest text-brand-orange font-bold flex items-center gap-1">
-                              <FileText className="w-3.5 h-3.5" />
-                              Shoot Details Summary
-                            </h5>
-                            <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 text-neutral-300 text-[11px] font-light">
-                              <div>
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Location</span>
-                                {area}, {city}, {state}
-                              </div>
-                              <div>
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Date / Schedule</span>
-                                {date ? date.split("-").reverse().join("/") : "Not Selected"} {timeSlot ? `@ ${timeSlot.split(" ")[0]}` : ""}
-                              </div>
-                              <div>
-                                <span className="text-neutral-500 font-bold uppercase text-[9px] block">Plan Selection</span>
-                                {selectedPlan.title}
-                              </div>
-                              {selectedPlan.title !== "Custom Plan" && (
-                                <div>
-                                  <span className="text-neutral-500 font-bold uppercase text-[9px] block">Extra Hour Add-on</span>
-                                  {addExtraHour ? "Yes (+₹899)" : "No"}
-                                </div>
-                              )}
-
-                            </div>
-                            <div className="h-[1px] bg-brand-orange/15 w-full my-1" />
-                            {selectedPlan.title === "Custom Plan" ? (
-                              <div className="flex justify-between items-center text-xs font-bold text-white">
-                                <span>Total Booking Amount:</span>
-                                <span className="text-brand-orange text-glow">
-                                  Custom Quote (TBD)
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="space-y-1.5 text-[11px] text-neutral-300 font-light">
-                                <div className="flex justify-between">
-                                  <span>Base Shoot Cost:</span>
-                                  <span className="text-white font-medium">₹{getCalculatedPrice().toLocaleString("en-IN")}</span>
-                                </div>
-                                {appliedCoupon && (
-                                  <div className="flex justify-between text-emerald-455 font-bold">
-                                    <span>Coupon Discount ({appliedCoupon.code}):</span>
-                                    <span>-₹{getCouponDiscount().toLocaleString("en-IN")}</span>
-                                  </div>
-                                )}
-                                <div className="flex justify-between">
-                                  <span className="flex items-center gap-1">
-                                    Platform Fee (2.5%):
-                                    <span className="text-[9px] text-neutral-500 font-bold uppercase">(incl. gateway costs)</span>
-                                  </span>
-                                  <span className="text-white font-medium">₹{Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 0.025).toLocaleString("en-IN")}</span>
-                                </div>
-                                <div className="h-[1px] bg-neutral-900/50 w-full my-1" />
-                                <div className="flex justify-between items-center text-xs font-bold text-white">
-                                  <span>Total Amount to Pay:</span>
-                                  <span className="text-brand-orange text-glow">
-                                    ₹{Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")}
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                      {/* Terms & Conditions Checkbox */}
-                      <div className="flex items-start gap-2.5 pt-1 mb-2">
-                        <input
-                          type="checkbox"
-                          id="pricing-accept-terms"
-                          checked={acceptTerms}
-                          onChange={(e) => setAcceptTerms(e.target.checked)}
-                          required
-                          className="w-4 h-4 rounded border-neutral-850 bg-neutral-950 text-brand-orange focus:ring-brand-orange accent-brand-orange mt-0.5 cursor-pointer"
-                        />
-                        <label htmlFor="pricing-accept-terms" className="text-neutral-450 text-[11px] font-light leading-relaxed select-none">
-                          I accept the{" "}
-                          <button
-                            type="button"
-                            onClick={() => setShowTermsModal(true)}
-                            className="underline text-brand-orange hover:text-white transition-colors cursor-pointer font-medium"
-                          >
-                            Terms & Conditions
-                          </button>{" "}
-                          *
-                        </label>
                       </div>
 
                       {errorMessage && (
-                        <div className="p-3 rounded-xl bg-red-950/20 border border-red-900/50 text-red-500 text-[11px] font-light text-center">
+                        <div className="p-2.5 rounded-xl bg-red-950/30 border border-red-900/50 text-red-400 text-xs text-center font-medium">
                           {errorMessage}
                         </div>
                       )}
 
-                      <button
-                        type="submit"
-                        className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-widest duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        <span>
-                          {selectedPlan.title === "Custom Plan"
-                            ? "Request Custom Quote"
-                            : `Pay ₹${Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")} & Confirm Slot`}
-                        </span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </button>
+                      {/* Primary Checkout Action */}
+                      <div className="space-y-2 pt-1">
+                        <button
+                          type="submit"
+                          className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(255,122,0,0.35)] active:scale-98"
+                        >
+                          <span>
+                            {selectedPlan.title === "Custom Plan"
+                              ? "Request Custom Quote →"
+                              : `Pay ₹${Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")} & Confirm Booking →`}
+                          </span>
+                        </button>
+
+                        {/* 10-Second WhatsApp Fast Booking */}
+                        <a
+                          href={`https://wa.me/919848012345?text=${encodeURIComponent(
+                            `Hi LitWorks! 🚀 I want to fast-book the ${selectedPlan.title} (${selectedPlan.price}) package for ${date || "upcoming shoot"}.\nName: ${name || "Client"}\nCity: ${city || "Pune"}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2.5 px-4 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/40 border border-emerald-500/30 text-emerald-400 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>💬 Or Fast Book via WhatsApp (10s)</span>
+                        </a>
+
+                        <p className="text-[10px] text-neutral-400 text-center font-light pt-1">
+                          🔒 100% Secure Payment • Instant WhatsApp Confirmation & Creator Dispatch
+                        </p>
+                      </div>
                     </form>
                   )}
 
