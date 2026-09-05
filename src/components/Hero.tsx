@@ -309,30 +309,10 @@ export default function Hero() {
                     <div className="w-0.5 h-0.5 bg-brand-orange/40 rounded-full absolute right-1.5 animate-pulse" />
                   </div>
 
-                  {/* Real-looking Status Bar & Audio Controller */}
-                  <div className="relative z-40 px-4 pt-3 pb-1 flex items-center justify-between text-white/90 font-sans text-[10px] font-semibold tracking-tight select-none">
+                  {/* Real-looking Status Bar */}
+                  <div className="relative z-40 px-5 pt-3 pb-1 flex items-center justify-between text-white/90 font-sans text-[10px] font-semibold tracking-tight select-none pointer-events-none">
                     <span>9:41</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setMockupMuted(!mockupMuted);
-                      }}
-                      className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white hover:text-brand-orange hover:border-brand-orange/40 transition-all cursor-pointer pointer-events-auto"
-                      title={mockupMuted ? "Unmute reel sound" : "Mute reel sound"}
-                    >
-                      {mockupMuted ? (
-                        <>
-                          <VolumeX className="w-3 h-3 text-neutral-400" />
-                          <span className="text-[8px] font-mono font-bold text-neutral-400">MUTED</span>
-                        </>
-                      ) : (
-                        <>
-                          <Volume2 className="w-3 h-3 text-brand-orange animate-pulse" />
-                          <span className="text-[8px] font-mono font-bold text-brand-orange">SOUND ON</span>
-                        </>
-                      )}
-                    </button>
-                    <div className="flex items-center gap-1.5 pointer-events-none">
+                    <div className="flex items-center gap-1.5">
                       <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                         <path d="M2 22h20V2z" className="opacity-30" />
                         <path d="M2 22h16V6z" />
@@ -345,20 +325,51 @@ export default function Hero() {
                     </div>
                   </div>
 
-                  {/* HTML5 Video Loop (Reels Simulation) */}
-                  <div className="absolute inset-0 w-full h-full z-10 overflow-hidden bg-black pointer-events-none">
+                  {/* Prominent Floating Audio Controller Pill (Top Right) */}
+                  <div className="absolute top-10 right-3.5 z-40 pointer-events-auto">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMockupMuted(!mockupMuted);
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-xl border transition-all duration-300 shadow-xl cursor-pointer ${
+                        mockupMuted
+                          ? "bg-black/80 border-white/20 text-neutral-300 hover:border-brand-orange/50 hover:text-white"
+                          : "bg-brand-orange text-black border-brand-orange font-bold shadow-[0_0_20px_rgba(255,122,0,0.5)] scale-105"
+                      }`}
+                      title={mockupMuted ? "Tap to unmute reel audio" : "Mute audio"}
+                    >
+                      {mockupMuted ? (
+                        <>
+                          <VolumeX className="w-3.5 h-3.5 text-brand-orange" />
+                          <span className="text-[9px] font-mono font-bold tracking-wider uppercase">Unmute</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5 fill-current animate-pulse" />
+                          <span className="text-[9px] font-mono font-extrabold tracking-wider uppercase">Audio On</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* HTML5 Video Loop (Reels Simulation - Clickable to toggle sound) */}
+                  <div
+                    onClick={() => setMockupMuted(!mockupMuted)}
+                    className="absolute inset-0 w-full h-full z-10 overflow-hidden bg-black cursor-pointer"
+                  >
                     <video
                       ref={videoRef}
                       src={mockupVideoUrl}
                       autoPlay
                       loop
-                      muted
+                      muted={mockupMuted}
                       playsInline
                       webkit-playsinline="true"
                       preload="auto"
                       className="w-full h-full object-cover scale-[1.02]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 pointer-events-none" />
                   </div>
 
                   {/* Instagram-style Actions Vertical Panel */}
