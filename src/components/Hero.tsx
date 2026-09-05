@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
-import { RotateCw, Heart, MessageCircle, Send, Bookmark, Sparkles, Play } from "lucide-react";
+import { RotateCw, Heart, MessageCircle, Send, Bookmark, Sparkles, Play, Volume2, VolumeX } from "lucide-react";
 
 export default function Hero() {
   const [heroData, setHeroData] = useState({
@@ -37,6 +37,7 @@ export default function Hero() {
   const rotateZ = useTransform(mouseXSpring, (mX) => mX * 0.12);
 
   const [mockupVideoUrl, setMockupVideoUrl] = useState("https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-in-a-rainy-night-42260-large.mp4");
+  const [mockupMuted, setMockupMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -61,12 +62,12 @@ export default function Hero() {
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
-      video.muted = true;
+      video.muted = mockupMuted;
       video.play().catch((err) => {
         console.log("Mockup video autoplay failed, retrying on interaction:", err);
       });
     }
-  }, [mockupVideoUrl]);
+  }, [mockupVideoUrl, mockupMuted]);
 
   // Restart 3D entry animation spin
   const triggerReplaySpin = () => {
@@ -308,10 +309,30 @@ export default function Hero() {
                     <div className="w-0.5 h-0.5 bg-brand-orange/40 rounded-full absolute right-1.5 animate-pulse" />
                   </div>
 
-                  {/* Real-looking Status Bar */}
-                  <div className="relative z-40 px-5 pt-3 pb-1 flex items-center justify-between text-white/90 font-sans text-[10px] font-semibold tracking-tight pointer-events-none select-none">
+                  {/* Real-looking Status Bar & Audio Controller */}
+                  <div className="relative z-40 px-4 pt-3 pb-1 flex items-center justify-between text-white/90 font-sans text-[10px] font-semibold tracking-tight select-none">
                     <span>9:41</span>
-                    <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMockupMuted(!mockupMuted);
+                      }}
+                      className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white hover:text-brand-orange hover:border-brand-orange/40 transition-all cursor-pointer pointer-events-auto"
+                      title={mockupMuted ? "Unmute reel sound" : "Mute reel sound"}
+                    >
+                      {mockupMuted ? (
+                        <>
+                          <VolumeX className="w-3 h-3 text-neutral-400" />
+                          <span className="text-[8px] font-mono font-bold text-neutral-400">MUTED</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3 h-3 text-brand-orange animate-pulse" />
+                          <span className="text-[8px] font-mono font-bold text-brand-orange">SOUND ON</span>
+                        </>
+                      )}
+                    </button>
+                    <div className="flex items-center gap-1.5 pointer-events-none">
                       <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                         <path d="M2 22h20V2z" className="opacity-30" />
                         <path d="M2 22h16V6z" />

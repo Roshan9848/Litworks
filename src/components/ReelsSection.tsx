@@ -223,20 +223,39 @@ export default function ReelsSection() {
                     {/* Overlays */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40 p-6 flex flex-col justify-between opacity-100 transition-opacity duration-300 pointer-events-none">
                       {/* Top Status & Controls */}
-                      <div className="flex items-center justify-between pointer-events-auto">
-                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/5 rounded-full px-2.5 py-1">
+                      <div className="flex items-center justify-between pointer-events-auto z-20">
+                        <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1">
                           {isCurrent && !isPaused ? (
                             <>
                               <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
-                              <span className="text-[8px] font-black uppercase tracking-wider text-brand-orange font-mono">Playing</span>
+                              <span className="text-[9px] font-black uppercase tracking-wider text-brand-orange font-mono">Playing</span>
                             </>
                           ) : (
                             <>
                               <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
-                              <span className="text-[8px] font-black uppercase tracking-wider text-neutral-400 font-mono font-bold">Up Next</span>
+                              <span className="text-[9px] font-black uppercase tracking-wider text-neutral-400 font-mono font-bold">Up Next</span>
                             </>
                           )}
                         </div>
+
+                        {/* Always-visible sound toggle on top-right for mobile & desktop */}
+                        <button
+                          onClick={toggleMute}
+                          className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-white hover:text-brand-orange hover:border-brand-orange/40 transition-all shadow-lg cursor-pointer"
+                          title={isMuted ? "Unmute audio" : "Mute audio"}
+                        >
+                          {isMuted ? (
+                            <>
+                              <VolumeX className="w-3.5 h-3.5 text-neutral-400" />
+                              <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-neutral-400">Muted</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 className="w-3.5 h-3.5 text-brand-orange animate-pulse" />
+                              <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-brand-orange">Sound On</span>
+                            </>
+                          )}
+                        </button>
                       </div>
 
                       {/* Unified Floating Controller Pill (Middle) */}

@@ -14,9 +14,9 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-      // Wait for exit animation to finish before notifying parent
-      setTimeout(onComplete, 800);
-    }, 2200);
+      // Fast exit transition for snappy mobile responsiveness
+      setTimeout(onComplete, 400);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
