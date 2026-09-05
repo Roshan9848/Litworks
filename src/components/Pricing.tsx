@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Zap, ArrowUpRight, X, Loader2, CheckCircle2, Phone, User, Calendar, MapPin, Clock, FileText, Search, CreditCard, ChevronLeft, Info, Mail, BookOpen } from "lucide-react";
+import { Check, Zap, ArrowUpRight, X, Loader2, CheckCircle2, Phone, User, Calendar, MapPin, Clock, FileText, Search, CreditCard, ChevronLeft, Info, Mail, BookOpen, Sparkles } from "lucide-react";
 
 interface PricingPlan {
   title: string;
@@ -721,16 +721,19 @@ export default function Pricing() {
             
             {/* Modal Box */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              initial={{ opacity: 0, scale: 0.96, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.3 }}
-              className="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-neutral-900 shadow-2xl relative z-10 bg-neutral-950/95 text-left max-h-[90vh] overflow-y-auto no-scrollbar"
+              exit={{ opacity: 0, scale: 0.96, y: 15 }}
+              transition={{ duration: 0.25 }}
+              className="relative w-full max-w-md rounded-3xl p-5 sm:p-7 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.85)] z-10 bg-neutral-950/90 backdrop-blur-2xl text-left max-h-[88vh] overflow-y-auto overflow-x-hidden no-scrollbar"
             >
+              {/* Subtle Ambient Glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 rounded-full blur-3xl pointer-events-none" />
+
               {/* Close Button */}
               <button
                 onClick={handleCloseModal}
-                className="absolute top-4 right-4 p-2 rounded-full border border-neutral-900 text-neutral-400 hover:text-white hover:border-brand-orange transition-colors cursor-pointer"
+                className="absolute top-4 right-4 p-2 rounded-full border border-white/10 text-neutral-400 hover:text-white hover:border-brand-orange transition-colors cursor-pointer z-20"
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
@@ -741,85 +744,83 @@ export default function Pricing() {
                   <div className="w-14 h-14 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange flex items-center justify-center mx-auto shadow-lg animate-bounce">
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
-                  <h4 className="text-xl font-black text-white">Slot Booking Confirmed!</h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed font-light">
-                    We have successfully registered your booking request. Our creators will connect with you on WhatsApp / Phone shortly!
+                  <h4 className="text-xl font-black text-white">Booking Registered</h4>
+                  <p className="text-xs text-neutral-400 leading-relaxed font-light max-w-xs mx-auto">
+                    We have received your shoot request. Our production team will connect on WhatsApp shortly.
                   </p>
                   <button
                     onClick={handleCloseModal}
-                    className="w-full py-2.5 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white text-xs font-bold tracking-widest uppercase transition-colors cursor-pointer mt-4"
+                    className="w-full py-3 rounded-xl bg-neutral-900 border border-neutral-800 text-white text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer mt-4"
                   >
-                    Close Window
+                    Done
                   </button>
                 </div>
               ) : (
-                <div>
+                <div className="relative z-10">
                   {/* STEP 1: Details Entry */}
                   {modalStep === 1 && (
-                    <form onSubmit={handleProceedToPayment} className="space-y-5">
-                      {/* Plan Header */}
-                      <div className="flex items-center justify-between">
+                    <form onSubmit={handleProceedToPayment} className="space-y-4">
+                      {/* Plan & Pricing Header */}
+                      <div className="flex items-start justify-between pr-8">
                         <div>
-                          <span className="text-[10px] uppercase font-mono tracking-widest text-brand-orange font-bold flex items-center gap-1">
-                            <Zap className="w-3 h-3" />
-                            Express 30s Booking
+                          <span className="text-[10px] uppercase font-mono tracking-widest text-brand-orange font-bold block">
+                            Direct Booking
                           </span>
-                          <h4 className="text-xl font-black text-white mt-0.5">
+                          <h4 className="text-lg font-black text-white mt-0.5 font-sans">
                             {selectedPlan.title}
                           </h4>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-black text-brand-orange">
+                          <p className="text-xl font-black text-white font-mono">
                             ₹{Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")}
                           </p>
-                          <span className="text-[9px] text-neutral-400 font-mono">Incl. GST & Fees</span>
+                          <span className="text-[9px] text-neutral-400 font-mono block">All taxes incl.</span>
                         </div>
                       </div>
 
-                      <div className="h-[1px] bg-neutral-900 w-full" />
+                      <div className="h-[1px] bg-white/10 w-full" />
 
                       {/* Streamlined Form Fields */}
-                      <div className="space-y-3.5">
-                        {/* Full Name & Phone in 2-col layout */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div>
-                            <label htmlFor="pricing-name" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
-                              <User className="w-3.5 h-3.5 text-brand-orange" />
-                              Full Name *
-                            </label>
-                            <input
-                              id="pricing-name"
-                              type="text"
-                              placeholder="e.g. Rahul Sharma"
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
-                              required
-                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
-                            />
-                          </div>
-
-                          <div>
-                            <label htmlFor="pricing-phone" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
-                              <Phone className="w-3.5 h-3.5 text-brand-orange" />
-                              WhatsApp Number *
-                            </label>
-                            <input
-                              id="pricing-phone"
-                              type="tel"
-                              placeholder="10-digit mobile number"
-                              value={phone}
-                              onChange={(e) => phone.length <= 15 && setPhone(e.target.value)}
-                              required
-                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors font-mono"
-                            />
-                          </div>
+                      <div className="space-y-3">
+                        {/* Full Name */}
+                        <div>
+                          <label htmlFor="pricing-name" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
+                            <User className="w-3 h-3 text-brand-orange" />
+                            Full Name *
+                          </label>
+                          <input
+                            id="pricing-name"
+                            type="text"
+                            placeholder="e.g. Rahul Sharma"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                          />
                         </div>
 
-                        {/* Date & City in 2-col layout */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div>
+                        {/* WhatsApp Number */}
+                        <div>
+                          <label htmlFor="pricing-phone" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
+                            <Phone className="w-3 h-3 text-brand-orange" />
+                            WhatsApp / Mobile Number *
+                          </label>
+                          <input
+                            id="pricing-phone"
+                            type="tel"
+                            placeholder="10-digit number"
+                            value={phone}
+                            onChange={(e) => phone.length <= 15 && setPhone(e.target.value)}
+                            required
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors font-mono"
+                          />
+                        </div>
+
+                        {/* Shoot Date & Location (Responsive 2-col with mobile safety) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                          <div className="w-full min-w-0">
                             <label htmlFor="pricing-date" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
-                              <Calendar className="w-3.5 h-3.5 text-brand-orange" />
+                              <Calendar className="w-3 h-3 text-brand-orange" />
                               Shoot Date *
                             </label>
                             <input
@@ -831,54 +832,53 @@ export default function Pricing() {
                               onClick={(e) => {
                                 try { e.currentTarget.showPicker(); } catch (err) {}
                               }}
-                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange [color-scheme:dark] cursor-pointer"
+                              className="w-full max-w-full px-3.5 py-2.5 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange [color-scheme:dark] cursor-pointer box-border"
                             />
                           </div>
 
-                          <div>
+                          <div className="w-full min-w-0">
                             <label htmlFor="pricing-city" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
-                              <MapPin className="w-3.5 h-3.5 text-brand-orange" />
-                              City / Shoot Location
+                              <MapPin className="w-3 h-3 text-brand-orange" />
+                              City / Location
                             </label>
                             <input
                               id="pricing-city"
                               type="text"
-                              placeholder="e.g. Pune, Hyderabad, Mumbai"
+                              placeholder="e.g. Pune, Hyderabad"
                               value={city}
                               onChange={(e) => {
                                 setCity(e.target.value);
                                 setArea(e.target.value);
                               }}
-                              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-850 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors"
+                              className="w-full max-w-full px-3.5 py-2.5 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors box-border"
                             />
                           </div>
                         </div>
 
-                        {/* Quick Occasion Chips (1-tap selection) */}
+                        {/* Occasion / Shoot Category Pills (Clean text-only without emojis) */}
                         <div>
                           <label className="block text-[10px] uppercase font-bold text-neutral-400 mb-1.5 font-sans">
-                            Occasion / Event Type
+                            Shoot Category
                           </label>
                           <div className="flex flex-wrap gap-1.5">
                             {[
-                              "🚗 Car Delivery",
-                              "🎂 Birthday",
-                              "💍 Wedding",
-                              "🏢 Brand Launch",
-                              "✨ Portfolio",
-                              "🎉 Other"
+                              "Car Delivery",
+                              "Birthday Event",
+                              "Wedding",
+                              "Brand Launch",
+                              "Personal Reel",
+                              "Other"
                             ].map((opt) => {
-                              const cleanOpt = opt.split(" ")[1] || opt;
-                              const isSelected = eventType === cleanOpt || (eventType === "" && cleanOpt === "Car");
+                              const isSelected = eventType === opt || (eventType === "" && opt === "Car Delivery");
                               return (
                                 <button
                                   type="button"
                                   key={opt}
-                                  onClick={() => setEventType(cleanOpt)}
-                                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                                  onClick={() => setEventType(opt)}
+                                  className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
                                     isSelected
-                                      ? "bg-brand-orange text-black border border-brand-orange font-extrabold shadow-[0_0_10px_rgba(255,122,0,0.3)]"
-                                      : "bg-neutral-900 border border-neutral-800 text-neutral-300 hover:border-neutral-700 hover:text-white"
+                                      ? "bg-brand-orange text-black font-bold shadow-[0_0_12px_rgba(255,122,0,0.3)]"
+                                      : "bg-neutral-900/80 border border-white/5 text-neutral-300 hover:border-white/20 hover:text-white"
                                   }`}
                                 >
                                   {opt}
@@ -888,76 +888,89 @@ export default function Pricing() {
                           </div>
                         </div>
 
-                        {/* 1-Tap Coupon Shortcut */}
+                        {/* Integrated Coupon Input Box */}
                         {selectedPlan.title !== "Custom Plan" && (
                           <div className="pt-1">
+                            <label className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 font-sans">
+                              Promo Code
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Enter coupon code"
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                disabled={!!appliedCoupon || isValidatingCoupon}
+                                className="flex-1 px-3.5 py-2 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange uppercase font-mono tracking-wider disabled:opacity-50"
+                              />
+                              {appliedCoupon ? (
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveCoupon}
+                                  className="px-3 py-2 rounded-xl bg-red-950/40 border border-red-900/40 text-red-400 font-bold text-xs uppercase tracking-wider hover:bg-red-900/40 transition-colors cursor-pointer"
+                                >
+                                  Remove
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={handleApplyCoupon}
+                                  disabled={isValidatingCoupon || !couponCode.trim()}
+                                  className="px-4 py-2 rounded-xl bg-brand-orange text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all disabled:opacity-40 cursor-pointer"
+                                >
+                                  {isValidatingCoupon ? "Checking..." : "Apply"}
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Subtle autofill helper chip */}
                             {!appliedCoupon ? (
                               <button
                                 type="button"
                                 onClick={() => {
                                   setCouponCode("BAPPA20");
-                                  handleApplyCoupon();
+                                  setTimeout(() => {
+                                    handleApplyCoupon();
+                                  }, 50);
                                 }}
-                                className="w-full p-2.5 rounded-xl bg-brand-orange/10 border border-brand-orange/30 text-brand-orange hover:bg-brand-orange/20 transition-all flex items-center justify-between text-xs font-bold cursor-pointer"
+                                className="text-[10px] text-brand-orange/80 hover:text-brand-orange mt-1.5 flex items-center gap-1 font-mono transition-colors cursor-pointer"
                               >
-                                <span className="flex items-center gap-1.5">
-                                  <Zap className="w-3.5 h-3.5 text-brand-orange" />
-                                  <span>Tap to apply <strong>BAPPA20</strong> for 20% OFF</span>
-                                </span>
-                                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-brand-orange text-black font-extrabold">
-                                  Apply
-                                </span>
+                                <Sparkles className="w-2.5 h-2.5" />
+                                <span>Use code <strong>BAPPA20</strong> for 20% discount</span>
                               </button>
                             ) : (
-                              <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 flex items-center justify-between text-xs">
-                                <span>🎉 Coupon <strong>{appliedCoupon.code}</strong> applied (-₹{getCouponDiscount().toLocaleString("en-IN")})</span>
-                                <button
-                                  type="button"
-                                  onClick={handleRemoveCoupon}
-                                  className="text-[10px] uppercase text-red-400 hover:underline font-bold"
-                                >
-                                  Remove
-                                </button>
-                              </div>
+                              <p className="text-emerald-400 text-[10px] mt-1 font-mono">
+                                Code {appliedCoupon.code} applied (-₹{getCouponDiscount().toLocaleString("en-IN")})
+                              </p>
+                            )}
+                            {couponError && (
+                              <p className="text-red-400 text-[10px] mt-1 font-mono">{couponError}</p>
                             )}
                           </div>
                         )}
                       </div>
 
                       {errorMessage && (
-                        <div className="p-2.5 rounded-xl bg-red-950/30 border border-red-900/50 text-red-400 text-xs text-center font-medium">
+                        <div className="p-2.5 rounded-xl bg-red-950/40 border border-red-900/50 text-red-400 text-xs text-center font-medium">
                           {errorMessage}
                         </div>
                       )}
 
-                      {/* Primary Checkout Action */}
-                      <div className="space-y-2 pt-1">
+                      {/* Primary Checkout Button */}
+                      <div className="pt-2">
                         <button
                           type="submit"
-                          className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-sm uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(255,122,0,0.35)] active:scale-98"
+                          className="w-full py-3.5 px-4 rounded-xl bg-brand-orange hover:bg-white text-black font-extrabold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,122,0,0.3)] active:scale-98"
                         >
                           <span>
                             {selectedPlan.title === "Custom Plan"
-                              ? "Request Custom Quote →"
-                              : `Pay ₹${Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")} & Confirm Booking →`}
+                              ? "Request Custom Proposal →"
+                              : `Pay ₹${Math.round(Math.max(0, getCalculatedPrice() - getCouponDiscount()) * 1.025).toLocaleString("en-IN")} & Confirm Slot →`}
                           </span>
                         </button>
 
-                        {/* 10-Second WhatsApp Fast Booking */}
-                        <a
-                          href={`https://wa.me/919848012345?text=${encodeURIComponent(
-                            `Hi LitWorks! 🚀 I want to fast-book the ${selectedPlan.title} (${selectedPlan.price}) package for ${date || "upcoming shoot"}.\nName: ${name || "Client"}\nCity: ${city || "Pune"}`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full py-2.5 px-4 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/40 border border-emerald-500/30 text-emerald-400 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>💬 Or Fast Book via WhatsApp (10s)</span>
-                        </a>
-
-                        <p className="text-[10px] text-neutral-400 text-center font-light pt-1">
-                          🔒 100% Secure Payment • Instant WhatsApp Confirmation & Creator Dispatch
+                        <p className="text-[9px] text-neutral-400 text-center font-mono pt-2">
+                          Encrypted Checkout • Instant Confirmation
                         </p>
                       </div>
                     </form>
