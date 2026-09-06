@@ -12,7 +12,7 @@ export default function FAQ() {
     },
     {
       question: "Which cities do you serve?",
-      answer: "We currently serve key cities in Telangana (Hyderabad, Karimnagar, Nizamabad, Armoor) and Andhra Pradesh (Vijayawada, Visakhapatnam/Vizag). If you are looking for services in these regions, we deploy our teams directly to your location.",
+      answer: "We currently provide on-location shoot and media services across 5 key hubs: Chennai, Hyderabad, Nizamabad, Mancherial, and Adilabad. Our mobile creator teams deploy directly to your venue or business.",
     },
     {
       question: "Do you handle Instagram pages?",

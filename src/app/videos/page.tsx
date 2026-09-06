@@ -6,13 +6,43 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import Chatbot from "@/components/Chatbot";
 
 export const metadata: Metadata = {
-  title: "Cinematic Reels Portfolio Showcase | LITWORKS Media",
-  description: "Watch our high-converting cinematic reels. Discover how our professional creators film and edit engaging, viral content for weddings, events, birthdays, and brands.",
+  title: "Cinematic Reels Portfolio Showcase | Wedding, Events & Brand Videos",
+  description: "Watch our high-converting cinematic reels shot in Chennai, Hyderabad, Nizamabad, Mancherial & Adilabad. Discover how our professional creators film and edit engaging, viral content for weddings, events, birthdays, and brands.",
+  alternates: {
+    canonical: "https://litworks.agency/videos",
+  },
   openGraph: {
     title: "Cinematic Reels Portfolio Showcase | LITWORKS Media",
-    description: "Browse our gallery of trending reels. See our production quality, transition editing, and storytelling capabilities.",
+    description: "Browse our gallery of trending reels. See our production quality, transition editing, and storytelling capabilities across Telangana & South India.",
     url: "https://litworks.agency/videos",
+    siteName: "LITWORKS",
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cinematic Reels Portfolio Showcase | LITWORKS Media",
+    description: "Watch trending instant reels and cinematic edits by LITWORKS Media.",
   }
+};
+
+const videosBreadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://litworks.agency"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Videos & Portfolio",
+      "item": "https://litworks.agency/videos"
+    }
+  ]
 };
 
 const videoObjectSchema = {
@@ -61,6 +91,10 @@ const videoObjectSchema = {
 export default function VideosPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(videosBreadcrumbSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(videoObjectSchema) }}

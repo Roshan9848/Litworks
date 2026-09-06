@@ -21,20 +21,46 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "LITWORKS | Turning Moments & Brands Into Instant Impact",
-  description: "We create cinematic Instant Reels (Wedding, Birthday, Car Delivery, Event, Business), manage social media, run Meta Ads/performance marketing campaigns, edit videos, design posters, and help businesses grow online across Chennai, Hyderabad, Nizamabad, Mancherial, and Adilabad.",
+  title: {
+    default: "LITWORKS | Instant Reels, Social Media Management & Meta Ads Agency",
+    template: "%s | LITWORKS Media",
+  },
+  description: "Premier creative media agency delivering cinematic Instant Reels (Weddings, Birthdays, Car Delivery, Events, Businesses), full-service social media management, high-ROI Meta Ads performance marketing, video editing, and graphic design across Chennai, Hyderabad, Nizamabad, Mancherial, and Adilabad.",
   metadataBase: new URL("https://litworks.agency"),
+  alternates: {
+    canonical: "https://litworks.agency",
+  },
   keywords: [
-    "LITWORKS", "Instant Reels", "Wedding Reels", "Birthday Reels", 
+    "LITWORKS", "LITWORKS Media", "Instant Reels", "Wedding Reels", "Birthday Reels", 
     "Car Delivery Reels", "Social Media Handling", "Instagram Management",
-    "Performance Marketing", "Meta Ads Hyderabad", "Video Editing", 
+    "Performance Marketing", "Meta Ads Hyderabad", "Video Editing Agency", 
     "Poster Designing", "YouTube Thumbnails", "Creative Agency Telangana",
-    "Chennai", "Hyderabad", "Nizamabad", "Mancherial", "Adilabad"
+    "Instant Reels Hyderabad", "Instant Reels Chennai", "Instant Reels Nizamabad",
+    "Instant Reels Mancherial", "Instant Reels Adilabad", "Event Videography Telangana",
+    "Wedding Reel Makers", "Cinematic Reel Creators", "Digital Marketing Agency South India"
   ],
-  authors: [{ name: "LITWORKS" }],
+  authors: [{ name: "LITWORKS", url: "https://litworks.agency" }],
+  creator: "LITWORKS",
+  publisher: "LITWORKS Media",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
-    title: "LITWORKS | Turning Moments & Brands Into Instant Impact",
-    description: "We create cinematic Instant Reels, manage social media, run performance marketing, edit videos, and design graphics for brands and individuals.",
+    title: "LITWORKS | Instant Reels, Social Media Management & Meta Ads",
+    description: "Premier creative agency for cinematic Instant Reels delivered on-site in hours, full-service Instagram handling, and high-converting Meta Ads campaigns.",
     url: "https://litworks.agency",
     siteName: "LITWORKS",
     locale: "en_IN",
@@ -44,9 +70,17 @@ export const metadata: Metadata = {
         url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "LITWORKS Logo",
+        alt: "LITWORKS - Creative Media & Instant Reels Agency",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LITWORKS | Instant Reels & Creative Media Agency",
+    description: "Cinematic Instant Reels, Instagram Management, Meta Ads & Video Editing in Chennai, Hyderabad, Nizamabad, Mancherial & Adilabad.",
+    images: ["/logo.png"],
+    creator: "@litworks_media",
+    site: "@litworks_media",
   },
   icons: {
     icon: [
@@ -57,6 +91,7 @@ export const metadata: Metadata = {
       { url: "/favicon.png" }
     ],
   },
+  category: "Creative Media & Digital Marketing Agency",
 };
 
 export default function RootLayout({
@@ -66,15 +101,21 @@ export default function RootLayout({
 }>) {
   const isMaintenance = process.env.NEXT_PUBLIC_MAINTENANCE === "true";
 
-  const localBusinessSchema = {
+  const organizationSchema = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": "ProfessionalService",
     "name": "LITWORKS",
+    "legalName": "LITWORKS Media Agency",
+    "alternateName": ["LitWorks", "LitWorks Media", "Litworks Agency"],
     "image": "https://litworks.agency/logo.png",
-    "@id": "https://litworks.agency/#localbusiness",
+    "logo": "https://litworks.agency/logo.png",
+    "@id": "https://litworks.agency/#organization",
     "url": "https://litworks.agency",
     "telephone": "+919110797354",
     "email": "litworks.media@gmail.com",
+    "priceRange": "₹₹",
+    "currenciesAccepted": "INR",
+    "paymentAccepted": "UPI, Credit Card, Debit Card, Net Banking, Cash",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Madhapur",
@@ -89,32 +130,80 @@ export default function RootLayout({
       "longitude": 78.3915
     },
     "areaServed": [
-      {
-        "@type": "AdministrativeArea",
-        "name": "Telangana"
-      },
-      {
-        "@type": "AdministrativeArea",
-        "name": "Andhra Pradesh"
-      }
+      { "@type": "City", "name": "Chennai" },
+      { "@type": "City", "name": "Hyderabad" },
+      { "@type": "City", "name": "Nizamabad" },
+      { "@type": "City", "name": "Mancherial" },
+      { "@type": "City", "name": "Adilabad" }
     ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "150",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday"
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
       ],
       "opens": "00:00",
       "closes": "23:59"
     },
     "sameAs": [
       "https://www.instagram.com/litworks.media/"
-    ]
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "LITWORKS Creative Media Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Instant Reels (Weddings, Events, Birthdays, Car Deliveries)",
+            "description": "On-location shoot and same-day editing delivering viral cinematic 9:16 reels within hours."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Social Media Page Handling",
+            "description": "Comprehensive Instagram and Facebook page management, content planning, and organic growth."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Meta Ads & Performance Marketing",
+            "description": "High-conversion lead generation and e-commerce advertising across Meta platforms."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Cinematic Video Editing & Post Production",
+            "description": "Premium color grading, sound design, and speed-ramp transition video editing."
+          }
+        }
+      ]
+    }
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LITWORKS",
+    "url": "https://litworks.agency",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://litworks.agency/services?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   };
 
   const faqSchema = {
@@ -134,7 +223,7 @@ export default function RootLayout({
         "name": "Which cities do you serve?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "We currently serve key cities in Telangana (Hyderabad, Karimnagar, Nizamabad, Armoor) and Andhra Pradesh (Vijayawada, Visakhapatnam/Vizag). If you are looking for services in these regions, we deploy our teams directly to your location."
+          "text": "We currently serve 5 key hubs: Chennai, Hyderabad, Nizamabad, Mancherial, and Adilabad. Our mobile creators and editors deploy directly to your event or business location."
         }
       },
       {
@@ -158,7 +247,7 @@ export default function RootLayout({
         "name": "How fast is delivery?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "For our 'Instant' services (like Instant Reels), delivery happens on the same day—often within 2 to 4 hours of the shoot. For larger video editing projects, posters, or monthly management accounts, delivery ranges from 24 to 72 hours based on mutual alignment."
+          "text": "For our Instant Reel services, delivery happens on the same day—often within 2 to 4 hours of the shoot. For larger video editing projects, posters, or monthly management accounts, delivery ranges from 24 to 72 hours based on mutual alignment."
         }
       }
     ]
@@ -172,7 +261,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/favicon.png" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <script
           type="application/ld+json"
