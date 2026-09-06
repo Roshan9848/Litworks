@@ -27,17 +27,22 @@ export default function MobileLaunchExperiencePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Cross-Browser Fullscreen
+  const [showIosTip, setShowIosTip] = useState(false);
+
+  // Cross-Browser Fullscreen Handler
   const toggleFullscreen = useCallback(() => {
     if (typeof window === "undefined") return;
     try {
       const doc = window.document as any;
-      const docEl = doc.documentElement as any;
+      const docEl = (document.getElementById("launch-container") || document.documentElement) as any;
       const isFs =
         doc.fullscreenElement ||
         doc.webkitFullscreenElement ||
         doc.mozFullScreenElement ||
         doc.msFullscreenElement;
+
+      // Check if iOS (iPhone/iPad) which blocks standard HTML5 Fullscreen API
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
       if (!isFs) {
         const req =
@@ -45,9 +50,15 @@ export default function MobileLaunchExperiencePage() {
           docEl.webkitRequestFullscreen ||
           docEl.mozRequestFullScreen ||
           docEl.msRequestFullscreen;
+
         if (req) {
-          req.call(docEl);
-          setIsFullscreen(true);
+          req.call(docEl).then(() => {
+            setIsFullscreen(true);
+          }).catch(() => {
+            if (isIOS) setShowIosTip(true);
+          });
+        } else if (isIOS) {
+          setShowIosTip((prev) => !prev);
         }
       } else {
         const exit =
@@ -61,7 +72,7 @@ export default function MobileLaunchExperiencePage() {
         }
       }
     } catch {
-      // Ignore
+      setShowIosTip(true);
     }
   }, []);
 
@@ -201,12 +212,37 @@ export default function MobileLaunchExperiencePage() {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] bg-black text-white flex flex-col justify-between overflow-hidden select-none font-sans z-50">
+    <div id="launch-container" className="fixed inset-0 w-full h-[100dvh] bg-black text-white flex flex-col justify-between overflow-hidden select-none font-sans z-50">
       {/* Lightweight Particle Canvas */}
       <canvas
         ref={canvasRef}
         className="fixed inset-0 pointer-events-none z-50 w-full h-full"
       />
+
+      {/* iOS Fullscreen Tip Modal/Banner */}
+      {showIosTip && (
+        <div className="fixed top-20 left-4 right-4 z-50 max-w-sm mx-auto p-4 rounded-xl bg-neutral-900 border border-brand-orange/40 text-left shadow-2xl animate-fade-in">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <span className="text-xs font-bold text-brand-orange uppercase font-mono tracking-wider">
+              iPhone Full Screen Tip
+            </span>
+            <button
+              onClick={() => setShowIosTip(false)}
+              className="text-neutral-400 hover:text-white text-xs font-mono px-1"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="text-xs text-neutral-300 leading-relaxed font-light mb-2">
+            Apple blocks JavaScript fullscreen on iPhones. To record with <strong>zero browser bars</strong>:
+          </p>
+          <ol className="text-[11px] text-neutral-400 space-y-1 list-decimal list-inside font-mono">
+            <li>Tap Safari <strong>Share</strong> (box with up arrow)</li>
+            <li>Tap <strong>&ldquo;Add to Home Screen&rdquo;</strong></li>
+            <li>Open the LitWorks icon for 100% full screen</li>
+          </ol>
+        </div>
+      )}
 
       {/* Top Header */}
       <header className="relative z-20 px-6 pt-6 flex items-center justify-between max-w-md mx-auto w-full">
