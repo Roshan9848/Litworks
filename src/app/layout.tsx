@@ -47,6 +47,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "LITWORKS",
+  },
   robots: {
     index: true,
     follow: true,
