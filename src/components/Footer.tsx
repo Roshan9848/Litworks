@@ -6,7 +6,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 export default function Footer() {
   const [phone, setPhone] = useState("+91 9110797354");
   const [email, setEmail] = useState("litworks.media@gmail.com");
-  const [location, setLocation] = useState("Serving Telangana, Andhra Pradesh & Tamil Nadu");
+  const [location, setLocation] = useState("Serving Chennai, Hyderabad, Nizamabad, Mancherial & Adilabad");
 
   useEffect(() => {
     fetch("/api/website-content")

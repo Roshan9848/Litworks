@@ -7,7 +7,7 @@ import { Phone, Mail, MapPin, MessageSquare } from "lucide-react";
 export default function Contact() {
   const [phone, setPhone] = useState("+91 9110797354");
   const [email, setEmail] = useState("litworks.media@gmail.com");
-  const [location, setLocation] = useState("Serving Telangana & Andhra Pradesh");
+  const [location, setLocation] = useState("Serving Chennai, Hyderabad, Nizamabad, Mancherial & Adilabad");
   const [whatsappNumber, setWhatsappNumber] = useState("+91 9866571801");
 
   useEffect(() => {

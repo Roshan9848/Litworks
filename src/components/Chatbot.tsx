@@ -81,11 +81,11 @@ export default function Chatbot() {
       clean.includes("cities") ||
       clean.includes("place") ||
       clean.includes("telangana") ||
-      clean.includes("andhra") ||
+      clean.includes("chennai") ||
       clean.includes("serve") ||
       clean.includes("where")
     ) {
-      return "We deploy our production crews to the following locations:\n\n📍 Telangana: Hyderabad, Karimnagar, Nizamabad, Armoor\n📍 Andhra Pradesh: Vijayawada, Visakhapatnam (Vizag)\n\nWe cover shoots directly at your venue within these regions.";
+      return "We deploy our production crews to the following locations:\n\n📍 Chennai\n📍 Hyderabad\n📍 Nizamabad\n📍 Mancherial\n📍 Adilabad\n\nWe cover shoots directly at your venue or business across these hubs.";
     }
 
     // 4. Booking queries
@@ -101,11 +101,11 @@ export default function Chatbot() {
 
     // 5. Greeting queries
     if (clean.includes("hi") || clean.includes("hello") || clean.includes("hey") || clean.includes("greetings")) {
-      return "Hello! I am ready to assist you. LITWORKS has successfully completed 100+ projects! Ask me about our services, starting prices (Reels start at ₹1,500!), contact info, or locations. Feel free to use the quick suggestions below!";
+      return "Hello! I am ready to assist you. LITWORKS has successfully completed 150+ projects! Ask me about our services, starting prices (Reels start at ₹1,500!), contact info, or locations. Feel free to use the quick suggestions below!";
     }
 
     // 6. Generic/Fallback response
-    return "I'm LITBOT ⚡, your virtual guide for LITWORKS. Having completed over 100+ creative projects, we can help you with anything! Ask me about our starting prices (Instant Reels start at ₹1,500!), contact numbers, or shoot locations. You can also type 'contact' or 'booking' to learn more!";
+    return "I'm LITBOT ⚡, your virtual guide for LITWORKS. Having completed over 150+ creative projects, we can help you with anything! Ask me about our starting prices (Instant Reels start at ₹1,500!), contact numbers, or shoot locations. You can also type 'contact' or 'booking' to learn more!";
   };
 
   return (

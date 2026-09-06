@@ -166,8 +166,8 @@ export default function Pricing() {
   const [dynamicBasicPlans, setDynamicBasicPlans] = useState<PricingPlan[]>(basicPlans);
   const [dynamicWeddingPlans, setDynamicWeddingPlans] = useState<PricingPlan[]>(weddingPlans);
   const [citiesByState, setCitiesByState] = useState<Record<string, string[]>>({
-    Telangana: ["Hyderabad", "Karimnagar", "Nizamabad", "Armoor"],
-    "Andhra Pradesh": ["Vijayawada", "Visakhapatnam (Vizag)"],
+    Telangana: ["Hyderabad", "Nizamabad", "Mancherial", "Adilabad"],
+    "Tamil Nadu": ["Chennai"],
   });
 
   useEffect(() => {
