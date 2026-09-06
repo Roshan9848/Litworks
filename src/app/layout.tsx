@@ -22,14 +22,14 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "LITWORKS | Turning Moments & Brands Into Instant Impact",
-  description: "We create cinematic Instant Reels (Wedding, Birthday, Car Delivery, Event, Business), manage social media, run Meta Ads/performance marketing campaigns, edit videos, design posters, and help businesses grow online in Telangana & Andhra Pradesh.",
+  description: "We create cinematic Instant Reels (Wedding, Birthday, Car Delivery, Event, Business), manage social media, run Meta Ads/performance marketing campaigns, edit videos, design posters, and help businesses grow online across Chennai, Hyderabad, Nizamabad, Mancherial, and Adilabad.",
   metadataBase: new URL("https://litworks.agency"),
   keywords: [
     "LITWORKS", "Instant Reels", "Wedding Reels", "Birthday Reels", 
     "Car Delivery Reels", "Social Media Handling", "Instagram Management",
     "Performance Marketing", "Meta Ads Hyderabad", "Video Editing", 
     "Poster Designing", "YouTube Thumbnails", "Creative Agency Telangana",
-    "Creative Agency Andhra Pradesh", "Hyderabad", "Vijayawada", "Vizag"
+    "Chennai", "Hyderabad", "Nizamabad", "Mancherial", "Adilabad"
   ],
   authors: [{ name: "LITWORKS" }],
   openGraph: {

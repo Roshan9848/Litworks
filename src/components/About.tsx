@@ -53,7 +53,7 @@ export default function About() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-neutral-400 font-light leading-relaxed text-base sm:text-lg"
           >
-            With over 100+ successful projects completed, LITWORKS is a premier creative media and marketing agency specializing in Instant Reels, social media management, performance marketing, video editing, and design services for businesses and individuals. We turn raw moments and brands into instant digital impact.
+            With over 150+ successful projects completed, LITWORKS is a premier creative media and marketing agency specializing in Instant Reels, social media management, performance marketing, video editing, and design services for businesses and individuals. We turn raw moments and brands into instant digital impact.
           </motion.p>
         </div>
 

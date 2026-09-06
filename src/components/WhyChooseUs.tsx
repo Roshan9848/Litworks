@@ -7,8 +7,8 @@ export default function WhyChooseUs() {
   const features = [
     {
       icon: Users,
-      title: "100+ Completed Projects",
-      description: "With over 100+ successful projects completed across Telangana and AP, our team brings proven creative expertise to every single shoot.",
+      title: "150+ Completed Projects",
+      description: "With over 150+ successful projects completed across Telangana, AP, and Tamil Nadu, our team brings proven creative expertise to every single shoot.",
     },
     {
       icon: Lightbulb,

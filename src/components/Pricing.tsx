@@ -846,45 +846,31 @@ export default function Pricing() {
                           </div>
                         </div>
 
-                        {/* City Dropdown & Locality (Responsive 2-col) */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                          <div className="w-full min-w-0">
-                            <label htmlFor="pricing-city" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
-                              <MapPin className="w-3 h-3 text-brand-orange" />
-                              City *
-                            </label>
-                            <div className="relative">
-                              <select
-                                id="pricing-city"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                                required
-                                className="w-full max-w-full px-3 py-2.5 rounded-xl bg-neutral-900/90 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange appearance-none pr-8 cursor-pointer box-border truncate"
-                              >
-                                <option value="" className="bg-neutral-900 text-neutral-400">Select City</option>
-                                <option value="Chennai" className="bg-neutral-900 text-white">Chennai</option>
-                                <option value="Hyderabad" className="bg-neutral-900 text-white">Hyderabad</option>
-                                <option value="Nizamabad" className="bg-neutral-900 text-white">Nizamabad</option>
-                                <option value="Mancherial" className="bg-neutral-900 text-white">Mancherial</option>
-                                <option value="Adilabad" className="bg-neutral-900 text-white">Adilabad</option>
-                              </select>
-                              <ChevronDown className="w-3.5 h-3.5 text-neutral-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            </div>
-                          </div>
-
-                          <div className="w-full min-w-0">
-                            <label htmlFor="pricing-area" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
-                              <MapPin className="w-3 h-3 text-brand-orange" />
-                              Locality / Area (Optional)
-                            </label>
-                            <input
-                              id="pricing-area"
-                              type="text"
-                              placeholder="e.g. Jubilee Hills, T. Nagar"
-                              value={area}
-                              onChange={(e) => setArea(e.target.value)}
-                              className="w-full max-w-full px-3.5 py-2.5 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange transition-colors box-border"
-                            />
+                        {/* City Dropdown (Only Supported Cities) */}
+                        <div className="w-full min-w-0">
+                          <label htmlFor="pricing-city" className="block text-[10px] uppercase font-bold text-neutral-400 mb-1 flex items-center gap-1 font-sans">
+                            <MapPin className="w-3 h-3 text-brand-orange" />
+                            Select City *
+                          </label>
+                          <div className="relative">
+                            <select
+                              id="pricing-city"
+                              value={city}
+                              onChange={(e) => {
+                                setCity(e.target.value);
+                                setArea(e.target.value);
+                              }}
+                              required
+                              className="w-full max-w-full px-3.5 py-2.5 rounded-xl bg-neutral-900/80 border border-white/10 text-white text-xs focus:outline-none focus:border-brand-orange appearance-none pr-8 cursor-pointer box-border truncate"
+                            >
+                              <option value="" className="bg-neutral-900 text-neutral-400">Select City</option>
+                              <option value="Chennai" className="bg-neutral-900 text-white">Chennai</option>
+                              <option value="Hyderabad" className="bg-neutral-900 text-white">Hyderabad</option>
+                              <option value="Nizamabad" className="bg-neutral-900 text-white">Nizamabad</option>
+                              <option value="Mancherial" className="bg-neutral-900 text-white">Mancherial</option>
+                              <option value="Adilabad" className="bg-neutral-900 text-white">Adilabad</option>
+                            </select>
+                            <ChevronDown className="w-3.5 h-3.5 text-neutral-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                           </div>
                         </div>
 

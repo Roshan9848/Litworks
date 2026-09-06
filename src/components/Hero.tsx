@@ -7,7 +7,7 @@ import { RotateCw, Heart, MessageCircle, Send, Bookmark, Sparkles, Play, Volume2
 
 export default function Hero() {
   const [heroData, setHeroData] = useState({
-    badgeText: "100+ Projects Completed • Creative Media Agency",
+    badgeText: "150+ Projects Completed • Creative Media Agency",
     heading: "Create Impact Instantly with LITWORKS",
     subheading: "We create cinematic Instant Reels, manage social media, run performance marketing campaigns, edit videos, design posters, and help businesses grow online.",
     primaryBtnText: "Book Instant Reel",
@@ -16,7 +16,7 @@ export default function Hero() {
 
   const [statsData, setStatsData] = useState({
     opacity: 0.8,
-    projectsCount: "100+",
+    projectsCount: "150+",
     deliveryTime: "Mins",
     satisfactionRate: "99%"
   });
